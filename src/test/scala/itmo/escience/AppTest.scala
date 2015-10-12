@@ -1,8 +1,10 @@
-import org.junit.Test
+package itmo.escience
+
 import org.junit.Assert._
+import org.junit.Test
 /**
- * Created by Mishanya on 12.10.2015.
- */
+*  Created by Mishanya on 12.10.2015.
+*/
 @Test
 class AppTest {
   @Test
