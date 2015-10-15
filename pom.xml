@@ -31,7 +31,7 @@
                 <artifactId>scala-maven-plugin</artifactId>
                 <version>3.2.1</version>
                 <configuration>
-                    <mainClass>itmo.escience.App</mainClass>
+                    <mainClass>itmo.escience.Initializer</mainClass>
                 </configuration>
                 <executions>
                     <execution>
@@ -61,7 +61,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>itmo.escience.App</mainClass>
+                            <mainClass>itmo.escience.Initializer</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
