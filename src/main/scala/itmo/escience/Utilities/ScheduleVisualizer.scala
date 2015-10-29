@@ -145,7 +145,7 @@ class ScheduleVisualizer {
 
         val node_type: Element = doc.createElement("node_property")
         node_type.setAttribute("name", "type")
-        if (nodesSched.indexOf(si) == 0) {
+        if (si == node.executedTask) {
           node_type.setAttribute("value", "executing")
         }
         else {
