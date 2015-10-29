@@ -16,7 +16,7 @@ class Context {
 
   // Add node to the context, and schedule
   def addNode(node: Node): Unit = {
-    nodes ::= node
+    nodes :+= node
     schedule.addNode(node)
   }
 
@@ -30,7 +30,7 @@ class Context {
     var n: Node = null
     for (n <- schedule.map.keySet) {
       // Add new schedule items
-      schedule.map(n) ::= newSchedule.map(n)
+      schedule.map = schedule.map.updated(n, schedule.map(n) ++ newSchedule.map(n))
       val nodeSchedule: List[ScheduleItem] = schedule.map(n)
 
       if (n.isFree() && nodeSchedule.nonEmpty) {

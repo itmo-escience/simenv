@@ -24,7 +24,7 @@ class EventQueue {
         return
       }
     }
-    eq ::= event
+    eq :+= event
   }
 
   // Check correctness of the order

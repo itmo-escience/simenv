@@ -16,7 +16,7 @@ class Schedule {
 
   // Add new schedule item
   def addItem(node: Node, item: ScheduleItem): Unit = {
-    map(node) ::= item
+    map = map.updated(node, map(node) :+ item)
   }
 
   // Get time, when new schedule item can be assigned on certain node

@@ -4,6 +4,7 @@ import itmo.escience.Algorithms.Scheduler
 import itmo.escience.Environment.Context
 import itmo.escience.Environment.Entities.{Schedule, Node, Task}
 import itmo.escience.Environment.Events.{EventQueue, EventHandler, Event}
+import itmo.escience.Utilities.ScheduleVisualizer
 
 /**
  * Created by Mishanya on 14.10.2015.
@@ -23,8 +24,19 @@ object Simulator {
     // Apply this initial schedule
     ctx.applySchedule(initSchedule, eq)
 
+    println("Correct eq = " + eq.isCorrectOrder())
+
+    // Visualizer
+    val scheduleVisualizer: ScheduleVisualizer = new ScheduleVisualizer()
+    val drawScheds: Boolean = true
+
     // Handle events from event queue
     while (!eq.isEmpty()) {
+      if (drawScheds) {
+        // Draw current schedule
+        scheduleVisualizer.drawSched(ctx.schedule)
+      }
+
       // Take next event from event queue
       val curEvent: Event = eq.next();
       println("Event time = " + curEvent.startTime)
@@ -37,7 +49,14 @@ object Simulator {
 
       // Handle current event
       EventHandler.handle(curEvent, ctx, eq, schedAlg)
+      println("Correct eq = " + eq.isCorrectOrder())
     }
+
+    if (drawScheds) {
+      // Draw last schedule
+      scheduleVisualizer.drawSched(ctx.schedule)
+    }
+
     //TODO what will be a result?
   }
 }

@@ -3,7 +3,7 @@ package itmo.escience.Environment.Entities
 /**
  * Created by Mishanya on 14.10.2015.
  */
-class Node (cName: String, cCapacity: Integer, cStatus: String = "working", cReliability: Double = 1) {
+class Node (cName: String, cCapacity: Integer, cReliability: Double = 1, cStatus: String = "working") {
   val name: String = cName
   //TODO create enumeration for status
   var status: String = cStatus
@@ -35,7 +35,7 @@ class Node (cName: String, cCapacity: Integer, cStatus: String = "working", cRel
   }
 
   // Is node ready to execute tasks
-  def isFree(): Boolean = executedTask != null
+  def isFree(): Boolean = executedTask == null
 
   def releaseTime(currentTime: Double): Double = {
     if (isFree()) {

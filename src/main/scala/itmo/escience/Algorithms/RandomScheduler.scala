@@ -11,7 +11,8 @@ class RandomScheduler extends Scheduler{
   def schedule(ctx: Context, tasks: List[Task]): Schedule = {
     // Copy current schedule
     //TODO check, does it makes change in current schedule, without copying
-    var resultSchedule: Schedule = ctx.schedule
+    var resultSchedule: Schedule = new Schedule()
+    resultSchedule.map = ctx.schedule.map
     val nodes: List[Node] = ctx.nodes
 
     var t: Task = null
@@ -22,7 +23,7 @@ class RandomScheduler extends Scheduler{
       val startTime: Double = resultSchedule.getNodeFreeTime(n, ctx)
       val endTime: Double = startTime + t.execTime / n.capacity
       // Add new schedule item
-      resultSchedule.map(n) ::= new ScheduleItem(n, t, startTime, endTime)
+      resultSchedule.map = resultSchedule.map.updated(n, resultSchedule.map(n) :+ new ScheduleItem(n, t, startTime, endTime))
     }
     return resultSchedule
   }
