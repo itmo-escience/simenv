@@ -16,7 +16,6 @@ import org.xml.sax.{InputSource, SAXException}
  * Created by Mishanya on 29.10.2015.
  */
 class ScheduleVisualizer {
-  //TODO change statuses !!!
   var counter: Int = 0
 
   val cmapString: String =
@@ -36,15 +35,20 @@ class ScheduleVisualizer {
         "<color type=\"fg\" rgb=\"FFFFFF\" />" +
         "<color type=\"bg\" rgb=\"FF0000\" />" +
       "</task>" +
-      "<composite>" +
-        "<task id=\"waiting\" />" +
-        "<task id=\"executing\" />" +
+      "<task id=\"transfer\">" +
         "<color type=\"fg\" rgb=\"FFFFFF\" />" +
-        "<color type=\"bg\" rgb=\"ff6200\" />" +
-      "</composite>" +
+        "<color type=\"bg\" rgb=\"666666\" />" +
+      "</task>" +
     "</cmap>"
 
+
   val tempDir: File = new File("./temp/lastRunSchedules")
+  if (tempDir.exists) {
+    var f: File = null
+    for (f <- tempDir.listFiles()) {
+      f.delete()
+    }
+  }
   if (!tempDir.exists) {
     tempDir.mkdir
   }
@@ -100,13 +104,14 @@ class ScheduleVisualizer {
 
     JeduleStarter.main(jedArgs)
     counter += 1
-    Files.delete(Paths.get(jedArgs(3)))
+//    Files.delete(Paths.get(jedArgs(3)))
   }
 
   def schedToXML(sched: Schedule) : Document = {
     val doc: Document = db.newDocument
     var nodes: List[Node] = List()
     sched.map.keySet.foreach(x => nodes :+= x)
+    nodes = nodes.sortBy(x => x.name)
 
     val grid_schedule: Element = doc.createElement("grid_schedule")
     doc.appendChild(grid_schedule)
@@ -132,10 +137,12 @@ class ScheduleVisualizer {
       val node: Node = nodes(n)
       var nodesSched: List[ScheduleItem] = sched.map(node)
       if (!node.isFree()) {
-        nodesSched :+= node.executedTask
+        nodesSched :+= node.executedItem
       }
       var si: ScheduleItem = null
       for (si <- nodesSched) {
+
+        // Runtime
         val node_statistics: Element = doc.createElement("node_statistics")
         node_infos.appendChild(node_statistics)
 
@@ -145,7 +152,7 @@ class ScheduleVisualizer {
 
         val node_type: Element = doc.createElement("node_property")
         node_type.setAttribute("name", "type")
-        if (si == node.executedTask) {
+        if (si == node.executedItem) {
           node_type.setAttribute("value", "executing")
         }
         else {
@@ -159,7 +166,7 @@ class ScheduleVisualizer {
 
         val node_startTime: Element = doc.createElement("node_property")
         node_startTime.setAttribute("name", "start_time")
-        node_startTime.setAttribute("value", "" + si.startTime)
+        node_startTime.setAttribute("value", "" + (si.startTime + si.transferTime))
 
         val node_endTime: Element = doc.createElement("node_property")
         node_endTime.setAttribute("name", "end_time")
@@ -191,6 +198,56 @@ class ScheduleVisualizer {
         hosts.setAttribute("start", "" + n)
         hosts.setAttribute("nb", "1")
         host_lists.appendChild(hosts)
+
+//         Transfer
+        if (si.transferTime > 0) {
+//        if (false) {
+          val data_node_statistics: Element = doc.createElement("node_statistics")
+          node_infos.appendChild(data_node_statistics)
+
+          val data_node_id: Element = doc.createElement("node_property")
+          data_node_id.setAttribute("name", "id")
+          data_node_id.setAttribute("value", si.task.name + "_d")
+
+          val data_node_type: Element = doc.createElement("node_property")
+          data_node_type.setAttribute("name", "type")
+          data_node_type.setAttribute("value", "transfer")
+
+          val data_node_startTime: Element = doc.createElement("node_property")
+          data_node_startTime.setAttribute("name", "start_time")
+          data_node_startTime.setAttribute("value", "" + si.startTime)
+
+          val data_node_endTime: Element = doc.createElement("node_property")
+          data_node_endTime.setAttribute("name", "end_time")
+          data_node_endTime.setAttribute("value", "" + (si.startTime + si.transferTime))
+
+          data_node_statistics.appendChild(data_node_id)
+          data_node_statistics.appendChild(data_node_type)
+          data_node_statistics.appendChild(data_node_startTime)
+          data_node_statistics.appendChild(data_node_endTime)
+
+          val data_configuration: Element = doc.createElement("configuration")
+          data_node_statistics.appendChild(data_configuration)
+
+          val data_conf_cluster: Element = doc.createElement("conf_property")
+          data_conf_cluster.setAttribute("name", "cluster_id")
+          data_conf_cluster.setAttribute("value", "0")
+
+          val data_conf_hosts: Element = doc.createElement("conf_property")
+          data_conf_hosts.setAttribute("name", "host_nb")
+          data_conf_hosts.setAttribute("value", "1")
+
+          data_configuration.appendChild(data_conf_cluster)
+          data_configuration.appendChild(data_conf_hosts)
+
+          val data_host_lists: Element = doc.createElement("host_lists")
+          data_configuration.appendChild(data_host_lists)
+
+          val data_hosts: Element = doc.createElement("hosts")
+          data_hosts.setAttribute("start", "" + n)
+          data_hosts.setAttribute("nb", "1")
+          data_host_lists.appendChild(data_hosts)
+        }
       }
     }
 

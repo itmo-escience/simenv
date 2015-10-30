@@ -19,8 +19,7 @@ class EventQueue {
     var i = 0
     for (i <- eq.indices) {
       if (eq(i).startTime > event.startTime) {
-        //TODO check, how to do this right, and test that
-        eq = eq.take(i) ++ List(event) ++ eq.takeRight(eq.size - i)
+        eq = (eq.take(i) :+ event) ++ eq.takeRight(eq.size - i)
         return
       }
     }

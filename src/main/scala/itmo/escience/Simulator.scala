@@ -24,7 +24,9 @@ object Simulator {
     // Apply this initial schedule
     ctx.applySchedule(initSchedule, eq)
 
-    println("Correct eq = " + eq.isCorrectOrder())
+    if (!eq.isCorrectOrder()) {
+      println("Incorrect eq!!!")
+    }
 
     // Visualizer
     val scheduleVisualizer: ScheduleVisualizer = new ScheduleVisualizer()
@@ -49,12 +51,9 @@ object Simulator {
 
       // Handle current event
       EventHandler.handle(curEvent, ctx, eq, schedAlg)
-      println("Correct eq = " + eq.isCorrectOrder())
-    }
-
-    if (drawScheds) {
-      // Draw last schedule
-      scheduleVisualizer.drawSched(ctx.schedule)
+      if (!eq.isCorrectOrder()) {
+        println("Incorrect eq!!!")
+      }
     }
 
     //TODO what will be a result?
