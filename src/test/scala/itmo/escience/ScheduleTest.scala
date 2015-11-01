@@ -2,7 +2,7 @@ package itmo.escience
 
 import itmo.escience.Environment.Context
 import itmo.escience.Environment.Entities._
-import itmo.escience.Environment.Events.EventQueue
+import itmo.escience.Environment.Events.{TaskFinished, EventQueue}
 import org.junit.Test
 
 /**
@@ -55,6 +55,8 @@ class ScheduleTest {
     assert(ctx.nodes(0).releaseTime(0) == 4, "Wrong apply schedule")
     assert(ctx.nodes(1).releaseTime(0) == 3, "Wrong apply schedule")
     assert(nodes(1).releaseTime(0) == 3, "Wrong apply schedule")
+    assert(eq.eq.size == 2)
+    assert(eq.isCorrectOrder())
   }
 
   @Test
@@ -79,5 +81,24 @@ class ScheduleTest {
     assert(node.releaseTime(6) == 6)
     assert(node.storage.containsFile(file0))
     assert(node.storage.containsFile(file1))
+  }
+
+  @Test
+  def testEventQueue(): Unit = {
+    var eq: EventQueue = new EventQueue()
+    var node: Node = new Node("n_0", 10, new Storage("s_0", 1000), 1)
+    var file: DataFile = new DataFile("f0", 10)
+    var task: Task = new Task("t_0", 30, List(new DataFile("in0", 50)), List(file))
+    eq.addEvent(new TaskFinished("test", task, 4, node))
+    eq.addEvent(new TaskFinished("test", task, 6, node))
+    eq.addEvent(new TaskFinished("test", task, 7, node))
+    assert(eq.isCorrectOrder())
+    eq.addEvent(new TaskFinished("test", task, 3, node))
+    assert(eq.isCorrectOrder())
+    eq.next()
+    eq.next()
+    eq.next()
+    eq.next()
+    assert(eq.isEmpty())
   }
 }
