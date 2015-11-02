@@ -1,4 +1,4 @@
-package itmo.escience.Environment.Events
+package itmo.escience.Executors.Events
 
 /**
  * Created by Mishanya on 14.10.2015.

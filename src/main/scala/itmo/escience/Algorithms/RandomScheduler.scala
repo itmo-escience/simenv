@@ -8,11 +8,14 @@ import itmo.escience.Environment.Entities.{ScheduleItem, Node, Schedule, Task}
  */
 class RandomScheduler extends Scheduler{
   // Tasks scheduling
-  def schedule(ctx: Context, tasks: List[Task]): Schedule = {
+  def schedule(ctx: Context): Schedule = {
     // Copy current schedule
-    var resultSchedule: Schedule = new Schedule()
+    val resultSchedule: Schedule = new Schedule()
     resultSchedule.map = ctx.schedule.map
     val nodes: List[Node] = ctx.nodes
+
+    // TODO: ctx.getUnsheduledTasks()
+    val tasks =
 
     var t: Task = null
     for (t <- tasks) {

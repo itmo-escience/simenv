@@ -3,7 +3,7 @@ package itmo.escience
 import itmo.escience.Algorithms.Scheduler
 import itmo.escience.Environment.Context
 import itmo.escience.Environment.Entities.{Schedule, Node, Task}
-import itmo.escience.Environment.Events.{EventQueue, EventHandler, Event}
+import itmo.escience.Executors.Events.{EventQueue, EventHandler, Event}
 import itmo.escience.Utilities.ScheduleVisualizer
 
 /**

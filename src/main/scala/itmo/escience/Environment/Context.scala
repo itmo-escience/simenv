@@ -1,14 +1,14 @@
 package itmo.escience.Environment
 
-import itmo.escience.Environment.Entities.{ScheduleItem, Node, Schedule}
-import itmo.escience.Environment.Events.{EventHandler, EventQueue}
+import itmo.escience.Environment.Entities.{Workflow, ScheduleItem, Node, Schedule}
+import itmo.escience.Executors.Events.{EventHandler, EventQueue}
 
 import scala.util.Random
 
 /**
  * Created by Mishanya on 14.10.2015.
  */
-class Context {
+class  Context(val workload:Array[Workflow]) {
   var schedule: Schedule = new Schedule()
   var time: Double = 0
   var nodes: List[Node] = List()

@@ -1,5 +1,7 @@
 package itmo.escience
 
+import itmo.escience.Executors.{ConsoleExecutor, Executor}
+
 /**
  * Created by Mishanya on 12.10.2015.
  */

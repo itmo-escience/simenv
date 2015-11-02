@@ -2,7 +2,7 @@ package itmo.escience
 
 import itmo.escience.Environment.Context
 import itmo.escience.Environment.Entities._
-import itmo.escience.Environment.Events.{EventHandler, TaskFinished, EventQueue}
+import itmo.escience.Executors.Events.{EventHandler, TaskFinished, EventQueue}
 import org.junit.Test
 
 /**

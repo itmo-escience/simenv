@@ -1,6 +1,6 @@
 package itmo.escience.Utilities
 
-import java.io.{StringReader, File, IOException}
+import java.io._
 import java.nio.file.{Paths, Files}
 import javax.xml.parsers.{ParserConfigurationException, DocumentBuilderFactory, DocumentBuilder}
 import javax.xml.transform.dom.DOMSource
@@ -17,6 +17,8 @@ import org.xml.sax.{InputSource, SAXException}
  */
 class ScheduleVisualizer {
   var counter: Int = 0
+
+  val cmapFilename = "./temp/lastRunSchedules/cmap.xml"
 
   val cmapString: String =
     "<cmap name=\"default\">" +
@@ -49,9 +51,13 @@ class ScheduleVisualizer {
       f.delete()
     }
   }
-  if (!tempDir.exists) {
-    tempDir.mkdir
+  if (!tempDir.exists && !tempDir.mkdirs()) {
+    throw new Exception(s"Cannot create file: ${tempDir.getCanonicalPath}")
   }
+
+  val cmapWriter = new PrintWriter(new File(cmapFilename))
+  cmapWriter.write(cmapString)
+  cmapWriter.close()
 
   var db: DocumentBuilder = null
   try {
@@ -79,7 +85,7 @@ class ScheduleVisualizer {
   val transformerFactory: TransformerFactory = TransformerFactory.newInstance
   val transformer: Transformer = transformerFactory.newTransformer
   var source: DOMSource = new DOMSource(cmap)
-  var result: StreamResult = new StreamResult(new File("./temp/lastRunSchedules/cmap.xml"))
+  var result: StreamResult = new StreamResult(new File(cmapFilename))
   transformer.transform(source, result)
 
   def drawSched (sched: Schedule): Unit = {

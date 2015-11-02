@@ -1,4 +1,4 @@
-package itmo.escience.Environment.Events
+package itmo.escience.Executors.Events
 
 import itmo.escience.Algorithms.Scheduler
 import itmo.escience.Environment.Context
