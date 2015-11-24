@@ -28,6 +28,11 @@ class Context {
   // Apply new schedule, start first tasks on nodes, and generate new events
   def applySchedule(newSchedule: Schedule, eq: EventQueue): Unit = {
     var n: Node = null
+    for (n <- newSchedule.map.keySet) {
+      if (!schedule.map.contains(n)) {
+        addNode(n)
+      }
+    }
     for (n <- schedule.map.keySet) {
       // Add new schedule items
       schedule.map = schedule.map.updated(n, schedule.map(n) ++ newSchedule.map(n))

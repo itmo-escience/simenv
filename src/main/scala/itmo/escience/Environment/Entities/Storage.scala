@@ -5,6 +5,7 @@ package itmo.escience.Environment.Entities
  */
 class Storage (cId: String, cVol: Double) {
   val id = cId
+  //TODO should storages have limit?
   var volume = cVol
   var files: List[DataFile] = List()
 

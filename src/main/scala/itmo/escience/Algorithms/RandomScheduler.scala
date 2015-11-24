@@ -17,8 +17,6 @@ class RandomScheduler extends Scheduler{
     var t: Task = null
     for (t <- tasks) {
       val n: Node = nodes(ctx.rnd.nextInt(nodes.size))
-      //TODO add data transfer time to endTime!!!
-      //TODO add function, which will estimate execute time into Scheduler trait, or new class Estimator!!!
       val startTime: Double = resultSchedule.getNodeFreeTime(n, ctx)
       val runTime: Double = Estimator.estimateRunTime(n, t)
       val transferTime: Double = Estimator.estimateTransferTime(nodes, n, t)
