@@ -1,13 +1,63 @@
 package itmo.escience.Environment
 
-import itmo.escience.Environment.Entities.{Workflow, ScheduleItem, Node, Schedule}
+import itmo.escience.Environment.Entities._
 import itmo.escience.Executors.Events.{EventHandler, EventQueue}
 
+import scala.collection.mutable
 import scala.util.Random
 
+
 /**
- * Created by Mishanya on 14.10.2015.
+ * Represents main operations on resource sets
+ * and give access to performance models
  */
+trait Environment {
+
+  type NodeId = String
+
+  /**
+   * Adds physical or virtual nodes to the pool of resources
+   * the node is virtual if we cannot directly control physical machine when it runs
+   * (for example, a node which has been bought of Amazon EC2 or GAE)
+   * @param nodes sequence of nodes
+   * @return
+   */
+  def addNodes(nodes: Seq[Node]):Unit
+
+  def removeNodes(nodes: Seq[Node]):Unit
+
+  def nodes(): Seq[Node]
+
+  def addContainer(node:Node): Unit
+
+  def removeContainer(node: Node): Unit
+
+  def nodeOrContainerById(nodeId:NodeId):Node
+
+  def changeNodeParams(newNodeDescription: Node)
+  /**
+   * Facade method for unifaction of access to performance models
+   * @param task
+   * @param nodeId
+   * @return
+   */
+  def estimateCalculationTime(task:Task, nodeId:NodeId): Int
+
+  def estimateDataTransferTime(pair1: (Task, NodeId), pair2: (Task, NodeId)):Int
+
+  def estimateReliability(nodeId: NodeId)
+}
+
+trait Schedule {
+  def mapping(): Map[NodeId, List[ScheduleItem]]
+}
+
+
+
+
+
+
+
 class  Context(val workload:Array[Workflow]) {
   var schedule: Schedule = new Schedule()
   var time: Double = 0
@@ -42,3 +92,47 @@ class  Context(val workload:Array[Workflow]) {
     }
   }
 }
+
+object Context {
+  val Environment
+  val Workload
+  val Schedule
+  val currentTime
+  val eventQueue
+  val Tag
+}
+
+object Workload {
+  val Futures #not schedules
+  val History #already executed
+  val Present #current executing
+  val WorkloadDynamicModel
+}
+
+object Schedule {
+  val History
+  val Plan # present and future
+}
+
+object eventQueue {
+  val future
+  val presentTask
+  val History
+}
+
+object Simulator {
+  val Context
+  val handlersLogic
+}
+
+object Scheduler {
+
+}
+
+object Serializer {
+
+}
+
+
+
+

@@ -5,6 +5,8 @@ package itmo.escience.Environment.Entities
  */
 
 trait BaseTask {
+
+  def id: TaskId
   def name: String
   def execTime: Double
   def inputData: List[DataFile]
@@ -13,13 +15,14 @@ trait BaseTask {
   def children: List[Task]
 }
 
-case class Task(name: String, execTime: Double,
+case class Task(id: TaskId, name: String, execTime: Double,
                 inputData: List[DataFile] = List(),
                 outputData: List[DataFile] = List(),
                 parents: List[Task],
                 children: List[Task] ) extends BaseTask
 
-case class HeadTask(name:String, children:List[Task]) extends BaseTask{
+case class HeadTask(id: TaskId, name:String, children:List[Task]) extends BaseTask{
+
   override def execTime: Double = 0.0
 
   override def inputData: List[DataFile] = List()
@@ -29,8 +32,8 @@ case class HeadTask(name:String, children:List[Task]) extends BaseTask{
   override def parents: List[Task] = List()
 }
 
-case class EndTask(name:String, parents:List[Task]) extends BaseTask
-{
+case class EndTask(id: TaskId, name:String, parents:List[Task]) extends BaseTask {
+
   override def execTime: Double = 0.0
 
   override def inputData: List[DataFile] = List()

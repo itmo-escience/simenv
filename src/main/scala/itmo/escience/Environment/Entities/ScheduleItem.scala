@@ -1,15 +1,44 @@
 package itmo.escience.Environment.Entities
 
-/**
- * Created by Mishanya on 14.10.2015.
- */
-class ScheduleItem(cNode: Node, cTask: Task, cStartTime: Double, cEndTime: Double, cTransferTime: Double) {
-  var node: Node = cNode
-  var task: Task = cTask
-  var startTime: Double = cStartTime
-  // transfer time included into (startTime:endTime)
-  var transferTime: Double = cTransferTime
-  var endTime: Double = cEndTime
-  //TODO create enumeration for status
-  var isFailed: Boolean = false
+trait ScheduleItem {
+  val NOTSTARTED: ScheduleItemStatus = "NOTSTARTED"
+  val SUCCEDED: ScheduleItemStatus = "SUCCEDED"
+  val FAILED: ScheduleItemStatus = "FAILED"
+
+  def id: ScheduleItemId
+  def name: String
+  def startTime: ModellingTimesatmp
+  def endTime: ModellingTimesatmp
+  def status: ScheduleItemStatus
 }
+
+
+case class TaskScheduleItem(id: ScheduleItemId,
+                            name: String,
+                            startTime: ModellingTimesatmp,
+                            endTime: ModellingTimesatmp,
+                            status: ScheduleItemStatus,
+                            task: Task) extends ScheduleItem
+
+case class StageInScheduleItem(id:ScheduleItemId,
+                               name:String,
+                               startTime:ModellingTimesatmp,
+                               endTime:ModellingTimesatmp,
+                               status:ScheduleItemStatus,
+                               from: (Task, NodeId),
+                              // this field is redundant
+                                to: (Task, NodeId)) extends ScheduleItem
+
+case class ContainerUpScheduleItem(id:ScheduleItemId,
+                                   name:String,
+                                   startTime:ModellingTimesatmp,
+                                   endTime:ModellingTimesatmp,
+                                   status:ScheduleItemStatus,
+                                   container: Node) extends ScheduleItem
+
+case class ContainerDownScheduleItem(id:ScheduleItemId,
+                                   name:String,
+                                   startTime:ModellingTimesatmp,
+                                   endTime:ModellingTimesatmp,
+                                   status:ScheduleItemStatus,
+                                   container: NodeId) extends ScheduleItem
