@@ -1,7 +1,7 @@
 package itmo.escience.Environment
 
 import itmo.escience.Environment.Entities.{ScheduleItem, Node, Schedule}
-import itmo.escience.Environment.Events.{EventHandler, EventQueue}
+import itmo.escience.Executors.Events.{EventHandler, EventQueue}
 
 import scala.util.Random
 
@@ -9,14 +9,25 @@ import scala.util.Random
  * Created by Mishanya on 14.10.2015.
  */
 class Context {
+  var environment: Environment = _
+  var workload: Workload = _
+  var eventQueue: EventQueue = new EventQueue()
   var schedule: Schedule = new Schedule()
   var time: Double = 0
-  var nodes: List[Node] = List()
   var rnd: Random = new Random()
+  var tag: Tag = new Tag()
+
+  def setEnvironment(envrionment: Environment) = {
+    this.environment = environment
+  }
+
+  def setWorkload(workload: Workload) = {
+    this.workload = workload
+  }
 
   // Add node to the context, and schedule
   def addNode(node: Node): Unit = {
-    nodes :+= node
+    environment.resourceManager.nodes :+= node
     schedule.addNode(node)
   }
 
@@ -26,7 +37,7 @@ class Context {
   }
 
   // Apply new schedule, start first tasks on nodes, and generate new events
-  def applySchedule(newSchedule: Schedule, eq: EventQueue): Unit = {
+  def applySchedule(newSchedule: Schedule): Unit = {
     var n: Node = null
     for (n <- newSchedule.map.keySet) {
       if (!schedule.map.contains(n)) {
@@ -42,7 +53,7 @@ class Context {
         // Try to start new task, if node is free
         var firstItem: ScheduleItem = nodeSchedule.head
         // Select, whether task will be finished or failed, and generate new events
-        EventHandler.taskFailer(firstItem, this, eq)
+        environment.estimator.taskFailer.taskFailer(firstItem, this)
       }
     }
   }

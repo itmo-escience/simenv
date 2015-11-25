@@ -1,4 +1,4 @@
-package itmo.escience.Environment.Events
+package itmo.escience.Executors.Events
 
 import itmo.escience.Environment.Entities.{Task, Node}
 

@@ -1,46 +1,46 @@
-package itmo.escience
+package itmo.escience.Executors
 
+import com.sun.applet2.preloader.event.InitEvent
 import itmo.escience.Algorithms.Scheduler
-import itmo.escience.Environment.Context
-import itmo.escience.Environment.Entities.{Schedule, Node, Task}
-import itmo.escience.Environment.Events.{EventQueue, EventHandler, Event}
+import itmo.escience.Environment.{Environment, Workload, Context}
+import itmo.escience.Environment.Entities.{Node, Schedule, Task}
+import itmo.escience.Executors.Events.{InitEvent, Event, EventHandler, EventQueue}
 import itmo.escience.Utilities.ScheduleVisualizer
 
 /**
  * Created by Mishanya on 14.10.2015.
  */
 object Simulator {
-  def simulate(tasks: List[Task], nodes: List[Node], schedAlg: Scheduler): Unit = {
+  def simulate(workload: Workload, environment: Environment, schedAlg: Scheduler): Unit = {
     println("It shall be done!")
 
     // Initialize context
     val ctx: Context = new Context()
-    // Set initial computing environment
-    ctx.addNodes(nodes)
-    // Initialize event queue
-    val eq: EventQueue = new EventQueue()
+    ctx.eventQueue.addEvent(InitEvent.instance)
+    ctx.setEnvironment(environment)
+    ctx.setWorkload(workload)
     // Create initial schedule
-    val initSchedule: Schedule = schedAlg.schedule(ctx, tasks)
+    val initSchedule: Schedule = schedAlg.schedule(ctx, workload.tasks)
     // Apply this initial schedule
-    ctx.applySchedule(initSchedule, eq)
+    ctx.applySchedule(initSchedule)
 
-    if (!eq.isCorrectOrder()) {
+    if (!ctx.eventQueue.isCorrectOrder()) {
       println("Incorrect eq!!!")
     }
 
     // Visualizer
     val scheduleVisualizer: ScheduleVisualizer = new ScheduleVisualizer()
-    val drawScheds: Boolean = true
+    val drawScheds: Boolean = false
 
     // Handle events from event queue
-    while (!eq.isEmpty()) {
+    while (!ctx.eventQueue.isEmpty()) {
       if (drawScheds) {
         // Draw current schedule
         scheduleVisualizer.drawSched(ctx.schedule)
       }
 
       // Take next event from event queue
-      val curEvent: Event = eq.next();
+      val curEvent: Event = ctx.eventQueue.next();
       println("Event time = " + curEvent.startTime)
 
       // Set context time
@@ -50,8 +50,8 @@ object Simulator {
       ctx.time = curEvent.startTime
 
       // Handle current event
-      EventHandler.handle(curEvent, ctx, eq, schedAlg)
-      if (!eq.isCorrectOrder()) {
+      EventHandler.dispatchEvent(curEvent, ctx, schedAlg)
+      if (!ctx.eventQueue.isCorrectOrder()) {
         println("Incorrect eq!!!")
       }
     }

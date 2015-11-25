@@ -2,7 +2,8 @@ package itmo.escience.Experiments
 
 import itmo.escience.Algorithms.{RandomScheduler, Scheduler}
 import itmo.escience.Environment.Entities.{Node, Task}
-import itmo.escience.Simulator
+import itmo.escience.Environment.{Environment, ResourceManager, Workload}
+import itmo.escience.Executors.Simulator
 
 /**
  * Created by Mishanya on 14.10.2015.
@@ -14,7 +15,7 @@ class TestExperiment extends Experiment {
   // Construct scheduling algorithm
   schedAlg = new RandomScheduler()
 
-  override def runExperiment(tasks: List[Task], nodes: List[Node]): Unit = {
-    Simulator.simulate(tasks, nodes, schedAlg)
+  override def runExperiment(workload: Workload, environment: Environment): Unit = {
+    Simulator.simulate(workload, environment, schedAlg)
   }
 }
