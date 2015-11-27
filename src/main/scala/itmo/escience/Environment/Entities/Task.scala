@@ -1,13 +1,12 @@
-package itmo.escience.Environment.Entities
+package itmo.escience.environment.entities
+
+import itmo.escience.common.NameAndId
 
 /**
  * Created by Mishanya on 14.10.2015.
  */
 
-trait BaseTask {
-
-  def id: TaskId
-  def name: String
+trait BaseTask extends NameAndId[TaskId] {
   def execTime: Double
   def inputData: List[DataFile]
   def outputData: List[DataFile]

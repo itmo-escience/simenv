@@ -1,12 +1,12 @@
-package itmo.escience.Environment.Entities
+package itmo.escience.environment.entities
 
-trait ScheduleItem {
+import itmo.escience.common.NameAndId
+
+trait ScheduleItem extends NameAndId[ScheduleItemId] {
   val NOTSTARTED: ScheduleItemStatus = "NOTSTARTED"
   val SUCCEDED: ScheduleItemStatus = "SUCCEDED"
   val FAILED: ScheduleItemStatus = "FAILED"
 
-  def id: ScheduleItemId
-  def name: String
   def startTime: ModellingTimesatmp
   def endTime: ModellingTimesatmp
   def status: ScheduleItemStatus

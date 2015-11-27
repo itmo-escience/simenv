@@ -1,8 +1,8 @@
 package itmo.escience
 
-import itmo.escience.Environment.Context
-import itmo.escience.Environment.Entities._
-import itmo.escience.Executors.Events.{EventHandler, TaskFinished, EventQueue}
+import itmo.escience.environment.Context
+import itmo.escience.environment.entities._
+import itmo.escience.simulator.events.{TaskFinished, EventQueue}
 import org.junit.Test
 
 /**

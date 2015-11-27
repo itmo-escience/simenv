@@ -1,10 +1,10 @@
-package itmo.escience.Experiments
+package itmo.escience.experiments
 
-import itmo.escience.Environment.Entities.{Node, Task}
+import itmo.escience.environment.entities.{Node, Task}
 
 /**
  * Created by Mishanya on 14.10.2015.
  */
 trait Experiment {
-  def runExperiment(tasks: List[Task], nodes: List[Node]): Unit
+  def apply()
 }

@@ -1,6 +1,6 @@
-package itmo.escience.Environment.Entities
+package itmo.escience.environment.entities
 
-import itmo.escience.Environment.Context
+import itmo.escience.environment.Context
 
 /**
  * Created by Mishanya on 14.10.2015.

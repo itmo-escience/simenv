@@ -1,9 +1,9 @@
-package itmo.escience.Environment
+package itmo.escience.environment
 
 /**
  * Created by Nikolay on 11/25/2015.
  */
-package object Entities {
+package object entities {
   /**
    * ScheduleItem aliases
    */
@@ -26,4 +26,14 @@ package object Entities {
    * Workflow aliases
    */
   type WorkflowId = String
+
+  /**
+   * DataFile aliases
+   */
+  type DataFileId = String
+
+  /**
+   * Storage aliases
+   */
+  type StorageId = String
 }

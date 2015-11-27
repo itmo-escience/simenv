@@ -1,4 +1,4 @@
-package itmo.escience.Utilities
+package itmo.escience.utilities
 
 import java.io._
 import java.nio.file.{Paths, Files}
@@ -7,7 +7,7 @@ import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.{TransformerException, Transformer, TransformerFactory}
 
-import itmo.escience.Environment.Entities.{ScheduleItem, Node, Schedule}
+import itmo.escience.environment.entities.{ScheduleItem, Node, Schedule}
 import net.sf.jedule.JeduleStarter
 import org.w3c.dom.{Element, Document}
 import org.xml.sax.{InputSource, SAXException}

@@ -1,4 +1,6 @@
-package itmo.escience.Environment.Entities
+package itmo.escience.environment.entities
+
+import itmo.escience.common.NameAndId
 
 /**
  * Created by Mishanya on 14.10.2015.
@@ -11,19 +13,24 @@ object Node {
   val Stopping: NodeStatus = "NodeStopping"
 }
 
-class Node (val id: NodeId,
+trait Node extends NameAndId[NodeId]{
+    def parent(): NodeId
+    def status(): NodeStatus
+}
+
+class CapacityBasedNode (val id: NodeId,
             val name: String,
             val nominalCapacity: Double,
             var reliability: Double = 1,
             var nominalStorage: Storage,
             var parent: NodeId,
-            var status: NodeStatus = Node.UP){
+            var status: NodeStatus = Node.UP) extends Node{
 
   var _currentCapacity = nominalCapacity
 
   def currentCapacity(): Double = _currentCapacity
 
-  def reserveResourcesForChild(node: Node):Unit = {
+  def reserveResourcesForChild(node: CapacityBasedNode):Unit = {
 
    if (node.parent != id) {
      throw new IllegalArgumentException(s"Child's parent id doesn't match")
@@ -37,7 +44,7 @@ class Node (val id: NodeId,
     _currentCapacity -= node.nominalCapacity
   }
 
-  def releaseChildResources(node: Node): Unit = {
+  def releaseChildResources(node: CapacityBasedNode): Unit = {
 
     if (node.parent != id) {
       throw new IllegalArgumentException(s"Child's parent id doesn't match")

@@ -1,29 +1,19 @@
-package itmo.escience.Executors
+package itmo.escience.simulator
 
-import itmo.escience.Algorithms.Scheduler
-import itmo.escience.Environment.Context
-import itmo.escience.Environment.Entities.Schedule
-import itmo.escience.Executors.Events._
+import itmo.escience.algorithms.Scheduler
+import itmo.escience.environment.Context
+import itmo.escience.environment.entities.Schedule
+import itmo.escience.simulator.events._
 import sun.reflect.generics.reflectiveObjects.NotImplementedException
-
-/**
- * Created by Mishanya on 14.10.2015.
- */
-trait Executor {
-  
-  def runSimulation():Unit
-
-  def dispatchEvent(event:Event):Unit
-}
 
 /**
  * Perform discrete event-drivent simulation of workflows execution
  * @param scheduler algorithm for scheduling, must implement Scheduler interface
  * @param ctx contains description of computational environments and may perform actions on it
  */
-class BaseExecutor(val scheduler:Scheduler, var ctx:Context) extends Executor {
+class SimpleSimulator(val scheduler:Scheduler, var ctx:Context) extends Simulator {
 
-  private val queue = new EventQueue()
+  val queue = new EventQueue()
 
   /**
    * generates and adds the very first event [[InitEvent]] to the event queue
@@ -48,7 +38,7 @@ class BaseExecutor(val scheduler:Scheduler, var ctx:Context) extends Executor {
    * chooses an appropriate event handler for the current event
    * @param event
    */
-  override def dispatchEvent(event: Event): Unit = {
+   def dispatchEvent(event: Event): Unit = {
       case InitEvent => onInitEvent()
       case ev: TaskStarted => onTaskStarted(ev)
       case ev: TaskFinished => onTaskFinished(ev)
@@ -56,6 +46,15 @@ class BaseExecutor(val scheduler:Scheduler, var ctx:Context) extends Executor {
   }
 
   private def onInitEvent() = {
+
+    // for any event there exists a general sequence of steps
+    // 1. update context according to the event
+    // 2. update CURRENRT schedule according to the event
+    // 3. check if the situation needs rescheduling: yes - 4, no - 6
+    // 4. create new schedule (or run background operations and etc)
+    // 5. apply new schedule to eventQueue (if any) and create new context
+    // 6. Exit
+
     val schedule = scheduler.schedule(ctx=ctx)
     // build new context according to the new schedule
     ctx = changeEventsBySchedule(ctx, schedule)
