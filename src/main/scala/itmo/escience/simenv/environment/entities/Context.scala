@@ -1,14 +1,13 @@
-package itmo.escience.simenv.environment
+package itmo.escience.simenv.environment.entities
 
-import itmo.escience.simenv.environment.entities.{ModellingTimesatmp, Schedule}
 import itmo.escience.simenv.environment.modelling.{Environment, Estimator, Workload}
 
 
-trait Context {
+trait Context[T, N] {
 
   def environment: Environment
 
-  def estimator: Estimator[_,_]
+  def estimator: Estimator[T,N]
 
   def schedule: Schedule
 

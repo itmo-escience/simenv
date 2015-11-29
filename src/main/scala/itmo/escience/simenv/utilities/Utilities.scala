@@ -1,7 +1,9 @@
 package itmo.escience.simenv.utilities
 
-import itmo.escience.simenv.environment.entities.Workflow
-import itmo.escience.simenv.environment.entities.Workflow
+import java.util.UUID
+
+import itmo.escience.simenv.environment.entities._
+import sun.reflect.generics.reflectiveObjects.NotImplementedException
 
 /**
  * Created by user on 27.11.2015.
@@ -9,5 +11,9 @@ import itmo.escience.simenv.environment.entities.Workflow
 object Utilities {
 
   def parseDAX(path:String): Workflow = ???
+
+  def generateId(): String = UUID.randomUUID().toString
+
+
 
 }

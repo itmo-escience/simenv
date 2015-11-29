@@ -14,17 +14,26 @@ object Node {
 }
 
 trait Node extends NameAndId[NodeId]{
-    def parent(): NodeId
-    def status(): NodeStatus
+    def parent: NodeId
+    def status: NodeStatus
+}
+
+object NullNode extends Node{
+  override def parent: NodeId = null
+
+  override def status: NodeStatus = Node.UP
+
+  override def name: String = "NULL_NODE"
+
+  override def id: NodeId = "NULL_NODE"
 }
 
 class CapacityBasedNode (val id: NodeId,
-            val name: String,
-            val nominalCapacity: Double,
-            var reliability: Double = 1,
-            var nominalStorage: Storage,
-            var parent: NodeId,
-            var status: NodeStatus = Node.UP) extends Node{
+                         val name: String,
+                         val nominalCapacity: Double,
+                         var reliability: Double = 1,
+                         var parent: NodeId = NullNode.id,
+                         var status: NodeStatus = Node.UP) extends Node {
 
   var _currentCapacity = nominalCapacity
 

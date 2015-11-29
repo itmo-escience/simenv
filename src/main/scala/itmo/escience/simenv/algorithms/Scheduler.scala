@@ -1,8 +1,6 @@
 package itmo.escience.simenv.algorithms
 
-import itmo.escience.simenv.environment.Context
-import itmo.escience.simenv.environment.entities.Schedule
-import itmo.escience.simenv.environment.Context
+import itmo.escience.simenv.environment.entities.{Task, Node, Context, Schedule}
 
 
 /**
@@ -10,6 +8,6 @@ import itmo.escience.simenv.environment.Context
  */
 trait Scheduler {
 
-  def schedule(context: Context):Schedule
+  def schedule[T <: Task, N <: Node](context: Context[T,N]):Schedule
 
 }

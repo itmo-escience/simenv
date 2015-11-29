@@ -1,10 +1,12 @@
 package itmo.escience.simenv.environment.entities
 
+import com.sun.javaws.exceptions.InvalidArgumentException
+
 /**
  * Created by Nikolay on 11/29/2015.
  */
-case class DaxTask(id: TaskId, name: String, execTime: Double,
-                   inputData: List[DataFile] = List(),
-                   outputData: List[DataFile] = List(),
-                   parents: List[DaxTask],
-                   children: List[DaxTask] ) extends Task
+class DaxTask(val id: TaskId, val name: String, val execTime: Double,
+                   val inputData: List[DataFile] = List(),
+                   val outputData: List[DataFile] = List(),
+                   val parents: List[DaxTask],
+                   val children: List[DaxTask] ) extends Task

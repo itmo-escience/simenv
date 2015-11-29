@@ -1,7 +1,6 @@
 package itmo.escience.simenv
 
-import itmo.escience.simenv.environment.Context
-import itmo.escience.simenv.environment.entities.{DataFile, DaxTask, Node}
+import itmo.escience.simenv.environment.entities.{Context, DataFile, DaxTask, Node}
 import itmo.escience.simenv.simulator.events.EventQueue
 import org.junit.Test
 

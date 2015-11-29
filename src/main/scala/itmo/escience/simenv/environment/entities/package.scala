@@ -21,6 +21,7 @@ package object entities {
    * Task aliases
    */
   type TaskId = String
+  type TaskStatus = String
 
   /**
    * Workflow aliases
@@ -36,4 +37,10 @@ package object entities {
    * Storage aliases
    */
   type StorageId = String
+
+  /**
+   * Network aliases
+   */
+
+  type NetworkId = String
 }

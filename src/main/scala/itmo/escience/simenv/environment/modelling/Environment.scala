@@ -19,7 +19,9 @@ trait Environment {
 
   def removeNodes(nodes: Seq[Node]):Unit
 
-  def nodes(): Seq[Node]
+  def nodes: Seq[Node]
+
+  def networks: Seq[Network]
 
   def addContainer(node:Node): Unit
 
@@ -28,4 +30,6 @@ trait Environment {
   def nodeOrContainerById(nodeId:NodeId):Node
 
   def changeNodeParams(newNodeDescription: Node)
+
+  def networksByNodes(node:Node): Seq[Network]
 }

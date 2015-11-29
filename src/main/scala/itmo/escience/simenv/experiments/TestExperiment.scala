@@ -1,7 +1,6 @@
 package itmo.escience.simenv.experiments
 
-import itmo.escience.simenv.environment.Context
-import itmo.escience.simenv.environment.entities.Schedule
+import itmo.escience.simenv.environment.entities.{Context, Schedule}
 import itmo.escience.simenv.simulator.events.{Event, EventQueue}
 import itmo.escience.simenv.utilities.ScheduleVisualizer
 
