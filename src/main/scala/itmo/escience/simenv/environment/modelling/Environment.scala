@@ -1,6 +1,6 @@
 package itmo.escience.simenv.environment.modelling
 
-import itmo.escience.environment.entities._
+import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entities.Node
 
 /**

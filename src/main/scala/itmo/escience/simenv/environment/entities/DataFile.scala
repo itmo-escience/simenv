@@ -1,6 +1,6 @@
 package itmo.escience.simenv.environment.entities
 
-import itmo.escience.common.NameAndId
+import itmo.escience.simenv.common.NameAndId
 
 /**
  * Created by Mishanya on 29.10.2015.

@@ -1,6 +1,6 @@
-package itmo.escience.simenv.simulator.Events
+package itmo.escience.simenv.simulator.events
 
-import itmo.escience.environment.entities.ModellingTimesatmp
+import itmo.escience.simenv.environment.entities.ModellingTimesatmp
 
 import scala.collection.mutable
 

@@ -1,6 +1,6 @@
 package itmo.escience.simenv.utilities
 
-import itmo.escience.environment.entities.Workflow
+import itmo.escience.simenv.environment.entities.Workflow
 import itmo.escience.simenv.environment.entities.Workflow
 
 /**

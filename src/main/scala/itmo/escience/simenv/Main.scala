@@ -1,7 +1,5 @@
 package itmo.escience.simenv
 
-import itmo.escience.simulator.Executor
-
 /**
  * Created by Mishanya on 12.10.2015.
  */

@@ -1,7 +1,7 @@
-package itmo.escience.simenv.simulator.Events
+package itmo.escience.simenv.simulator.events
 
-import itmo.escience.environment.entities.{ModellingTimesatmp, DaxTask, Node}
-import itmo.escience.simulator.EventId
+import itmo.escience.simenv.environment.entities.{Task, ModellingTimesatmp, DaxTask, Node}
+import itmo.escience.simenv.simulator.EventId
 
 /**
  * Created by Mishanya on 15.10.2015.
@@ -9,5 +9,5 @@ import itmo.escience.simulator.EventId
 case class TaskFinished(id:EventId, name: String,
                         postTime: ModellingTimesatmp,
                         eventTime: ModellingTimesatmp,
-                        task: DaxTask,
+                        task: Task,
                         node: Node) extends Event

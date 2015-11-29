@@ -1,7 +1,7 @@
-package itmo.escience.simenv.simulator.Events
+package itmo.escience.simenv.simulator.events
 
-import itmo.escience.environment.entities.{ModellingTimesatmp, DaxTask, Node}
-import itmo.escience.simulator.EventId
+import itmo.escience.simenv.environment.entities.ModellingTimesatmp
+import itmo.escience.simenv.simulator.EventId
 
 /**
  * Created by user on 02.11.2015.

@@ -1,7 +1,7 @@
 package itmo.escience.simenv.algorithms
 
-import itmo.escience.environment.Context
-import itmo.escience.environment.entities.Schedule
+import itmo.escience.simenv.environment.Context
+import itmo.escience.simenv.environment.entities.Schedule
 import itmo.escience.simenv.environment.Context
 
 

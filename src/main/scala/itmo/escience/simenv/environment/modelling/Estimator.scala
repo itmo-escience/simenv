@@ -1,6 +1,6 @@
 package itmo.escience.simenv.environment.modelling
 
-import itmo.escience.environment.entities.{Node, DaxTask}
+import itmo.escience.simenv.environment.entities.{Node, DaxTask}
 
 /**
  * Created by user on 27.11.2015.

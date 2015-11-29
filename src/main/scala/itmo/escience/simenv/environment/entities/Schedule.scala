@@ -1,6 +1,6 @@
 package itmo.escience.simenv.environment.entities
 
-import itmo.escience.environment.Context
+import itmo.escience.simenv.environment.Context
 import itmo.escience.simenv.environment.Context
 
 /**
@@ -20,16 +20,16 @@ class Schedule {
     map = map.updated(node, map(node) :+ item)
   }
 
-  // Get time, when new schedule item can be assigned on certain node
-  def getNodeFreeTime(node: Node, ctx: Context): Double = {
-    val currentTime: Double = ctx.time
-    // If node executing task, get end time of this task
-    val nodeRelasedTime: Double = node.releaseTime(currentTime)
-    // If schedule contains items on this node, get end time of last schedule item of this node
-    var nodeLastSchedTime: Double = currentTime
-    if (map(node).nonEmpty) {
-      nodeLastSchedTime = map(node).last.endTime
-    }
-    return Math.max(nodeRelasedTime, nodeLastSchedTime)
-  }
+//  // Get time, when new schedule item can be assigned on certain node
+//  def getNodeFreeTime(node: Node, ctx: Context): Double = {
+//    val currentTime: Double = ctx.time
+//    // If node executing task, get end time of this task
+//    val nodeRelasedTime: Double = node.releaseTime(currentTime)
+//    // If schedule contains items on this node, get end time of last schedule item of this node
+//    var nodeLastSchedTime: Double = currentTime
+//    if (map(node).nonEmpty) {
+//      nodeLastSchedTime = map(node).last.endTime
+//    }
+//    return Math.max(nodeRelasedTime, nodeLastSchedTime)
+//  }
 }

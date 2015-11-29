@@ -1,7 +1,7 @@
-package itmo.escience.simenv.simulator.Events
+package itmo.escience.simenv.simulator.events
 
-import itmo.escience.environment.entities._
-import itmo.escience.simulator._
+import itmo.escience.simenv.environment.entities._
+import itmo.escience.simenv.simulator._
 
 /**
  * Created by Mishanya on 14.10.2015.
@@ -9,5 +9,5 @@ import itmo.escience.simulator._
 case class TaskFailed(id:EventId, name: String,
                         postTime: ModellingTimesatmp,
                         eventTime: ModellingTimesatmp,
-                        task: DaxTask,
+                        task: Task,
                         node: Node) extends Event
