@@ -20,27 +20,27 @@ class StaticSchedulingTest {
     // TODO: actually, single app and multi app workload should be tested separately
     throw new NotImplementedError()
 
-    val wfs = List("", "",)
-
-    val nodes = List(new CapacityBasedNode(id=generateId(), name="", nominalCapacity=30),
-      new CapacityBasedNode(id=generateId(), name="", nominalCapacity=25),
-      new CapacityBasedNode(id=generateId(), name="", nominalCapacity=15),
-      new CapacityBasedNode(id=generateId(), name="", nominalCapacity=10))
-
-    val MB_sec_100 = 1024*1024*100
-
-    val networks = List(new Network(id=generateId(), name="", bandwidth=MB_sec_100, nodes))
-
-    val environment = new BasicEnvironment(nodes, networks)
-    val estimator = new BasicEstimator(idealCapacity = 20.0, environment)
-
-    for (awf <- wfs) {
-      val wf = parseDAX(awf)
-      val workload = new SingleAppWorkload(wf)
-      val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule(), estimator, 0.0, workload)
-      val schedule = MinMinScheduler.schedule(ctx)
-      ScheduleHelper.checkStaticSchedule(ctx)
-    }
-
+//    val wfs = List("", "",)
+//
+//    val nodes = List(new CapacityBasedNode(id=generateId(), name="", nominalCapacity=30),
+//      new CapacityBasedNode(id=generateId(), name="", nominalCapacity=25),
+//      new CapacityBasedNode(id=generateId(), name="", nominalCapacity=15),
+//      new CapacityBasedNode(id=generateId(), name="", nominalCapacity=10))
+//
+//    val MB_sec_100 = 1024*1024*100
+//
+//    val networks = List(new Network(id=generateId(), name="", bandwidth=MB_sec_100, nodes))
+//
+//    val environment = new BasicEnvironment(nodes, networks)
+//    val estimator = new BasicEstimator(idealCapacity = 20.0, environment)
+//
+//    for (awf <- wfs) {
+//      val wf = parseDAX(awf)
+//      val workload = new SingleAppWorkload(wf)
+//      val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule(), estimator, 0.0, workload)
+//      val schedule = MinMinScheduler.schedule(ctx)
+//      ScheduleHelper.checkStaticSchedule(ctx)
+//    }
+//
   }
 }

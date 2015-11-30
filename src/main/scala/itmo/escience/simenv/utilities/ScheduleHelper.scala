@@ -8,12 +8,12 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException
  */
 object ScheduleHelper {
 
-  def checkStaticSchedule[T <: Task, N <: Node](ctx:Context[T, N]) = {
+  def checkStaticSchedule[T <: Task, N <: Node](ctx:Context[T, N]):Unit = {
     for (app <- ctx.workload.apps) {
       checkStaticSchedule(app, ctx)
     }
   }
-  def checkStaticSchedule[T <: Task, N <: Node](wf: Workflow, ctx: Context[T, N]) = {
+  def checkStaticSchedule[T <: Task, N <: Node](wf: Workflow, ctx: Context[T, N]):Unit = {
 
     throw new NotImplementedError()
 

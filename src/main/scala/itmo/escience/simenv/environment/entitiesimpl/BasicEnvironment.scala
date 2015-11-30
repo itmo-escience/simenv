@@ -40,4 +40,6 @@ class BasicEnvironment(nodesSeq:Seq[Node], networksSeq: Seq[Network]) extends En
   override def nodes: Seq[Node] = _nodes.toSeq
 
   override def networks: Seq[Network] = _networks.toSeq
+
+  override def networksByNodes(node: Node): scala.Seq[Network] = ???
 }

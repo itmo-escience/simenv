@@ -53,7 +53,7 @@ class SimpleSimulator(val scheduler:Scheduler, var ctx:Context[_,_]) extends Sim
     // 5. apply new schedule to eventQueue (if any) and create new context
     // 6. Exit
 
-    val schedule = scheduler.schedule(ctx)
+    //val schedule = scheduler.schedule(ctx)
     //TODO: add logging here
     throw new NotImplementedError()
   }
