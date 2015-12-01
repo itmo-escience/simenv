@@ -8,7 +8,10 @@ import com.sun.javaws.exceptions.InvalidArgumentException
 class DaxTask(val id: TaskId, val name: String, val execTime: Double,
                    val inputData: List[DataFile] = List(),
                    val outputData: List[DataFile] = List(),
-                   val parents: List[DaxTask],
-                   val children: List[DaxTask] ) extends Task {
+                   var parents: List[DaxTask] = List(),
+                   var children: List[DaxTask] ) extends Task {
   override def status: TaskStatus = ???
 }
+
+class HeadDaxTask(override val id: TaskId, override val name: String, children: List[DaxTask] )
+  extends DaxTask(id=id, name=name, execTime=0.0, children=children)

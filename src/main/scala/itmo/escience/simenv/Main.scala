@@ -9,6 +9,14 @@ package itmo.escience.simenv
 object Main {
   def main(args: Array[String]) {
 
+    import itmo.escience.simenv.utilities.Utilities
+
+    val path = "D:\\wspace\\simenv\\resources\\wf-examples\\Montage_25.xml"
+
+    val wf = Utilities.parseDAX(path)
+
+    val k = 0
+
     // 1. read parameters or config
     // 2. create instance or use object of appropriate Experiment
     // 3. Run experiment

@@ -35,15 +35,15 @@ trait Task extends NameAndId[TaskId] {
 }
 
 
-case class HeadTask(id: TaskId, name:String, children:List[Task]) extends Task{
-
-  override def execTime: Double = 0.0
-
-  override def inputData: List[DataFile] = List()
-
-  override def outputData: List[DataFile] = List()
-
-  override def parents: List[DaxTask] = List()
-
-  override def status: TaskStatus = TaskStatus.FINISHED
-}
+//trait HeadTask extends Task{
+//
+//  override def execTime: Double = 0.0
+//
+//  override def inputData: List[DataFile] = List()
+//
+//  override def outputData: List[DataFile] = List()
+//
+//  override def parents: List[Task] = List()
+//
+//  override def status: TaskStatus = TaskStatus.FINISHED
+//}

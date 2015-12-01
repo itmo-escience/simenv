@@ -10,7 +10,7 @@ import scala.collection.mutable.ArrayBuffer
 /**
  * Created by user on 02.11.2015.
  */
-class Workflow(val id: WorkflowId, val name:String, val headTask:HeadTask) extends NameAndId[WorkflowId] {
+class Workflow(val id: WorkflowId, val name:String, val headTask:Task) extends NameAndId[WorkflowId] {
   def tasks: Seq[Task] = {
     import collection.JavaConversions._
     val allTasks:ArrayBuffer[Task] = new ArrayBuffer[Task]()
