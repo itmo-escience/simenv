@@ -31,7 +31,7 @@ object ScheduleHelper {
 
     for (task <- wf.tasks){
 
-      val titems = schedule.items(task.id)
+      val titems = schedule.taskItems(task.id)
 //      onlyOnceFinishedOrNotstarted(titems)
       val titem = titems.last
 
@@ -43,7 +43,7 @@ object ScheduleHelper {
 
         // TODO: headtask checking. Remove head task at all later!!!
         if (p.parents.nonEmpty) {
-          val pitems = schedule.items(p.id)
+          val pitems = schedule.taskItems(p.id)
 
           if (pitems.isEmpty) {
             throw new InvalidScheduleException(s"Parent with id: ${p.id} of task ${task.id} is absent")
@@ -54,6 +54,8 @@ object ScheduleHelper {
           if (pitem.endTime > titem.startTime) {
             throw new InvalidScheduleException(s"Task (id: ${task.id}) is started (${titem.startTime}}) before the end (${pitem.endTime}}) of parent (id: ${p.id})")
           }
+
+          //TODO: it is incorrect. Repair this checkings
 
           //a child has all parents in "notstarted" or "finished" states
           if (titem.status == TaskStatus.UNSTARTED && (pitem.status == TaskStatus.FINISHED || pitem.status == TaskStatus.UNSTARTED)) {

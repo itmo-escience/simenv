@@ -47,8 +47,14 @@ object MinMinScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
 
       val mintasks = tasksToSchedule.sortBy(x => x.execTime)
 
+      // TODO: multiport model of traffic can be splitted in separate model
       val scheduleItems = mintasks.map( task => {
-        val bestNode = nodes.minBy(node => context.estimator.calcTime(task, node))
+        val bestNode = nodes.minBy(node => {
+          val transfer_overheads = task.parents.filter(x => !x.isInstanceOf[HeadDaxTask]).map( x =>context.estimator.
+            calcTransferTime(from=(x, newSchedule.lastTaskItem(x.id).node), to=(task, node)))
+          val transfer = if (transfer_overheads.isEmpty) 0.0 else transfer_overheads.max
+          transfer + context.estimator.calcTime(task, node)
+        })
         newSchedule.placeTask(task, bestNode, context)
       })
 
@@ -58,6 +64,9 @@ object MinMinScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
       // children have to be verified on 'ready-to-run'
       tasksToSchedule = scheduleItems.sortBy(x => x.endTime).
         foldLeft(List[DaxTask]())((acc, x) => acc ++ x.task.children.filter(x => isReadyToRun(x))).toSet.toList
+
+      //TODO: debug
+      println(newSchedule.prettyPrint())
     }
 
     newSchedule

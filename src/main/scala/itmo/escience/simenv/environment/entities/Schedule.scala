@@ -23,7 +23,7 @@ class Schedule {
     val stageInEndTime = task.parents.map({
       case _:HeadDaxTask => 0.0
       case x =>
-        val parentItem = this.lastItem(x.id).asInstanceOf[TaskScheduleItem]
+        val parentItem = this.lastTaskItem(x.id).asInstanceOf[TaskScheduleItem]
         parentItem.endTime + context.estimator.calcTransferTime(from = (parentItem.task, parentItem.node), to = (task, node))
     }).max
 
@@ -93,23 +93,26 @@ class Schedule {
 
   /**
    * items (sorted by startTime) related to the entity with {@entityId}
-   * @param entityId
+   * @param taskId
    * @return sorted sequence of scheduleitems
    */
-  def items(entityId:String):Seq[ScheduleItem] = {
-    val itms = map.foldLeft(List[ScheduleItem]())((acc, x) => acc ++ x._2).filter(x => x.entity.id == entityId)
+  def taskItems(taskId:String):Seq[TaskScheduleItem] = {
+    val itms = map.foldLeft(List[ScheduleItem]())((acc, x) => acc ++ x._2).filter({
+      case t:TaskScheduleItem => t.task.id == taskId
+      case _ => false
+    }).map(x => x.asInstanceOf[TaskScheduleItem])
     itms
   }
 
   /**
    * Returns the last element of
-   * @param entityId
+   * @param taskId
    * @return
    */
-  def lastItem(entityId:String): ScheduleItem= {
-    val itms = items(entityId)
+  def lastTaskItem(taskId:String): TaskScheduleItem = {
+    val itms = taskItems(taskId)
     if (itms.isEmpty) {
-      throw new InvalidArgumentException(Array(s"There is no items for the entity (id: ${entityId})"))
+      throw new InvalidArgumentException(Array(s"There is no items for the entity (id: ${taskId})"))
     }
     itms.sortBy(x => x.startTime).last
   }
@@ -135,10 +138,10 @@ class Schedule {
         // we need to use conversion toList here due to
       // map will not preserve the order of SortedSet (map don't know about custom ordering anything)
         val itemStr = x._2.toList.map({
-          case x:TaskScheduleItem =>
-            s"\tTask - id: ${x.entity.id} start: ${x.startTime} end: ${x.endTime} status: ${x.status}\n"
-          case x =>
-            s"\tItem (${x.getClass}) - id: ${x.entity.id} start: ${x.startTime} end: ${x.endTime} status: ${x.status}\n"
+          case y:TaskScheduleItem =>
+            s"\tTask - id: ${y.entity.id} start: ${y.startTime} end: ${y.endTime} status: ${y.status}\n"
+          case y =>
+            s"\tItem (${y.getClass}) - id: ${y.entity.id} start: ${y.startTime} end: ${y.endTime} status: ${y.status}\n"
         })
         (acc :+ nodeStr) ++ itemStr
     })

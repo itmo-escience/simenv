@@ -41,5 +41,7 @@ class BasicEnvironment(nodesSeq:Seq[CapacityBasedNode], networksSeq: Seq[Network
 
   override def networks: Seq[Network] = _networks.toSeq
 
-  override def networksByNode(node: CapacityBasedNode): scala.Seq[Network] = ???
+  override def networksByNode(node: CapacityBasedNode): scala.Seq[Network] = {
+    networks.filter(x => x.nodes.map(x => x.id).contains(node.id))
+  }
 }
