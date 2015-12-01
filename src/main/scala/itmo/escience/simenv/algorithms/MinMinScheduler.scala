@@ -42,20 +42,36 @@ object MinMinScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
 
     while (tasksToSchedule.nonEmpty) {
 
-      // TODO: debug
-      println(tasksToSchedule)
+//      // TODO: debug
+//      println(tasksToSchedule)
 
       val mintasks = tasksToSchedule.sortBy(x => x.execTime)
 
       // TODO: multiport model of traffic can be splitted in separate model
+//      val scheduleItems = mintasks.map( task => {
+//        val bestNode = nodes.minBy(node => {
+//
+//          val parents = task.parents.filter(x => !x.isInstanceOf[HeadDaxTask])
+//          val transfer_overheads = parents.map( x =>
+//          {
+//            val parentItem = newSchedule.lastTaskItem(x.id)
+//            parentItem.endTime + context.estimator.calcTransferTime(from=(x, parentItem.node), to=(task, node))
+//          })
+//
+//          val transfer = if (transfer_overheads.isEmpty) 0.0 else transfer_overheads.max
+//
+//          val calc = context.estimator.calcTime(task, node)
+//          val all = transfer + calc
+//          println(s"task ${task.id} node: ${node.id} all ${all} transfer ${transfer} calc ${calc}")
+//          all
+//        })
+//        newSchedule.placeTask(task, bestNode, context)
+//      })
+
       val scheduleItems = mintasks.map( task => {
-        val bestNode = nodes.minBy(node => {
-          val transfer_overheads = task.parents.filter(x => !x.isInstanceOf[HeadDaxTask]).map( x =>context.estimator.
-            calcTransferTime(from=(x, newSchedule.lastTaskItem(x.id).node), to=(task, node)))
-          val transfer = if (transfer_overheads.isEmpty) 0.0 else transfer_overheads.max
-          transfer + context.estimator.calcTime(task, node)
-        })
-        newSchedule.placeTask(task, bestNode, context)
+        val item = nodes.map(node => newSchedule.findTimeSlot(task, node, context)).minBy(x => x.endTime)
+        newSchedule.placeTask(item)
+        item
       })
 
       // update list of scheduled tasks
@@ -65,8 +81,8 @@ object MinMinScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
       tasksToSchedule = scheduleItems.sortBy(x => x.endTime).
         foldLeft(List[DaxTask]())((acc, x) => acc ++ x.task.children.filter(x => isReadyToRun(x))).toSet.toList
 
-      //TODO: debug
-      println(newSchedule.prettyPrint())
+//      //TODO: debug
+//      println(newSchedule.prettyPrint())
     }
 
     newSchedule

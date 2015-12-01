@@ -7,6 +7,7 @@ import itmo.escience.simenv.environment.modelling.{Workload, Estimator, Environm
 import itmo.escience.simenv.utilities.ScheduleHelper
 import itmo.escience.simenv.utilities.Utilities._
 import org.junit.Test
+import org.junit.Assert._
 
 /**
  * Created by Nikolay on 11/29/2015.
@@ -18,7 +19,10 @@ class StaticSchedulingTest {
   def testMinMinScheduler() = {
 
     val basepath = "D:\\wspace\\simenv\\resources\\wf-examples\\"
-    val pathWfs = List( "Montage_25").map(x => basepath + x + ".xml" )
+    val pathWfs = List("Montage_25", "Montage_30", "Montage_75", "Montage_100",
+      "CyberShake_30", "CyberShake_50", "CyberShake_75", "CyberShake_100",
+      "Inspiral_30", "Inspiral_50", "Inspiral_72", "Inspiral_100"
+    ).map(x => basepath + x + ".xml" )
 
 
     //construct environment
@@ -42,6 +46,8 @@ class StaticSchedulingTest {
       ctx.schedule = schedule
 
       ScheduleHelper.checkStaticSchedule(ctx)
+
+      println(s"Workflow ${wf.name} has been successfully scheduled")
     }
   }
 }

@@ -7,18 +7,15 @@ import itmo.escience.simenv.utilities.Utilities
 
 import scala.collection.JavaConversions._
 
+
+class InvalidScheduleException(msg:String) extends RuntimeException(msg)
+
 /**
  * Created by Mishanya on 14.10.2015.
  */
 class Schedule {
 
-  // TODO: should be moved out of here or remade it universally
-  def placeTask(task: DaxTask, node: CapacityBasedNode, context: Context[DaxTask, CapacityBasedNode]): TaskScheduleItem= {
-
-    if (!map.containsKey(node.id)) {
-      addNode(node.id)
-    }
-
+  def findTimeSlot(task: DaxTask, node: CapacityBasedNode, context: Context[DaxTask, CapacityBasedNode]): TaskScheduleItem = {
     // calculate time when all transfer from each node will be ended
     val stageInEndTime = task.parents.map({
       case _:HeadDaxTask => 0.0
@@ -33,30 +30,33 @@ class Schedule {
     var foundStartTime = earliestStartTime
 
     // searching for a slot
-    val endOfLastTask =  if (map.get(node.id).size == 0) 0.0 else map.get(node.id).last.endTime
-    if (map.get(node.id).nonEmpty && endOfLastTask > earliestStartTime ) {
+    if (map.containsKey(node.id)) {
+      val endOfLastTask =  if (map.get(node.id).size == 0) 0.0 else map.get(node.id).last.endTime
+      if (map.get(node.id).nonEmpty && endOfLastTask > earliestStartTime ) {
 
-      foundStartTime = endOfLastTask
-      var st = endOfLastTask
-      var end = endOfLastTask
+        foundStartTime = endOfLastTask
+        var st = endOfLastTask
+        var end = endOfLastTask
 
-      import scala.util.control.Breaks._
-      breakable {
-        for (x <- map.get(node.id).toList.reverseIterator) {
+        import scala.util.control.Breaks._
+        breakable {
+          for (x <- map.get(node.id).toList.reverseIterator) {
 
-          if (end > earliestStartTime) {
-            break
+            if (end > earliestStartTime) {
+              break
+            }
+
+            st = x.endTime
+            if (end - st <= runningTime) {
+              foundStartTime = st
+            }
+            end = x.startTime
+
           }
-
-          st = x.endTime
-          if (end - st <= runningTime) {
-            foundStartTime = st
-          }
-          end = x.startTime
-
         }
       }
     }
+
 
     val newItem = new TaskScheduleItem(id=Utilities.generateId(),
       name = task.name,
@@ -65,9 +65,47 @@ class Schedule {
       status = TaskScheduleItemStatus.NOTSTARTED,
       node,
       task)
+    newItem
+  }
+
+  // TODO: should be moved out of here or remade it universally
+  def placeTask(task: DaxTask, node: CapacityBasedNode, context: Context[DaxTask, CapacityBasedNode]): TaskScheduleItem= {
+
+    if (!map.containsKey(node.id)) {
+      addNode(node.id)
+    }
+
+    val newItem = findTimeSlot(task, node, context)
 
     map.get(node.id).add(newItem)
     newItem
+  }
+
+  def placeTask(item: TaskScheduleItem) = {
+    // 1. check if node exists
+    //    if false create it
+    if (!map.containsKey(item.node.id)) {
+      addNode(item.node.id)
+    }
+    // it may be better to make a check for timeSlot
+    // (in case of operation that can be performed separately,
+    // for example: findTimeSlot and placeTask)
+    // 2. check if the desirable time slot is free
+    //    if true place the item
+
+    // add new item
+    map.get(item.node.id).add(item)
+  }
+
+  def checkCrossing(nodeId: NodeId)= {
+    var prev = 0.0
+    for (x <- map.get(nodeId)){
+      if (!(prev <= x.startTime &&  x.startTime < x.endTime)) {
+        throw new InvalidScheduleException(s"the sequence of schedule items is broken (may be overlaps) for node ${nodeId}")
+      }
+      prev = x.endTime
+    }
+
   }
 
   /**
@@ -128,6 +166,12 @@ class Schedule {
       override def compare(x: ScheduleItem, y: ScheduleItem): Int = x.startTime.compare(y.startTime)
     }))
   }
+
+  /**
+   * Nodes are used for scheduling
+   * @return
+   */
+  def nodeIds() = map.keySet().toSet
 
   def prettyPrint(): String = {
     //TODO: add correct interpolation

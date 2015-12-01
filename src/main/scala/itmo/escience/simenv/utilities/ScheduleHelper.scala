@@ -7,7 +7,6 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException
  * Created by Nikolay on 11/29/2015.
  */
 
-class InvalidScheduleException(msg:String) extends RuntimeException(msg)
 
 object ScheduleHelper {
 
@@ -19,8 +18,6 @@ object ScheduleHelper {
   def checkStaticSchedule[T <: Task, N <: Node](wf: Workflow, ctx: Context[T, N], haveToBeFinished:Boolean):Unit = {
 
     val schedule = ctx.schedule
-
-    println(schedule.prettyPrint())
 
     // Check schedule for each app:
     // check dependency validaty:
@@ -41,7 +38,6 @@ object ScheduleHelper {
 
       for(p <- task.parents){
 
-        // TODO: headtask checking. Remove head task at all later!!!
         if (p.parents.nonEmpty) {
           val pitems = schedule.taskItems(p.id)
 
@@ -55,22 +51,27 @@ object ScheduleHelper {
             throw new InvalidScheduleException(s"Task (id: ${task.id}) is started (${titem.startTime}}) before the end (${pitem.endTime}}) of parent (id: ${p.id})")
           }
 
-          //TODO: it is incorrect. Repair this checkings
-
           //a child has all parents in "notstarted" or "finished" states
-          if (titem.status == TaskStatus.UNSTARTED && (pitem.status == TaskStatus.FINISHED || pitem.status == TaskStatus.UNSTARTED)) {
-            throw new InvalidScheduleException(s"Incorrect status of parent (id: ${p.id}, status: ${p.status}}) for child (id: ${task.id}, status: ${task.status}})")
+          if (titem.status == TaskScheduleItemStatus.NOTSTARTED && (pitem.status != TaskScheduleItemStatus.FINISHED && pitem.status != TaskScheduleItemStatus.NOTSTARTED)) {
+            throw new InvalidScheduleException(s"Incorrect status of parent (id: ${p.id}, status: ${pitem.status}}) " +
+              s"for child (id: ${task.id}, status: ${titem.status}})")
           }
 
-          if (titem.status == TaskStatus.FINISHED && pitem.status == TaskStatus.FINISHED) {
-            throw new InvalidScheduleException(s"Incorrect status of parent (id: ${p.id}, status: ${p.status}}) for child (id: ${task.id}, status: ${task.status}})")
+          if (titem.status == TaskScheduleItemStatus.FINISHED && pitem.status != TaskScheduleItemStatus.FINISHED) {
+            throw new InvalidScheduleException(s"Incorrect status of parent (id: ${p.id}, status: ${pitem.status}}) " +
+              s"for child (id: ${task.id}, status: ${titem.status}})")
           }
         }
       }
     }
-    //throw new NotImplementedException()
-    // TODO: crossing
+
+    // overlaps check
+    // for each node, take a sequence of ScheduleItem and verify there is not any crossing
+    for(nodeId <-  schedule.nodeIds()){
+      schedule.checkCrossing(nodeId)
+    }
   }
+
 
 //  private def onlyOnceFinishedOrNotstarted(items:Seq[ScheduleItem]) =  {
 //    items.filter(x => x.status == TaskStatus.FINISHED)
