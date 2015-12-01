@@ -6,7 +6,7 @@ import itmo.escience.simenv.environment.entities.Node
 /**
  * Created by user on 27.11.2015.
  */
-trait Environment {
+trait Environment[N] {
 
   /**
    * Adds physical or virtual nodes to the pool of resources
@@ -15,21 +15,21 @@ trait Environment {
    * @param nodes sequence of nodes
    * @return
    */
-  def addNodes(nodes: Seq[Node]):Unit
+  def addNodes(nodes: Seq[N]):Unit
 
-  def removeNodes(nodes: Seq[Node]):Unit
+  def removeNodes(nodes: Seq[N]):Unit
 
-  def nodes: Seq[Node]
+  def nodes: Seq[N]
 
   def networks: Seq[Network]
 
-  def addContainer(node:Node): Unit
+  def addContainer(node: N): Unit
 
-  def removeContainer(node: Node): Unit
+  def removeContainer(node: N): Unit
 
   def nodeOrContainerById(nodeId:NodeId):Node
 
-  def changeNodeParams(newNodeDescription: Node)
+  def changeNodeParams(newNodeDescription: N)
 
-  def networksByNodes(node:Node): Seq[Network]
+  def networksByNode(node:N): Seq[Network]
 }

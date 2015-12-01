@@ -1,15 +1,15 @@
 package itmo.escience.simenv.environment.entitiesimpl
 
-import itmo.escience.simenv.environment.entities.{Network, NodeId, Node}
+import itmo.escience.simenv.environment.entities.{CapacityBasedNode, Network, NodeId, Node}
 import itmo.escience.simenv.environment.modelling.Environment
 import scala.collection._
 
 /**
  * Created by Nikolay on 11/29/2015.
  */
-class BasicEnvironment(nodesSeq:Seq[Node], networksSeq: Seq[Network]) extends Environment{
+class BasicEnvironment(nodesSeq:Seq[CapacityBasedNode], networksSeq: Seq[Network]) extends Environment[CapacityBasedNode]{
 
-  var _nodes:mutable.HashSet[Node] = mutable.HashSet(nodesSeq:_*)
+  var _nodes:mutable.HashSet[CapacityBasedNode] = mutable.HashSet(nodesSeq:_*)
   var _networks = mutable.HashSet(networksSeq:_*)
   /**
    * Adds physical or virtual nodes to the pool of resources
@@ -18,7 +18,7 @@ class BasicEnvironment(nodesSeq:Seq[Node], networksSeq: Seq[Network]) extends En
    * @param nodes sequence of nodes
    * @return
    */
-  override def addNodes(nodes: Seq[Node]): Unit = {
+  override def addNodes(nodes: Seq[CapacityBasedNode]): Unit = {
     for (node <- nodes){
       if (_nodes.contains(node)){
         throw new IllegalArgumentException(s"Node ${node.id} is already added")
@@ -27,19 +27,19 @@ class BasicEnvironment(nodesSeq:Seq[Node], networksSeq: Seq[Network]) extends En
     _nodes ++= nodes
   }
 
-  override def changeNodeParams(newNodeDescription: Node): Unit = ???
+  override def changeNodeParams(newNodeDescription: CapacityBasedNode): Unit = ???
 
   override def nodeOrContainerById(nodeId: NodeId): Node = ???
 
-  override def removeNodes(nodes: Seq[Node]): Unit = ???
+  override def removeNodes(nodes: Seq[CapacityBasedNode]): Unit = ???
 
-  override def addContainer(node: Node): Unit = ???
+  override def addContainer(node: CapacityBasedNode): Unit = ???
 
-  override def removeContainer(node: Node): Unit = ???
+  override def removeContainer(node: CapacityBasedNode): Unit = ???
 
-  override def nodes: Seq[Node] = _nodes.toSeq
+  override def nodes: Seq[CapacityBasedNode] = _nodes.toSeq
 
   override def networks: Seq[Network] = _networks.toSeq
 
-  override def networksByNodes(node: Node): scala.Seq[Network] = ???
+  override def networksByNode(node: CapacityBasedNode): scala.Seq[Network] = ???
 }

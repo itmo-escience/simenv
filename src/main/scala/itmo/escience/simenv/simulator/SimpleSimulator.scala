@@ -1,7 +1,7 @@
 package itmo.escience.simenv.simulator
 
 import itmo.escience.simenv.algorithms.Scheduler
-import itmo.escience.simenv.environment.entities.Context
+import itmo.escience.simenv.environment.entities.{CapacityBasedNode, DaxTask, Context}
 import itmo.escience.simenv.simulator.events.{InitEvent, TaskStarted, _}
 
 /**
@@ -9,7 +9,7 @@ import itmo.escience.simenv.simulator.events.{InitEvent, TaskStarted, _}
  * @param scheduler algorithm for scheduling, must implement Scheduler interface
  * @param ctx contains description of computational environments and may perform actions on it
  */
-class SimpleSimulator(val scheduler:Scheduler, var ctx:Context[_,_]) extends Simulator {
+class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var ctx:Context[DaxTask, CapacityBasedNode]) extends Simulator {
 
   val queue = new EventQueue()
 

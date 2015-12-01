@@ -5,7 +5,7 @@ import itmo.escience.simenv.environment.modelling.{Environment, Estimator, Workl
 
 trait Context[T, N] {
 
-  def environment: Environment
+  def environment: Environment[N]
 
   def estimator: Estimator[T,N]
 

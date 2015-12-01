@@ -11,6 +11,10 @@ class DaxTask(val id: TaskId, val name: String, val execTime: Double,
                    var parents: List[DaxTask] = List(),
                    var children: List[DaxTask] ) extends Task {
   override def status: TaskStatus = ???
+
+  override def toString: String = {
+    s"DaxTask id: ${id}"
+  }
 }
 
 class HeadDaxTask(override val id: TaskId, override val name: String, children: List[DaxTask] )

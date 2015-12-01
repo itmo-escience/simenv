@@ -6,8 +6,8 @@ import itmo.escience.simenv.environment.entities.{Task, Node, Context, Schedule}
 /**
  * Created by user on 27.11.2015.
  */
-trait Scheduler {
+trait Scheduler[T, N] {
 
-  def schedule[T <: Task, N <: Node](context: Context[T,N]):Schedule
+  def schedule(context: Context[T,N]):Schedule
 
 }

@@ -35,9 +35,9 @@ class CapacityBasedNode (val id: NodeId,
                          var parent: NodeId = NullNode.id,
                          var status: NodeStatus = Node.UP) extends Node {
 
-  var _currentCapacity = nominalCapacity
+  private var _currentCapacity = nominalCapacity
 
-  def currentCapacity(): Double = _currentCapacity
+  def currentCapacity: Double = _currentCapacity
 
   def reserveResourcesForChild(node: CapacityBasedNode):Unit = {
 
