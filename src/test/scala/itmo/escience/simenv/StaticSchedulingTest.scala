@@ -1,12 +1,12 @@
 package itmo.escience.simenv
 
-import itmo.escience.simenv.algorithms.MinMinScheduler
+import itmo.escience.simenv.algorithms.{HEFTScheduler, MinMinScheduler}
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl.{SingleAppWorkload, BasicEstimator, BasicEnvironment, BasicContext}
 import itmo.escience.simenv.environment.modelling.{Workload, Estimator, Environment}
 import itmo.escience.simenv.utilities.ScheduleHelper
 import itmo.escience.simenv.utilities.Utilities._
-import org.junit.Test
+import org.junit.{Before, Test}
 import org.junit.Assert._
 
 /**
@@ -15,34 +15,44 @@ import org.junit.Assert._
 @Test
 class StaticSchedulingTest {
 
-  @Test
-  def testMinMinScheduler() = {
-
-    val basepath = "D:\\wspace\\simenv\\resources\\wf-examples\\"
-    val pathWfs = List("Montage_25", "Montage_30", "Montage_75", "Montage_100",
+  val basepath = "D:\\wspace\\simenv\\resources\\wf-examples\\"
+  val wfs = List("Montage_25", "Montage_30", "Montage_75", "Montage_100",
       "CyberShake_30", "CyberShake_50", "CyberShake_75", "CyberShake_100",
       "Inspiral_30", "Inspiral_50", "Inspiral_72", "Inspiral_100"
-    ).map(x => basepath + x + ".xml" )
+    ).map(x => basepath + x + ".xml" ).map(x => parseDAX(x))
 
-
-    //construct environment
-    val nodes = List(new CapacityBasedNode(id=generateId(), name="", nominalCapacity=30),
+  val nodes = List(new CapacityBasedNode(id=generateId(), name="", nominalCapacity=30),
       new CapacityBasedNode(id=generateId(), name="", nominalCapacity=25),
       new CapacityBasedNode(id=generateId(), name="", nominalCapacity=15),
       new CapacityBasedNode(id=generateId(), name="", nominalCapacity=10))
 
-    val MB_sec_100 = 1024*1024*100
+  val MB_sec_100 = 1024*1024*100
 
-    val networks = List(new Network(id=generateId(), name="", bandwidth=MB_sec_100, nodes))
+  val networks = List(new Network(id=generateId(), name="", bandwidth=MB_sec_100, nodes))
 
-    val environment = new BasicEnvironment(nodes, networks)
-    val estimator = new BasicEstimator(idealCapacity = 20.0, environment)
+  val environment = new BasicEnvironment(nodes, networks)
+  val estimator = new BasicEstimator(idealCapacity = 20.0, environment)
 
-    for (path <- pathWfs ){
-      val wf = parseDAX(path)
-      val workload = new SingleAppWorkload(wf)
-      val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule(), estimator, 0.0, workload)
+  //@Test
+  def testMinMinScheduler() = {
+    for (wf <- wfs){
+      val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule(),
+        estimator, 0.0, new SingleAppWorkload(wf))
       val schedule = MinMinScheduler.schedule(ctx)
+      ctx.schedule = schedule
+
+      ScheduleHelper.checkStaticSchedule(ctx)
+
+      println(s"Workflow ${wf.name} has been successfully scheduled")
+    }
+  }
+
+  @Test
+  def testHEFTScheduler() = {
+    for (wf <- wfs){
+      val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule(),
+        estimator, 0.0, new SingleAppWorkload(wf))
+      val schedule = HEFTScheduler.schedule(ctx)
       ctx.schedule = schedule
 
       ScheduleHelper.checkStaticSchedule(ctx)

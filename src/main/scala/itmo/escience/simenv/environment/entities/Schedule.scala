@@ -108,6 +108,7 @@ class Schedule {
 
   }
 
+
   /**
    * This method have to return fixed part of schedule, which cannot be changed by scheduler
    * @return
