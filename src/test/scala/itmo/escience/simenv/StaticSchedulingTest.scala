@@ -26,14 +26,14 @@ class StaticSchedulingTest {
       new CapacityBasedNode(id=generateId(), name="", nominalCapacity=15),
       new CapacityBasedNode(id=generateId(), name="", nominalCapacity=10))
 
-  val MB_sec_100 = 1024*1024*100
+  val Mb_sec_100 = 1024*1024*0.001/8
 
-  val networks = List(new Network(id=generateId(), name="", bandwidth=MB_sec_100, nodes))
+  val networks = List(new Network(id=generateId(), name="", bandwidth=Mb_sec_100, nodes))
 
   val environment = new BasicEnvironment(nodes, networks)
   val estimator = new BasicEstimator(idealCapacity = 20.0, environment)
 
-//  @Test
+ @Test
   def testMinMinScheduler() = {
     for (wf <- wfs){
       val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule(),

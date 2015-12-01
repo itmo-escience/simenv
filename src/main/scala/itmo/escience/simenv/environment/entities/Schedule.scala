@@ -21,7 +21,8 @@ class Schedule {
       case _:HeadDaxTask => 0.0
       case x =>
         val parentItem = this.lastTaskItem(x.id).asInstanceOf[TaskScheduleItem]
-        parentItem.endTime + context.estimator.calcTransferTime(from = (parentItem.task, parentItem.node), to = (task, node))
+        val transferTime = context.estimator.calcTransferTime(from = (parentItem.task, parentItem.node), to = (task, node))
+        parentItem.endTime + transferTime
     }).max
 
     val runningTime = context.estimator.calcTime(task, node)

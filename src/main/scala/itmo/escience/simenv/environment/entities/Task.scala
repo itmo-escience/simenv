@@ -21,17 +21,7 @@ trait Task extends NameAndId[TaskId] {
   def parents: List[Task]
   def children: List[Task]
   def status: TaskStatus
-
-  def volumeToTransfer(parent: DaxTask): Double = {
-    if (!parents.contains(parent)) {
-      throw new InvalidArgumentException(Array(s"the task ${parent.id} is not a parent for ${id}"))
-    }
-
-    // TODO: ATTENTION! intersection is possible if the entity of network is immutable
-    val files = this.inputData.intersect(parent.outputData)
-    val transferVolume = files.foldLeft(0.0)((acc:Double, x:DataFile) => acc + x.cVolume)
-    transferVolume
-  }
+  def volumeToTransfer(parent: DaxTask): Double
 }
 
 
