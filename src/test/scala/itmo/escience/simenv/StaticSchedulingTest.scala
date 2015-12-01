@@ -33,7 +33,7 @@ class StaticSchedulingTest {
   val environment = new BasicEnvironment(nodes, networks)
   val estimator = new BasicEstimator(idealCapacity = 20.0, environment)
 
-  //@Test
+//  @Test
   def testMinMinScheduler() = {
     for (wf <- wfs){
       val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule(),
@@ -43,7 +43,7 @@ class StaticSchedulingTest {
 
       ScheduleHelper.checkStaticSchedule(ctx)
 
-      println(s"Workflow ${wf.name} has been successfully scheduled")
+      println(s"Workflow ${wf.name} has been successfully scheduled by MinMin - makespan: ${ctx.schedule.makespan()}")
     }
   }
 
@@ -57,7 +57,7 @@ class StaticSchedulingTest {
 
       ScheduleHelper.checkStaticSchedule(ctx)
 
-      println(s"Workflow ${wf.name} has been successfully scheduled")
+      println(s"Workflow ${wf.name} has been successfully scheduled by HEFT - makespan: ${ctx.schedule.makespan()}")
     }
   }
 }

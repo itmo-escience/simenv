@@ -97,6 +97,11 @@ class Schedule {
     map.get(item.node.id).add(item)
   }
 
+  /**
+   * checks if there is overlaps schedule items
+   * (i.e. validaty of the schedule)
+   * @param nodeId
+   */
   def checkCrossing(nodeId: NodeId)= {
     var prev = 0.0
     for (x <- map.get(nodeId)){
@@ -108,6 +113,10 @@ class Schedule {
 
   }
 
+  def makespan():Double = {
+    val occupationTime = map.map({case (nodeId,items) => if (items.isEmpty) 0.0 else items.last.endTime})
+    if(occupationTime.isEmpty) 0.0 else occupationTime.max
+  }
 
   /**
    * This method have to return fixed part of schedule, which cannot be changed by scheduler
