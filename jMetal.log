@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="windows-1251" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2015-12-02T09:16:16</date>
+  <millis>1449036976643</millis>
+  <sequence>0</sequence>
+  <logger>jMetal</logger>
+  <level>INFO</level>
+  <class>itmo.escience.simenv.algorithms.ga.TempMain$</class>
+  <method>main</method>
+  <thread>1</thread>
+  <message>Total execution time: 50796ms</message>
+</record>
+<record>
+  <date>2015-12-02T09:16:16</date>
+  <millis>1449036976695</millis>
+  <sequence>1</sequence>
+  <logger>jMetal</logger>
+  <level>INFO</level>
+  <class>org.uma.jmetal.runner.AbstractAlgorithmRunner</class>
+  <method>printFinalSolutionSet</method>
+  <thread>1</thread>
+  <message>Random seed: 1449036925743</message>
+</record>
+<record>
+  <date>2015-12-02T09:16:16</date>
+  <millis>1449036976696</millis>
+  <sequence>2</sequence>
+  <logger>jMetal</logger>
+  <level>INFO</level>
+  <class>org.uma.jmetal.runner.AbstractAlgorithmRunner</class>
+  <method>printFinalSolutionSet</method>
+  <thread>1</thread>
+  <message>Objectives values have been written to file FUN.tsv</message>
+</record>
+<record>
+  <date>2015-12-02T09:16:16</date>
+  <millis>1449036976697</millis>
+  <sequence>3</sequence>
+  <logger>jMetal</logger>
+  <level>INFO</level>
+  <class>org.uma.jmetal.runner.AbstractAlgorithmRunner</class>
+  <method>printFinalSolutionSet</method>
+  <thread>1</thread>
+  <message>Variables values have been written to file VAR.tsv</message>
+</record>
+<record>
+  <date>2015-12-02T09:16:16</date>
+  <millis>1449036976791</millis>
+  <sequence>4</sequence>
+  <logger>jMetal</logger>
+  <level>INFO</level>
+  <class>org.uma.jmetal.runner.AbstractAlgorithmRunner</class>
+  <method>printQualityIndicators</method>
+  <thread>1</thread>
+  <message>
+Hypervolume (N) : 0.660320304655585
+Hypervolume     : 0.660320304655585
+Epsilon (N)     : 0.010343638560144586
+Epsilon         : 0.010343638560144586
+GD (N)          : 2.013605821834167E-4
+GD              : 2.013605821834167E-4
+IGD (N)         : 1.904343493840221E-4
+IGD             : 1.904343493840221E-4
+IGD+ (N)        : 0.003395136129466171
+IGD+            : 0.003395136129466171
+Spread (N)      : 0.4054439056777833
+Spread          : 0.4054439056777833
+R2 (N)          : 0.1316854228326975
+R2              : 0.1316854228326975
+Error ratio     : 1.0
+</message>
+</record>
+</log>

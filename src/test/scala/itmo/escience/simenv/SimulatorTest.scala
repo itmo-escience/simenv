@@ -17,8 +17,8 @@ class SimulatorTest {
   def testSimulator() = {
 
     // TODO: actually, single app and multi app workload should be tested separately
-    throw new NotImplementedError()
-
+//    throw new NotImplementedError()
+//
 //    val wfs = List("", "",)
 //
 //    val nodes = List(new CapacityBasedNode(id=generateId(), name="", nominalCapacity=30),

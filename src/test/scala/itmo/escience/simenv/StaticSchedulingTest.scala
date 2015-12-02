@@ -1,5 +1,6 @@
 package itmo.escience.simenv
 
+import itmo.escience.simenv.algorithms.ga.GAScheduler
 import itmo.escience.simenv.algorithms.{HEFTScheduler, MinMinScheduler}
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl.{SingleAppWorkload, BasicEstimator, BasicEnvironment, BasicContext}
@@ -26,7 +27,7 @@ class StaticSchedulingTest {
       new CapacityBasedNode(id=generateId(), name="", nominalCapacity=15),
       new CapacityBasedNode(id=generateId(), name="", nominalCapacity=10))
 
-  val Mb_sec_100 = 1024*1024*0.001/8
+  val Mb_sec_100 = 1024*1024*100/8
 
   val networks = List(new Network(id=generateId(), name="", bandwidth=Mb_sec_100, nodes))
 
@@ -58,6 +59,20 @@ class StaticSchedulingTest {
       ScheduleHelper.checkStaticSchedule(ctx)
 
       println(s"Workflow ${wf.name} has been successfully scheduled by HEFT - makespan: ${ctx.schedule.makespan()}")
+    }
+  }
+
+  @Test
+  def testGAScheduler() = {
+    for (wf <- wfs){
+      val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule(),
+        estimator, 0.0, new SingleAppWorkload(wf))
+      val schedule = GAScheduler.schedule(ctx)
+      ctx.schedule = schedule
+
+      ScheduleHelper.checkStaticSchedule(ctx)
+
+      println(s"Workflow ${wf.name} has been successfully scheduled by GA - makespan: ${ctx.schedule.makespan()}")
     }
   }
 }
