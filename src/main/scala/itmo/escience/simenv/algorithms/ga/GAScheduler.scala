@@ -15,6 +15,11 @@ import org.uma.jmetal.util.{JMetalLogger, AlgorithmRunner}
 object GAScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
   override def schedule(context: Context[DaxTask, CapacityBasedNode]): Schedule = {
 
+    if (!context.workload.isInstanceOf[SingleAppWorkload]) {
+      throw new UnsupportedOperationException(s"Invalid workload type ${context.workload.getClass}. " +
+        s"Currently only SingleAppWorkload is supported")
+    }
+
     val wf = context.workload.asInstanceOf[SingleAppWorkload].app
     val newSchedule = Schedule.emptySchedule()
     val nodes = context.environment.nodes.filter(x => x.status == Node.UP)

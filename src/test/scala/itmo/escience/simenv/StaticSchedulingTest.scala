@@ -1,7 +1,7 @@
 package itmo.escience.simenv
 
 import itmo.escience.simenv.algorithms.ga.GAScheduler
-import itmo.escience.simenv.algorithms.{HEFTScheduler, MinMinScheduler}
+import itmo.escience.simenv.algorithms.{RandomScheduler, Scheduler, HEFTScheduler, MinMinScheduler}
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl.{SingleAppWorkload, BasicEstimator, BasicEnvironment, BasicContext}
 import itmo.escience.simenv.environment.modelling.{Workload, Estimator, Environment}
@@ -36,43 +36,34 @@ class StaticSchedulingTest {
 
  @Test
   def testMinMinScheduler() = {
-    for (wf <- wfs){
-      val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule(),
-        estimator, 0.0, new SingleAppWorkload(wf))
-      val schedule = MinMinScheduler.schedule(ctx)
-      ctx.schedule = schedule
-
-      ScheduleHelper.checkStaticSchedule(ctx)
-
-      println(s"Workflow ${wf.name} has been successfully scheduled by MinMin - makespan: ${ctx.schedule.makespan()}")
-    }
+    runOnWfs(MinMinScheduler, "MinMin")
   }
 
   @Test
   def testHEFTScheduler() = {
-    for (wf <- wfs){
-      val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule(),
-        estimator, 0.0, new SingleAppWorkload(wf))
-      val schedule = HEFTScheduler.schedule(ctx)
-      ctx.schedule = schedule
-
-      ScheduleHelper.checkStaticSchedule(ctx)
-
-      println(s"Workflow ${wf.name} has been successfully scheduled by HEFT - makespan: ${ctx.schedule.makespan()}")
-    }
+    runOnWfs(HEFTScheduler, "HEFT")
   }
 
   @Test
+  def testRandomScheduler() = {
+    runOnWfs(RandomScheduler, "Random")
+  }
+
+  //@Test
   def testGAScheduler() = {
+    runOnWfs(GAScheduler, "GA")
+  }
+
+  private def runOnWfs(scheduler:Scheduler[DaxTask, CapacityBasedNode], schedulerName: String) = {
     for (wf <- wfs){
       val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule(),
         estimator, 0.0, new SingleAppWorkload(wf))
-      val schedule = GAScheduler.schedule(ctx)
+      val schedule = scheduler.schedule(ctx)
       ctx.schedule = schedule
 
       ScheduleHelper.checkStaticSchedule(ctx)
 
-      println(s"Workflow ${wf.name} has been successfully scheduled by GA - makespan: ${ctx.schedule.makespan()}")
+      println(s"Workflow ${wf.name} has been successfully scheduled by ${schedulerName} - makespan: ${ctx.schedule.makespan()}")
     }
   }
 }

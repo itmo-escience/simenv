@@ -12,6 +12,11 @@ import scala.collection.JavaConversions._
 object HEFTScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
   override def schedule(context: Context[DaxTask, CapacityBasedNode]): Schedule = {
 
+    if (!context.workload.isInstanceOf[SingleAppWorkload]) {
+      throw new UnsupportedOperationException(s"Invalid workload type ${context.workload.getClass}. " +
+        s"Currently only SingleAppWorkload is supported")
+    }
+
     val wf = context.workload.asInstanceOf[SingleAppWorkload].app
     val newSchedule = Schedule.emptySchedule()
     val nodes = context.environment.nodes.filter(x => x.status == Node.UP)
@@ -64,7 +69,7 @@ object HEFTScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
 
       // children have to be verified on 'ready-to-run'
       tasksToCalcluateRank = tasksToCalcluateRank.
-        foldLeft(List[DaxTask]())((acc, x) => acc ++ x.parents.filter(x => isReady(x))).toSet.toList
+        foldLeft(List[DaxTask]())((acc, x) => acc ++ x.parents.filter(x => isReady(x))).distinct
     }
 
     rankMap.toList.sortBy({case (taskId, rank) => -rank}).map({case (taskId, rank) =>

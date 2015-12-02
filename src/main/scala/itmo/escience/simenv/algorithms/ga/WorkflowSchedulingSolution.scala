@@ -20,7 +20,8 @@ class WorkflowSchedulingSolution(mappedTasks: List[MappedTask]) extends Solution
 
   def this(that:WorkflowSchedulingSolution) = this(that._genes)
 
-  private var _objective:Double = null
+  //TODO: do we play for min or max?
+  private var _objective:Double = 0.0
 
   private val _attributes = new util.HashMap[scala.Any, scala.Any]()
 
@@ -37,7 +38,7 @@ class WorkflowSchedulingSolution(mappedTasks: List[MappedTask]) extends Solution
 
   override def getObjective(i: Int): Double = _objective
 
-  override def getAttribute(o: scala.Any): Any = _attributes.get(o)
+  override def getAttribute(o: Object): Object = null//_attributes.get(o)
 
   override def setAttribute(o: scala.Any, o1: scala.Any): Unit = {
     _attributes.put(o, o1)
