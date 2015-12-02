@@ -96,7 +96,7 @@ class WorkflowSchedulingProblem(wf:Workflow, newSchedule:Schedule, nodes:Seq[Cap
   override def evaluate(s: WorkflowSchedulingSolution): Unit = {
     val schedule = WorkflowSchedulingProblem.solutionToSchedule(s, context)
     val makespan = schedule.makespan()
-    s.setObjective(0, -makespan)
+    s.setObjective(0, makespan)
   }
 
   override def getNumberOfVariables: Int = wf.tasks.length

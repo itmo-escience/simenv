@@ -34,13 +34,11 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
     val selection = new BinaryTournamentSelection[WorkflowSchedulingSolution]()
 
     val algorithm: Algorithm[WorkflowSchedulingSolution] =
-      new GeneticAlgorithmBuilder[WorkflowSchedulingSolution](problem, crossover, mutation)
+      new ExtGeneticAlgorithmBuilder[WorkflowSchedulingSolution](problem, crossover, mutation)
       .setSelectionOperator(selection)
-      .setMaxEvaluations(100)
+      .setMaxEvaluations(1000)
       .setPopulationSize(50)
       .build()
-
-    //algorithm
 
     val algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute()
 

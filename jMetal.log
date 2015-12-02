@@ -2,135 +2,135 @@
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
 <record>
-  <date>2015-12-02T18:37:38</date>
-  <millis>1449070658471</millis>
+  <date>2015-12-02T19:24:40</date>
+  <millis>1449073480926</millis>
   <sequence>0</sequence>
   <logger>jMetal</logger>
   <level>INFO</level>
   <class>itmo.escience.simenv.algorithms.ga.GAScheduler</class>
   <method>schedule</method>
   <thread>1</thread>
-  <message>Total execution time: 80ms</message>
+  <message>Total execution time: 516ms</message>
 </record>
 <record>
-  <date>2015-12-02T18:37:38</date>
-  <millis>1449070658574</millis>
+  <date>2015-12-02T19:24:41</date>
+  <millis>1449073481307</millis>
   <sequence>1</sequence>
   <logger>jMetal</logger>
   <level>INFO</level>
   <class>itmo.escience.simenv.algorithms.ga.GAScheduler</class>
   <method>schedule</method>
   <thread>1</thread>
-  <message>Total execution time: 90ms</message>
+  <message>Total execution time: 366ms</message>
 </record>
 <record>
-  <date>2015-12-02T18:37:38</date>
-  <millis>1449070658849</millis>
+  <date>2015-12-02T19:24:42</date>
+  <millis>1449073482362</millis>
   <sequence>2</sequence>
   <logger>jMetal</logger>
   <level>INFO</level>
   <class>itmo.escience.simenv.algorithms.ga.GAScheduler</class>
   <method>schedule</method>
   <thread>1</thread>
-  <message>Total execution time: 263ms</message>
+  <message>Total execution time: 1046ms</message>
 </record>
 <record>
-  <date>2015-12-02T18:37:39</date>
-  <millis>1449070659236</millis>
+  <date>2015-12-02T19:24:43</date>
+  <millis>1449073483977</millis>
   <sequence>3</sequence>
   <logger>jMetal</logger>
   <level>INFO</level>
   <class>itmo.escience.simenv.algorithms.ga.GAScheduler</class>
   <method>schedule</method>
   <thread>1</thread>
-  <message>Total execution time: 289ms</message>
+  <message>Total execution time: 1500ms</message>
 </record>
 <record>
-  <date>2015-12-02T18:37:39</date>
-  <millis>1449070659546</millis>
+  <date>2015-12-02T19:24:44</date>
+  <millis>1449073484606</millis>
   <sequence>4</sequence>
   <logger>jMetal</logger>
   <level>INFO</level>
   <class>itmo.escience.simenv.algorithms.ga.GAScheduler</class>
   <method>schedule</method>
   <thread>1</thread>
-  <message>Total execution time: 45ms</message>
+  <message>Total execution time: 343ms</message>
 </record>
 <record>
-  <date>2015-12-02T18:37:39</date>
-  <millis>1449070659612</millis>
+  <date>2015-12-02T19:24:45</date>
+  <millis>1449073485055</millis>
   <sequence>5</sequence>
   <logger>jMetal</logger>
   <level>INFO</level>
   <class>itmo.escience.simenv.algorithms.ga.GAScheduler</class>
   <method>schedule</method>
   <thread>1</thread>
-  <message>Total execution time: 65ms</message>
+  <message>Total execution time: 444ms</message>
 </record>
 <record>
-  <date>2015-12-02T18:37:39</date>
-  <millis>1449070659761</millis>
+  <date>2015-12-02T19:24:46</date>
+  <millis>1449073486015</millis>
   <sequence>6</sequence>
   <logger>jMetal</logger>
   <level>INFO</level>
   <class>itmo.escience.simenv.algorithms.ga.GAScheduler</class>
   <method>schedule</method>
   <thread>1</thread>
-  <message>Total execution time: 145ms</message>
+  <message>Total execution time: 950ms</message>
 </record>
 <record>
-  <date>2015-12-02T18:37:39</date>
-  <millis>1449070659971</millis>
+  <date>2015-12-02T19:24:47</date>
+  <millis>1449073487393</millis>
   <sequence>7</sequence>
   <logger>jMetal</logger>
   <level>INFO</level>
   <class>itmo.escience.simenv.algorithms.ga.GAScheduler</class>
   <method>schedule</method>
   <thread>1</thread>
-  <message>Total execution time: 196ms</message>
+  <message>Total execution time: 1350ms</message>
 </record>
 <record>
-  <date>2015-12-02T18:37:40</date>
-  <millis>1449070660048</millis>
+  <date>2015-12-02T19:24:47</date>
+  <millis>1449073487618</millis>
   <sequence>8</sequence>
   <logger>jMetal</logger>
   <level>INFO</level>
   <class>itmo.escience.simenv.algorithms.ga.GAScheduler</class>
   <method>schedule</method>
   <thread>1</thread>
-  <message>Total execution time: 57ms</message>
+  <message>Total execution time: 186ms</message>
 </record>
 <record>
-  <date>2015-12-02T18:37:40</date>
-  <millis>1449070660122</millis>
+  <date>2015-12-02T19:24:47</date>
+  <millis>1449073487993</millis>
   <sequence>9</sequence>
   <logger>jMetal</logger>
   <level>INFO</level>
   <class>itmo.escience.simenv.algorithms.ga.GAScheduler</class>
   <method>schedule</method>
   <thread>1</thread>
-  <message>Total execution time: 69ms</message>
+  <message>Total execution time: 369ms</message>
 </record>
 <record>
-  <date>2015-12-02T18:37:40</date>
-  <millis>1449070660212</millis>
+  <date>2015-12-02T19:24:48</date>
+  <millis>1449073488616</millis>
   <sequence>10</sequence>
   <logger>jMetal</logger>
   <level>INFO</level>
   <class>itmo.escience.simenv.algorithms.ga.GAScheduler</class>
   <method>schedule</method>
   <thread>1</thread>
-  <message>Total execution time: 81ms</message>
+  <message>Total execution time: 603ms</message>
 </record>
 <record>
-  <date>2015-12-02T18:37:40</date>
-  <millis>1449070660380</millis>
+  <date>2015-12-02T19:24:49</date>
+  <millis>1449073489594</millis>
   <sequence>11</sequence>
   <logger>jMetal</logger>
   <level>INFO</level>
   <class>itmo.escience.simenv.algorithms.ga.GAScheduler</class>
   <method>schedule</method>
   <thread>1</thread>
-  <message>Total execution time: 151ms</message>
+  <message>Total execution time: 948ms</message>
 </record>
 </log>
