@@ -70,6 +70,7 @@ class Schedule {
   }
 
   // TODO: should be moved out of here or remade it universally
+
   def placeTask(task: DaxTask, node: CapacityBasedNode, context: Context[DaxTask, CapacityBasedNode]): TaskScheduleItem= {
 
     if (!map.containsKey(node.id)) {
@@ -96,6 +97,10 @@ class Schedule {
 
     // add new item
     map.get(item.node.id).add(item)
+  }
+
+  def scheduleItemsSeq(): Seq[ScheduleItem] = {
+    map.foldLeft(List[ScheduleItem]())((acc, x) => acc ++ x._2).sortBy(x => x.startTime)
   }
 
   /**

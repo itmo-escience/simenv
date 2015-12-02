@@ -12,12 +12,10 @@ object ScheduleHelper {
 
   def checkStaticSchedule[T <: Task, N <: Node](ctx:Context[T, N], haveToBeFinished: Boolean=false):Unit = {
     for (app <- ctx.workload.apps) {
-      checkStaticSchedule(app, ctx, haveToBeFinished)
+      checkStaticSchedule(app, ctx.schedule, ctx, haveToBeFinished)
     }
   }
-  def checkStaticSchedule[T <: Task, N <: Node](wf: Workflow, ctx: Context[T, N], haveToBeFinished:Boolean):Unit = {
-
-    val schedule = ctx.schedule
+  def checkStaticSchedule[T <: Task, N <: Node](wf: Workflow, schedule: Schedule, ctx: Context[T, N], haveToBeFinished:Boolean):Unit = {
 
     // Check schedule for each app:
     // check dependency validaty:

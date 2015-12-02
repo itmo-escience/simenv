@@ -34,22 +34,22 @@ class StaticSchedulingTest {
   val environment = new BasicEnvironment(nodes, networks)
   val estimator = new BasicEstimator(idealCapacity = 20.0, environment)
 
- @Test
+ //@Test
   def testMinMinScheduler() = {
     runOnWfs(MinMinScheduler, "MinMin")
   }
 
-  @Test
+  //@Test
   def testHEFTScheduler() = {
     runOnWfs(HEFTScheduler, "HEFT")
   }
 
-  @Test
+  //@Test
   def testRandomScheduler() = {
     runOnWfs(RandomScheduler, "Random")
   }
 
-  //@Test
+  @Test
   def testGAScheduler() = {
     runOnWfs(GAScheduler, "GA")
   }

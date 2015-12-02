@@ -62,5 +62,6 @@ class WorkflowSchedulingSolution(mappedTasks: List[MappedTask]) extends Solution
 
   override def getNumberOfVariables: Int = _genes.length
 
+  def tasksSeq() = _genes
 
 }

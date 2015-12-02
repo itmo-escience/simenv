@@ -26,6 +26,8 @@ object GAScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
 
 
     val problemName = "WorkflowScheduling"
+    val problem = new WorkflowSchedulingProblem(wf, newSchedule, nodes, context)
+
 
     val crossoverProbability = 0.4
     val mutationProbability = 0.2
@@ -34,8 +36,6 @@ object GAScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
     val crossover = new WorkflowSchedulingCrossover(crossoverProbability)
     val mutation = new WorkflowSchedulingMutation(mutationProbability, swapMutationProbability)
     val selection = new BinaryTournamentSelection[WorkflowSchedulingSolution]()
-
-    val problem = new WorkflowSchedulingProblem(wf, newSchedule, nodes, context)
 
     val algorithm = new GeneticAlgorithmBuilder[WorkflowSchedulingSolution](problem, crossover, mutation)
       .setSelectionOperator(selection)
