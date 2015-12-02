@@ -10,6 +10,7 @@ import org.uma.jmetal.problem.Problem
 import scala.collection.JavaConversions._
 
 import scala.util.Random
+import scala.collection.JavaConversions._
 
 /**
  * Created by user on 02.12.2015.
@@ -37,32 +38,50 @@ object WorkflowSchedulingProblem {
     // repair sequence in relation with parent-child dependencies
     // construct new schedule by placing it in task-by-task manner
 
-    // java.util.ArrayList[Any] ==
+    val repairedOrdering = repairOrdering(solution, context)
 
-
-    val wf = context.workload.asInstanceOf[SingleAppWorkload].app
-    val tasksSeq = new util.TreeSet[(DaxTask, NodeId)](solution.tasksSeq().map(x => (wf.taskById(x.taskId).asInstanceOf[DaxTask], x.nodeId)))
-
-    val orderedMappedTasks = new util.TreeMap[TaskId, (DaxTask, NodeId)]()
-    val isReadyToRun = (task: DaxTask) => task.parents.forall(x => orderedMappedTasks.containsKey(x.id))
-
-    while (tasksSeq.nonEmpty) {
-      val el = tasksSeq.find({ case (tsk, _ ) => isReadyToRun(tsk)}).get
-      val (task, nodeId) = el
-      orderedMappedTasks.put(task.id, el)
-      tasksSeq.remove(el)
-    }
-
-    val ordering:List[(TaskId, (DaxTask, NodeId))] = orderedMappedTasks.toList
-
-    for (x <- ordering) {
-      val (taskId, (task, nodeId)) = x
+    for (x <- repairedOrdering) {
+      val (task, nodeId) = x
       newSchedule.placeTask(task,
         context.environment.nodeOrContainerById(nodeId).asInstanceOf[CapacityBasedNode],
         context)
     }
 
     newSchedule
+  }
+
+  private def repairOrdering(solution: WorkflowSchedulingSolution, context: Context[DaxTask, CapacityBasedNode]):List[(DaxTask, NodeId)] = {
+    val wf = context.workload.asInstanceOf[SingleAppWorkload].app
+    val tasksSeq = new util.TreeSet[Pair[(DaxTask, NodeId)]](solution.tasksSeq().zipWithIndex
+      .map( { case (x, i) =>
+        new Pair(i,
+          (wf.taskById(x.taskId).asInstanceOf[DaxTask], x.nodeId)
+        )}
+      ))
+
+    val mappedTasks = new util.HashMap[TaskId, (DaxTask, NodeId)]()
+    val repairedOrdering: java.util.ArrayList[(DaxTask, NodeId)] = new util.ArrayList[(DaxTask, NodeId)](tasksSeq.size())
+    val isReadyToRun = (task: DaxTask) => if (task.parents.size == 1 && task.parents.head.isInstanceOf[HeadDaxTask])
+      true else  task.parents.forall(x => mappedTasks.containsKey(x.id))
+
+    while (tasksSeq.nonEmpty) {
+
+      val el = tasksSeq.find( pair => {
+        val (tsk, _) = pair.value
+        isReadyToRun(tsk)
+      }).get
+
+      val (task, nodeId) = el.value
+      repairedOrdering.add(el.value)
+      mappedTasks.put(task.id, el.value)
+      tasksSeq.remove(el)
+    }
+
+    repairedOrdering.toList
+  }
+
+  private class Pair[T](val num: Int, val value: T) extends Comparable[Pair[T]]{
+    override def compareTo(o: Pair[T]): Int = num.compareTo(o.num)
   }
 }
 

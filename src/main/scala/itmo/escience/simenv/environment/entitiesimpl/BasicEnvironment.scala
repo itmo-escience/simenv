@@ -3,13 +3,17 @@ package itmo.escience.simenv.environment.entitiesimpl
 import itmo.escience.simenv.environment.entities.{CapacityBasedNode, Network, NodeId, Node}
 import itmo.escience.simenv.environment.modelling.Environment
 import scala.collection._
-
+import scala.collection.JavaConversions._
 /**
  * Created by Nikolay on 11/29/2015.
  */
 class BasicEnvironment(nodesSeq:Seq[CapacityBasedNode], networksSeq: Seq[Network]) extends Environment[CapacityBasedNode]{
+  val _nodes:java.util.HashMap[NodeId, CapacityBasedNode] = new java.util.HashMap()
 
-  var _nodes:mutable.HashSet[CapacityBasedNode] = mutable.HashSet(nodesSeq:_*)
+  for (x <- nodesSeq){
+    _nodes.put(x.id, x)
+  }
+
   var _networks = mutable.HashSet(networksSeq:_*)
   /**
    * Adds physical or virtual nodes to the pool of resources
@@ -20,16 +24,20 @@ class BasicEnvironment(nodesSeq:Seq[CapacityBasedNode], networksSeq: Seq[Network
    */
   override def addNodes(nodes: Seq[CapacityBasedNode]): Unit = {
     for (node <- nodes){
-      if (_nodes.contains(node)){
+      if (_nodes.containsKey(node.id)){
         throw new IllegalArgumentException(s"Node ${node.id} is already added")
       }
     }
-    _nodes ++= nodes
+
+    for (node <- nodes) {
+      _nodes.put(node.id, node)
+    }
+
   }
 
   override def changeNodeParams(newNodeDescription: CapacityBasedNode): Unit = ???
 
-  override def nodeOrContainerById(nodeId: NodeId): Node = ???
+  override def nodeOrContainerById(nodeId: NodeId): Node = _nodes.get(nodeId)
 
   override def removeNodes(nodes: Seq[CapacityBasedNode]): Unit = ???
 
@@ -37,7 +45,7 @@ class BasicEnvironment(nodesSeq:Seq[CapacityBasedNode], networksSeq: Seq[Network
 
   override def removeContainer(node: CapacityBasedNode): Unit = ???
 
-  override def nodes: Seq[CapacityBasedNode] = _nodes.toSeq
+  override def nodes: Seq[CapacityBasedNode] = _nodes.map({case (nodeId, node) => node}).toSeq
 
   override def networks: Seq[Network] = _networks.toSeq
 
