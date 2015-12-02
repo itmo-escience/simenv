@@ -1,8 +1,5 @@
 package itmo.escience.simenv.environment.entities
 
-import com.sun.javaws.exceptions.InvalidArgumentException
-import org.apache.commons.lang3.builder.HashCodeBuilder
-
 /**
  * Created by Nikolay on 11/29/2015.
  */
@@ -19,7 +16,7 @@ class DaxTask(val id: TaskId, val name: String, val execTime: Double,
 
   override def volumeToTransfer(parent: DaxTask): Double = {
     if (!parents.contains(parent)) {
-      throw new InvalidArgumentException(Array(s"the task ${parent.id} is not a parent for ${id}"))
+      throw new IllegalArgumentException(s"the task ${parent.id} is not a parent for ${id}")
     }
 
     // TODO: ATTENTION! Situation with ids should be clearified

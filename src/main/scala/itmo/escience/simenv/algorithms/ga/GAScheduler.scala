@@ -3,16 +3,17 @@ package itmo.escience.simenv.algorithms.ga
 import itmo.escience.simenv.algorithms.Scheduler
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl.SingleAppWorkload
-import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder
+import org.uma.jmetal.algorithm.Algorithm
 import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.GeneticAlgorithmBuilder
 import org.uma.jmetal.operator.impl.selection.BinaryTournamentSelection
-import org.uma.jmetal.solution.DoubleSolution
-import org.uma.jmetal.util.{JMetalLogger, AlgorithmRunner}
+import org.uma.jmetal.util.{AlgorithmRunner, JMetalLogger}
 
 /**
  * Created by user on 02.12.2015.
  */
-object GAScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
+class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: Double,
+                   popSize:Int, iterationCount: Int) extends Scheduler[DaxTask, CapacityBasedNode]{
+
   override def schedule(context: Context[DaxTask, CapacityBasedNode]): Schedule = {
 
     if (!context.workload.isInstanceOf[SingleAppWorkload]) {
@@ -28,20 +29,18 @@ object GAScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
     val problemName = "WorkflowScheduling"
     val problem = new WorkflowSchedulingProblem(wf, newSchedule, nodes, context)
 
-
-    val crossoverProbability = 0.4
-    val mutationProbability = 0.2
-    val swapMutationProbability = 0.3
-
-    val crossover = new WorkflowSchedulingCrossover(crossoverProbability)
-    val mutation = new WorkflowSchedulingMutation(mutationProbability, swapMutationProbability)
+    val crossover = new WorkflowSchedulingCrossover(crossoverProb)
+    val mutation = new WorkflowSchedulingMutation(mutationProb, swapMutationProb)
     val selection = new BinaryTournamentSelection[WorkflowSchedulingSolution]()
 
-    val algorithm = new GeneticAlgorithmBuilder[WorkflowSchedulingSolution](problem, crossover, mutation)
+    val algorithm: Algorithm[WorkflowSchedulingSolution] =
+      new GeneticAlgorithmBuilder[WorkflowSchedulingSolution](problem, crossover, mutation)
       .setSelectionOperator(selection)
       .setMaxEvaluations(100)
       .setPopulationSize(50)
       .build()
+
+    //algorithm
 
     val algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute()
 
@@ -50,7 +49,8 @@ object GAScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
     JMetalLogger.logger.info("Total execution time: " + computingTime + "ms")
 
 
-    throw new NotImplementedError()
+    //throw new NotImplementedError()
+    WorkflowSchedulingProblem.solutionToSchedule(best, context)
   }
 
 }

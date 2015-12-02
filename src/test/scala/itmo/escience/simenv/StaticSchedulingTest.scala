@@ -51,7 +51,11 @@ class StaticSchedulingTest {
 
   @Test
   def testGAScheduler() = {
-    runOnWfs(GAScheduler, "GA")
+    runOnWfs(new GAScheduler(crossoverProb = 0.4,
+      mutationProb = 0.2,
+      swapMutationProb = 0.3,
+      popSize = 50,
+      iterationCount = 100), "GA")
   }
 
   private def runOnWfs(scheduler:Scheduler[DaxTask, CapacityBasedNode], schedulerName: String) = {

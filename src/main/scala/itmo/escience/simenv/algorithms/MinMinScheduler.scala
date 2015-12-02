@@ -1,6 +1,5 @@
 package itmo.escience.simenv.algorithms
 
-import com.sun.javaws.exceptions.InvalidArgumentException
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl.SingleAppWorkload
 

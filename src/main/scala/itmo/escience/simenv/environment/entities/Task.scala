@@ -1,6 +1,5 @@
 package itmo.escience.simenv.environment.entities
 
-import com.sun.javaws.exceptions.InvalidArgumentException
 import itmo.escience.simenv.common.NameAndId
 
 /**

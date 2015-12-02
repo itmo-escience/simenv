@@ -1,0 +1,8 @@
+wf_path: ""
+crossover_probability: 0.4
+mutation_probability: 0.3
+swap_mutation_probability: 0.2
+population_size: 50
+iteration_count: 50
+nodes: [1.5, 1.25, 0.75, 0.5]
+

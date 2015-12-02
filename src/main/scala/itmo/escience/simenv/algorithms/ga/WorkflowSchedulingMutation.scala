@@ -11,7 +11,8 @@ class WorkflowSchedulingMutation(probability:Double, swapProbability: Double) ex
     if (null == source) {
       throw new JMetalException("Null parameter")
     }
-    doMutation(source)
+    //doMutation(source)
+    source
   }
 
   private def doMutation(source:WorkflowSchedulingSolution) = {

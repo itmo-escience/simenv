@@ -2,7 +2,6 @@ package itmo.escience.simenv.environment.entities
 
 import java.util
 
-import com.sun.javaws.exceptions.InvalidArgumentException
 import itmo.escience.simenv.utilities.Utilities
 
 import scala.collection.JavaConversions._
@@ -166,7 +165,7 @@ class Schedule {
   def lastTaskItem(taskId:String): TaskScheduleItem = {
     val itms = taskItems(taskId)
     if (itms.isEmpty) {
-      throw new InvalidArgumentException(Array(s"There is no items for the entity (id: ${taskId})"))
+      throw new IllegalArgumentException(s"There is no items for the entity (id: ${taskId})")
     }
     itms.sortBy(x => x.startTime).last
   }

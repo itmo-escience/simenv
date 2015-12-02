@@ -2,7 +2,6 @@ package itmo.escience.simenv.algorithms.ga
 
 import java.util
 
-import com.sun.javaws.exceptions.InvalidArgumentException
 import org.uma.jmetal.solution.Solution
 
 /**
@@ -31,9 +30,10 @@ class WorkflowSchedulingSolution(mappedTasks: List[MappedTask]) extends Solution
 
   override def setObjective(i: Int, v: Double): Unit = {
     if (i != 0){
-      throw new InvalidArgumentException(Array(s"invalid number of objective ${i}. Only 0 is allowed"))
+      throw new IllegalArgumentException(s"invalid number of objective ${i}. Only 0 is allowed")
     }
     _objective = v
+
   }
 
   override def getObjective(i: Int): Double = _objective
