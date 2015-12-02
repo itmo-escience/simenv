@@ -36,7 +36,7 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
     val algorithm: Algorithm[WorkflowSchedulingSolution] =
       new ExtGeneticAlgorithmBuilder[WorkflowSchedulingSolution](problem, crossover, mutation)
       .setSelectionOperator(selection)
-      .setMaxEvaluations(1000)
+      .setMaxEvaluations(iterationCount * popSize)
       .setPopulationSize(50)
       .build()
 

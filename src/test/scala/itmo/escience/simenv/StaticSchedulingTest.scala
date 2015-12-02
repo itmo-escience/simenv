@@ -17,10 +17,16 @@ import org.junit.Assert._
 class StaticSchedulingTest {
 
   val basepath = "D:\\wspace\\simenv\\resources\\wf-examples\\"
+//  val wfs = List("Montage_25", "Montage_30", "Montage_75", "Montage_100",
+//      "CyberShake_30", "CyberShake_50", "CyberShake_75", "CyberShake_100",
+//      "Inspiral_30", "Inspiral_50", "Inspiral_72", "Inspiral_100"
+//    ).map(x => basepath + x + ".xml" ).map(x => parseDAX(x))
+
   val wfs = List("Montage_25", "Montage_30", "Montage_75", "Montage_100",
-      "CyberShake_30", "CyberShake_50", "CyberShake_75", "CyberShake_100",
-      "Inspiral_30", "Inspiral_50", "Inspiral_72", "Inspiral_100"
-    ).map(x => basepath + x + ".xml" ).map(x => parseDAX(x))
+    "CyberShake_30", "CyberShake_50", "CyberShake_75", "CyberShake_100",
+    "Inspiral_30", "Inspiral_50", "Inspiral_72", "Inspiral_100"
+  ).map(x => basepath + x + ".xml" ).map(x => parseDAX(x))
+
 
   val nodes = List(new CapacityBasedNode(id=generateId(), name="", nominalCapacity=30),
       new CapacityBasedNode(id=generateId(), name="", nominalCapacity=25),
