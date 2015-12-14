@@ -24,7 +24,6 @@ class StaticSchedulingTest {
 
 //  val wfs = List("Montage_25" ).map(x => basepath + x + ".xml" ).map(x => parseDAX(x))
 
-
   val nodes = List(new CapacityBasedNode(id=generateId(), name="", nominalCapacity=30),
       new CapacityBasedNode(id=generateId(), name="", nominalCapacity=25),
       new CapacityBasedNode(id=generateId(), name="", nominalCapacity=15),

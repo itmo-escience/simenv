@@ -12,8 +12,13 @@ import scala.util.Random
  */
 class WorkflowSchedulingCrossover(probability: Double) extends CrossoverOperator[WorkflowSchedulingSolution]{
 
-  val random = new Random(System.currentTimeMillis)
+  private val random = new Random(System.currentTimeMillis)
 
+  /**
+   * Crossover creates new individuals and don't modify existed parents
+   * @param source list of parents
+   * @return list of children
+   */
   override def execute(source: util.List[WorkflowSchedulingSolution]): util.List[WorkflowSchedulingSolution] = {
 
     if (null == source) {
@@ -22,10 +27,14 @@ class WorkflowSchedulingCrossover(probability: Double) extends CrossoverOperator
       throw new JMetalException("There must be two parents instead of " + source.size())
     }
 
-    val p1 = source.get(0).copy()
-    val p2 = source.get(1).copy()
+    if (random.nextDouble() <= probability) {
 
-    doCrossover(p1, p2)
+      val p1 = source.get(0).copy()
+      val p2 = source.get(1).copy()
+
+      doCrossover(p1, p2)
+    }
+    else source
   }
 
   private def doCrossover(p1: WorkflowSchedulingSolution, p2: WorkflowSchedulingSolution) ={
