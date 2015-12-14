@@ -14,7 +14,7 @@ class DaxTask(val id: TaskId, val name: String, val execTime: Double,
     s"DaxTask id: ${id}"
   }
 
-  override def volumeToTransfer(parent: DaxTask): Double = {
+  def volumeToTransfer(parent: DaxTask): Double = {
     if (!parents.contains(parent)) {
       throw new IllegalArgumentException(s"the task ${parent.id} is not a parent for ${id}")
     }
