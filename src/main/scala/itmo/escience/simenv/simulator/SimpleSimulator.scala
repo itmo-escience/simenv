@@ -1,8 +1,14 @@
 package itmo.escience.simenv.simulator
 
+
 import itmo.escience.simenv.algorithms.Scheduler
-import itmo.escience.simenv.environment.entities.{CapacityBasedNode, DaxTask, Context}
+import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.simulator.events.{InitEvent, TaskStarted, _}
+import itmo.escience.simenv.utilities.Utilities
+import org.apache.logging.log4j.{Level, LogManager, Logger}
+
+import scala.util.Random
+
 
 /**
  * Perform discrete event-drivent simulation of workflows execution
@@ -11,7 +17,9 @@ import itmo.escience.simenv.simulator.events.{InitEvent, TaskStarted, _}
  */
 class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var ctx:Context[DaxTask, CapacityBasedNode]) extends Simulator {
 
+  val logger: Logger = LogManager.getLogger("logger")
   val queue = new EventQueue()
+  val rnd = new Random()
 
   /**
    * generates and adds the very first event [[InitEvent]] to the event queue
@@ -19,6 +27,7 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
    */
   def init() = {
     queue.submitEvent(InitEvent.instance)
+    logger.trace("Init event submitted")
   }
 
   /**
@@ -55,7 +64,23 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
 
     //val schedule = scheduler.schedule(ctx)
     //TODO: add logging here
-    throw new NotImplementedError()
+    logger.trace("Init event")
+    val schedule = scheduler.schedule(ctx)
+    logger.trace("Init schedule is generated")
+    // This function applies new schedule and generates events
+    ctx.applySchedule(schedule, queue)
+    logger.trace("Init schedule has been applied")
+    // Generate initial events
+    val schedMap = ctx.schedule.getMap()
+    for (n <- ctx.environment.nodes) {
+      //TODO remove "asInstanceOf"
+      val firstItem = schedMap.get(n.id).head.asInstanceOf[TaskScheduleItem]
+      val newFirstItem = firstItem.changeStatus(TaskScheduleItemStatus.RUNNING)
+      taskFailer(firstItem)
+      // TODO check this mutation
+      schedMap.put(n.id, schedMap.get(n.id).tail + newFirstItem)
+    }
+    logger.trace("Initial task has been handled")
   }
 
   private def onTaskStarted(event: TaskStarted) = {
@@ -66,6 +91,26 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
   private def onTaskFinished(event: TaskFinished) = {
     //TODO: add logging here
     throw new NotImplementedError()
+  }
+
+  private def taskFailer(taskScheduleItem: TaskScheduleItem) = {
+    //TODO: add logging here
+//    taskScheduleItem.status = TaskScheduleItemStatus.RUNNING
+    val dice = rnd.nextDouble()
+    if (dice < taskScheduleItem.node.reliability) {
+      // Task will be finished
+      val taskFinishedEvent = new TaskFinished(id=Utilities.generateId(), name=taskScheduleItem.name, postTime=ctx.currentTime,
+        eventTime = taskScheduleItem.endTime, taskScheduleItem.task, taskScheduleItem.node)
+      queue.submitEvent(taskFinishedEvent)
+    } else {
+      // Task will be failed (random time between start and end of the current schedule item)
+      val itemStart = taskScheduleItem.startTime
+      val itemEnd = taskScheduleItem.endTime
+      val failTime = rnd.nextDouble() * (itemEnd - itemStart) + itemStart
+      val taskFailedEvent = new TaskFinished(id=Utilities.generateId(), name=taskScheduleItem.name, postTime=ctx.currentTime,
+        eventTime = failTime, taskScheduleItem.task, taskScheduleItem.node)
+      queue.submitEvent(taskFailedEvent)
+    }
   }
 }
 

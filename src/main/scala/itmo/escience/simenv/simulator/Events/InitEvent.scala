@@ -1,6 +1,6 @@
 package itmo.escience.simenv.simulator.events
 
-import itmo.escience.simenv.environment.entities.ModellingTimesatmp
+import itmo.escience.simenv.environment.entities.ModellingTimestamp
 import itmo.escience.simenv.simulator.EventId
 
 /**
@@ -11,11 +11,11 @@ case object InitEvent extends Event {
 
   def instance = this
 
-  override def postTime: ModellingTimesatmp = ???
+  override def postTime: ModellingTimestamp = 0
 
-  override def eventTime: ModellingTimesatmp = ???
+  override def eventTime: ModellingTimestamp = 0
 
-  override def id(): EventId = ???
+  override def id(): EventId = "0"
 
-  override def name(): String = ???
+  override def name(): String = "InitEvent"
 }

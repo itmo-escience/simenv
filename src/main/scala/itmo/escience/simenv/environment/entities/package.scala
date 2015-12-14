@@ -8,7 +8,7 @@ package object entities {
    * ScheduleItem aliases
    */
   type ScheduleItemId = String
-  type ModellingTimesatmp = Double
+  type ModellingTimestamp = Double
   type ScheduleItemStatus = String
 
   /**

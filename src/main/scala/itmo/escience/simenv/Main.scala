@@ -11,7 +11,7 @@ object Main {
 
     import itmo.escience.simenv.utilities.Utilities
 
-    val path = "D:\\wspace\\simenv\\resources\\wf-examples\\Montage_25.xml"
+    val path = ".\\resources\\wf-examples\\Montage_25.xml"
 
     val wf = Utilities.parseDAX(path)
 

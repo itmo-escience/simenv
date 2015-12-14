@@ -1,6 +1,7 @@
 package itmo.escience.simenv.simulator.events
 
-import itmo.escience.simenv.environment.entities.ModellingTimesatmp
+import com.sun.applet2.preloader.event.InitEvent
+import itmo.escience.simenv.environment.entities.ModellingTimestamp
 
 import scala.collection.mutable
 
@@ -8,7 +9,7 @@ import scala.collection.mutable
  * Created by Mishanya on 14.10.2015.
  */
 class EventQueue {
-  var _currentTime: ModellingTimesatmp = 0
+  var _currentTime: ModellingTimestamp = 0
   var eq: mutable.PriorityQueue[Event] = new mutable.PriorityQueue[Event]()(new Ordering[Event] {
     override def compare(x: Event, y: Event): Int = -x.eventTime.compare(y.eventTime)
   })

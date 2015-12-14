@@ -7,7 +7,7 @@ import itmo.escience.simenv.simulator._
  * Created by user on 02.11.2015.
  */
 case class TaskStarted(id:EventId, name: String,
-                        postTime: ModellingTimesatmp,
-                        eventTime: ModellingTimesatmp,
-                        task: Task,
-                        node: Node) extends Event
+                       postTime: ModellingTimestamp,
+                       eventTime: ModellingTimestamp,
+                       task: Task,
+                       node: Node) extends Event

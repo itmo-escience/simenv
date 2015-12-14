@@ -1,6 +1,7 @@
 package itmo.escience.simenv.environment.entities
 
 import itmo.escience.simenv.environment.modelling.{Environment, Estimator, Workload}
+import itmo.escience.simenv.simulator.events.EventQueue
 
 
 trait Context[T, N] {
@@ -13,7 +14,9 @@ trait Context[T, N] {
 
   def workload: Workload
 
-  def currentTime: ModellingTimesatmp
+  def currentTime: ModellingTimestamp
+
+  def applySchedule(newSched: Schedule, queue: EventQueue)
 
 }
 

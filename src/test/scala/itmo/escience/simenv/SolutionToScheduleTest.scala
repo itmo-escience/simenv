@@ -14,7 +14,7 @@ import org.junit.Test
 @Test
 class SolutionToScheduleTest {
 
-  val basepath = "D:\\wspace\\simenv\\resources\\wf-examples\\"
+  val basepath = ".\\resources\\wf-examples\\"
   val wfs = List("Montage_25", "Montage_30", "Montage_75", "Montage_100",
     "CyberShake_30", "CyberShake_50", "CyberShake_75", "CyberShake_100",
     "Inspiral_30", "Inspiral_50", "Inspiral_72", "Inspiral_100"

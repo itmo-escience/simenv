@@ -7,7 +7,7 @@ import itmo.escience.simenv.simulator._
  * Created by Mishanya on 14.10.2015.
  */
 case class TaskFailed(id:EventId, name: String,
-                        postTime: ModellingTimesatmp,
-                        eventTime: ModellingTimesatmp,
-                        task: Task,
-                        node: Node) extends Event
+                      postTime: ModellingTimestamp,
+                      eventTime: ModellingTimestamp,
+                      task: Task,
+                      node: Node) extends Event

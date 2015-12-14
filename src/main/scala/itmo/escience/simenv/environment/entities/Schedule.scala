@@ -128,7 +128,17 @@ class Schedule {
    * @return
    */
   def fixedSchedule(): Schedule = {
-    throw new NotImplementedError()
+    var fixed = new Schedule()
+    for (nid <- nodeIds()) {
+      fixed.addNode(nid)
+      val items = map.get(nid)
+      for (item <- items) {
+        if (item.status != TaskScheduleItemStatus.NOTSTARTED) {
+          fixed.map.get(nid).add(item)
+        }
+      }
+    }
+    return fixed
   }
 
   /**
@@ -206,6 +216,12 @@ class Schedule {
     })
     strs.mkString
   }
+
+  def getMap() = map
+
+//  def setMap(newMap: java.util.HashMap[NodeId, scala.collection.mutable.SortedSet[ScheduleItem]]) = {
+//    map = newMap
+//  }
 }
 
 object Schedule {

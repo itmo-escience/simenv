@@ -3,8 +3,8 @@ package itmo.escience.simenv.environment.entities
 import itmo.escience.simenv.common.NameAndId
 
 trait ScheduleItem extends NameAndId[ScheduleItemId] {
-  def startTime: ModellingTimesatmp
-  def endTime: ModellingTimesatmp
+  def startTime: ModellingTimestamp
+  def endTime: ModellingTimestamp
   def status: ScheduleItemStatus
   def entity: NameAndId[String]
 }
@@ -19,12 +19,17 @@ object TaskScheduleItemStatus {
 
 case class TaskScheduleItem(id: ScheduleItemId,
                             name: String,
-                            startTime: ModellingTimesatmp,
-                            endTime: ModellingTimesatmp,
+                            startTime: ModellingTimestamp,
+                            endTime: ModellingTimestamp,
                             status: ScheduleItemStatus,
                             node: CapacityBasedNode,
                             task: DaxTask) extends ScheduleItem {
   override def entity: NameAndId[String] = task
+
+  def changeStatus(newStatus: String) : TaskScheduleItem = {
+    return new TaskScheduleItem(id=id, name=name, startTime=startTime, endTime=endTime, status=newStatus,
+      node=node, task=task)
+  }
 }
 
 //case class StageInScheduleItem(id:ScheduleItemId,
