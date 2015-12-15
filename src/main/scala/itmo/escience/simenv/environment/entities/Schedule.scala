@@ -147,7 +147,16 @@ class Schedule {
    * @return
    */
   def restTasks(wf: Workflow): List[Task] = {
-    throw new NotImplementedError()
+    var rest = List[Task]()
+    for (nid <- nodeIds()) {
+      val items = map.get(nid)
+      for (item <- items) {
+        if (item.status == TaskScheduleItemStatus.NOTSTARTED) {
+          rest = rest
+        }
+      }
+    }
+    return rest
   }
 
   // Schedule representation is map of nodes and list of schedule items

@@ -33,4 +33,12 @@ class EventQueue {
     eq += event
   }
 
+  def print(): String = {
+    var result = ""
+    for (item <- eq) {
+      result += s"event ${item.id}; class ${item.getClass.getName}; post ${item.postTime}; eventTime; ${item.eventTime}\n"
+    }
+    return result
+  }
+
 }

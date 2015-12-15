@@ -14,4 +14,11 @@ class BasicContext[T, N](var environment:Environment[N], var schedule: Schedule,
   def applySchedule(newSched: Schedule, queue: EventQueue) = {
     schedule = newSched
   }
+
+  def setTime(newTime: ModellingTimestamp): Unit = {
+    if (newTime < currentTime) {
+      throw new IllegalArgumentException("New time can't be less than current time")
+    }
+    currentTime = newTime
+  }
 }

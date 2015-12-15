@@ -27,6 +27,10 @@ case class TaskScheduleItem(id: ScheduleItemId,
   override def entity: NameAndId[String] = task
 
   def changeStatus(newStatus: String) : TaskScheduleItem = {
+    if (newStatus != TaskScheduleItemStatus.RUNNING && newStatus != TaskScheduleItemStatus.FINISHED &&
+      newStatus != TaskScheduleItemStatus.NOTSTARTED && newStatus != TaskScheduleItemStatus.FAILED) {
+      throw new IllegalArgumentException("Status is not correct")
+    }
     return new TaskScheduleItem(id=id, name=name, startTime=startTime, endTime=endTime, status=newStatus,
       node=node, task=task)
   }

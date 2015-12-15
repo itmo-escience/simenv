@@ -1,5 +1,7 @@
 package itmo.escience.simenv
 
+import org.apache.logging.log4j.{LogManager, Logger}
+
 /**
  * Created by Mishanya on 12.10.2015.
  */
