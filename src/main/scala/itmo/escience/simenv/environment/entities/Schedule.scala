@@ -5,6 +5,7 @@ import java.util
 import itmo.escience.simenv.utilities.Utilities
 
 import scala.collection.JavaConversions._
+import scala.collection.mutable
 
 
 class InvalidScheduleException(msg:String) extends RuntimeException(msg)
@@ -147,6 +148,7 @@ class Schedule {
    * @return
    */
   def restTasks(wf: Workflow): List[Task] = {
+    // TODO refactor this shit
     var rest = List[Task]()
     for (nid <- nodeIds()) {
       val items = map.get(nid)
@@ -227,6 +229,28 @@ class Schedule {
   }
 
   def getMap() = map
+
+  /**
+    * this method returns values:
+    * iterator with the point on current event
+    * current item
+    * number of items before current item
+    */
+  def findItemInNodeSched(nodeId: NodeId, itemId: ScheduleItemId): (Iterator[ScheduleItem], ScheduleItem, Int) = {
+    // return iterator
+    val iterator = map.get(nodeId).iterator
+    var counter = -1
+    var loopExit = false
+    var item : ScheduleItem = null
+    while (iterator.hasNext && !loopExit) {
+      item = iterator.next()
+      if (item.id == itemId) {
+        loopExit = true
+      }
+      counter += 1
+    }
+    return (iterator, item, counter)
+  }
 
 //  def setMap(newMap: java.util.HashMap[NodeId, scala.collection.mutable.SortedSet[ScheduleItem]]) = {
 //    map = newMap

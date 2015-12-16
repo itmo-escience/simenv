@@ -39,6 +39,8 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
       val event = queue.next()
       dispatchEvent(event)
       println("---next event---")
+      print(s"current time ${ctx.currentTime}")
+      println(s"event time ${event.eventTime}")
       println(ctx.schedule.prettyPrint())
     }
   }
@@ -51,6 +53,7 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
     case InitEvent => onInitEvent()
     case ev: TaskStarted => onTaskStarted(ev)
     case ev: TaskFinished => onTaskFinished(ev)
+    case ev: TaskFailed => onTaskFailed(ev)
     case _ => throw new Exception(s"Unknown type of the event: ${event.getClass}")
   }
 
@@ -75,18 +78,29 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
     // Generate initial events
     val schedMap = ctx.schedule.getMap()
     for (n <- ctx.environment.nodes) {
-      //TODO remove "asInstanceOf"
+      //TODO try to remove "asInstanceOf"
       val firstItem = schedMap.get(n.id).head.asInstanceOf[TaskScheduleItem]
-      val newFirstItem = firstItem.changeStatus(TaskScheduleItemStatus.RUNNING)
-      taskFailer(firstItem)
-      schedMap.put(n.id, schedMap.get(n.id).tail + newFirstItem)
+      queue.submitEvent(new TaskStarted(id=firstItem.id, name=firstItem.name,
+        postTime=ctx.currentTime, eventTime=firstItem.startTime,
+        task=firstItem.task, node=firstItem.node))
     }
     logger.trace("Initial task has been handled")
   }
 
   private def onTaskStarted(event: TaskStarted) = {
     //TODO: add logging here
-    throw new NotImplementedError()
+    logger.trace(s"Task has been started ${event.task.name}")
+    ctx.setTime(event.eventTime)
+    val nid = event.node.id
+    val schedMap = ctx.schedule.getMap()
+    val nodeSched = schedMap.get(nid)
+    val (iterator, curItem, counter) = ctx.schedule.findItemInNodeSched(nid, event.id)
+    schedMap.put(nid, nodeSched.take(counter))
+    schedMap.get(nid).add(curItem.asInstanceOf[TaskScheduleItem].changeStatus(TaskScheduleItemStatus.RUNNING))
+    taskFailer(curItem.asInstanceOf[TaskScheduleItem])
+    while (iterator.hasNext) {
+      schedMap.get(nid).add(iterator.next())
+    }
   }
 
   private def onTaskFinished(event: TaskFinished) = {
@@ -96,30 +110,22 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
     val nid = event.node.id
     val schedMap = ctx.schedule.getMap()
     val nodeSched = schedMap.get(nid)
-    val iterator = nodeSched.iterator
-    var take = -1
-    var loopExit = false
-    while (iterator.hasNext && !loopExit) {
-      val item = iterator.next()
-      if (item.id == event.id) {
-        loopExit = true
-      }
-      take += 1
-    }
-    schedMap.put(nid, nodeSched.take(take))
+    val (iterator, curItem, counter) = ctx.schedule.findItemInNodeSched(nid, event.id)
+
+    schedMap.put(nid, nodeSched.take(counter))
+    val finishedItem = curItem.asInstanceOf[TaskScheduleItem].changeStatus(TaskScheduleItemStatus.FINISHED)
+    schedMap.get(nid).add(finishedItem)
+
     if (iterator.hasNext) {
-      val finishedItem = iterator.next().asInstanceOf[TaskScheduleItem].changeStatus(TaskScheduleItemStatus.FINISHED)
-      schedMap.get(nid).add(finishedItem)
-    }
-    if (iterator.hasNext) {
-      val runningItem = iterator.next().asInstanceOf[TaskScheduleItem].changeStatus(TaskScheduleItemStatus.RUNNING)
-      taskFailer(runningItem)
-      schedMap.get(nid).add(runningItem)
+      val nextItem = iterator.next().asInstanceOf[TaskScheduleItem]
+      queue.submitEvent(new TaskStarted(id=nextItem.id, name=nextItem.name,
+        postTime=ctx.currentTime, eventTime=nextItem.startTime,
+        task=nextItem.task, node=nextItem.node))
+      schedMap.get(nid).add(nextItem)
     }
     while (iterator.hasNext) {
       schedMap.get(nid).add(iterator.next())
     }
-    schedMap
   }
 
   private def onTaskFailed(event: TaskFailed) = {
