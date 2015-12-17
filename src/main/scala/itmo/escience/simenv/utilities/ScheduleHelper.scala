@@ -26,7 +26,7 @@ object ScheduleHelper {
 
     for (task <- wf.tasks){
 
-      val titems = schedule.taskItems(task.id)
+      val titems = schedule.taskItems(task.id).sortBy(x => x.endTime)
 //      onlyOnceFinishedOrNotstarted(titems)
       val titem = titems.last
 
@@ -37,12 +37,11 @@ object ScheduleHelper {
       for(p <- task.parents){
 
         if (p.parents.nonEmpty) {
-          val pitems = schedule.taskItems(p.id)
+          val pitems = schedule.taskItems(p.id).sortBy(x => x.endTime)
 
           if (pitems.isEmpty) {
             throw new InvalidScheduleException(s"Parent with id: ${p.id} of task ${task.id} is absent")
           }
-
           val pitem = pitems.last
           //a child is started only after the end of parent
           if (pitem.endTime > titem.startTime) {
@@ -50,6 +49,7 @@ object ScheduleHelper {
           }
 
           //a child has all parents in "notstarted" or "finished" states
+          // TODO, and for "running" ????
           if (titem.status == TaskScheduleItemStatus.NOTSTARTED && (pitem.status != TaskScheduleItemStatus.FINISHED && pitem.status != TaskScheduleItemStatus.NOTSTARTED)) {
             throw new InvalidScheduleException(s"Incorrect status of parent (id: ${p.id}, status: ${pitem.status}}) " +
               s"for child (id: ${task.id}, status: ${titem.status}})")

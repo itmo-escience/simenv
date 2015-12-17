@@ -41,7 +41,7 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
       println("---next event---")
       print(s"current time ${ctx.currentTime}")
       println(s"event time ${event.eventTime}")
-      println(ctx.schedule.prettyPrint())
+//      println(ctx.schedule.prettyPrint())
     }
   }
 
@@ -129,11 +129,59 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
   }
 
   private def onTaskFailed(event: TaskFailed) = {
+    ctx.setTime(event.eventTime)
     //TODO: add logging here
+
     // Mark this item as failed
+    val nid = event.node.id
+    val schedMap = ctx.schedule.getMap()
+    val nodeSched = schedMap.get(nid)
+    val (iterator, curItem, counter) = ctx.schedule.findItemInNodeSched(nid, event.id)
+
+    schedMap.put(nid, nodeSched.take(counter))
+    val finishedItem = curItem.asInstanceOf[TaskScheduleItem].setToFailed(event.eventTime)
+    schedMap.get(nid).add(finishedItem)
+
+    while (iterator.hasNext) {
+      schedMap.get(nid).add(iterator.next())
+    }
+
     // Reschedule
+    val sc = scheduler.schedule(ctx)
+
+    println(s"Rescheduled schedule:\n ${sc.prettyPrint()}")
+    queue.eq = queue.eq.filter(x => !x.isInstanceOf[TaskStarted])
     // Apply new schedule
-    throw new NotImplementedError()
+    ctx.applySchedule(sc, queue)
+
+    // submit new events, if it is required after the failed task
+
+    val newFixedSchedule = ctx.schedule.fixedSchedule()
+    for (nid <- newFixedSchedule.nodeIds()) {
+      val fixNodeSched = newFixedSchedule.getMap().get(nid)
+      if (fixNodeSched.nonEmpty && fixNodeSched.last.status != TaskScheduleItemStatus.RUNNING) {
+        val lastItem = fixNodeSched.last
+        val (newIterator, newCurItem, newCounter) = ctx.schedule.findItemInNodeSched(nid, lastItem.id)
+        if (newIterator.hasNext) {
+          val nextItem = newIterator.next().asInstanceOf[TaskScheduleItem]
+          if (!queue.eq.map(x => x.id).toList.contains(nextItem.id)) {
+            queue.submitEvent(new TaskStarted(id=nextItem.id, name=nextItem.name,
+              postTime=ctx.currentTime, eventTime=nextItem.startTime,
+              task=nextItem.task, node=nextItem.node))
+          }
+        }
+      } else {
+        val newNodeSched = ctx.schedule.getMap().get(nid)
+        if (newNodeSched.nonEmpty) {
+          val firstItem = newNodeSched.head.asInstanceOf[TaskScheduleItem]
+          if (firstItem.status == TaskScheduleItemStatus.NOTSTARTED && !queue.eq.map(x => x.id).toList.contains(firstItem.id)) {
+            queue.submitEvent(new TaskStarted(id = firstItem.id, name = firstItem.name,
+              postTime = ctx.currentTime, eventTime = firstItem.startTime,
+              task = firstItem.task, node = firstItem.node))
+          }
+        }
+      }
+    }
   }
 
   private def taskFailer(taskScheduleItem: TaskScheduleItem) = {

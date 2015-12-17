@@ -20,24 +20,29 @@ object WorkflowSchedulingProblem {
 
   // TODO: ATTENTION! Now it does NOT work for dynamic case. It needs to be implemented. Context will be needed for it
   def scheduleToSolution(schedule:Schedule, context: Context[DaxTask, CapacityBasedNode]):WorkflowSchedulingSolution = {
-    //TODO: implement dealing with dynamics
+    //TODO: implement dealing with dynamics (implemented with fails of tasks)
     val taskItems = schedule.scheduleItemsSeq().filter({
       case x: TaskScheduleItem => true
       case _ => false
     }).map(x => x.asInstanceOf[TaskScheduleItem])
-
-    val genes = taskItems.map(x => MappedTask(x.task.id, x.node.id)).toList
-
+    val fixed = context.schedule.fixedSchedule()
+    var fixed_tasks = List[String]()
+    for (n <- fixed.nodeIds()) {
+      fixed_tasks = fixed_tasks ++ fixed.getMap().get(n).toList.filter(x => x.status != TaskScheduleItemStatus.FAILED
+      ).map(x => x.asInstanceOf[TaskScheduleItem].task.id)
+    }
+    val restTasks = taskItems.filter(x => !fixed_tasks.contains(x.task.id))
+    val genes = restTasks.map(x => MappedTask(x.task.id, x.node.id)).toList
+    // TODO check ids of events and tasks!!! scheduleItemId should be equal to its eventId
     new WorkflowSchedulingSolution(genes)
   }
 
   def solutionToSchedule(solution: WorkflowSchedulingSolution, context: Context[DaxTask, CapacityBasedNode]): Schedule = {
-    //TODO: implement dealing with dynamics
-    val newSchedule = Schedule.emptySchedule()
+    //TODO: implement dealing with dynamics (implemented with fails of tasks)
+    val newSchedule = context.schedule.fixedSchedule()
 
     // repair sequence in relation with parent-child dependencies
     // construct new schedule by placing it in task-by-task manner
-
     val repairedOrdering = repairOrdering(solution, context)
 
     for (x <- repairedOrdering) {
@@ -46,7 +51,6 @@ object WorkflowSchedulingProblem {
         context.environment.nodeOrContainerById(nodeId).asInstanceOf[CapacityBasedNode],
         context)
     }
-
     newSchedule
   }
 
@@ -60,6 +64,17 @@ object WorkflowSchedulingProblem {
       ))
 
     val mappedTasks = new util.HashMap[TaskId, (DaxTask, NodeId)]()
+    // add all task from fixed schedule
+    val fixedSched = context.schedule.fixedSchedule()
+    for (nid <- fixedSched.nodeIds()) {
+      for (item <- fixedSched.getMap().get(nid)) {
+        val taskScItem = item.asInstanceOf[TaskScheduleItem]
+        if (taskScItem.status != TaskScheduleItemStatus.FAILED) {
+          mappedTasks.put(taskScItem.task.id, (taskScItem.task, taskScItem.node.id))
+        }
+      }
+    }
+
     val repairedOrdering: java.util.ArrayList[(DaxTask, NodeId)] = new util.ArrayList[(DaxTask, NodeId)](tasksSeq.size())
     val isReadyToRun = (task: DaxTask) => if (task.parents.size == 1 && task.parents.head.isInstanceOf[HeadDaxTask])
       true else  task.parents.forall(x => mappedTasks.containsKey(x.id))

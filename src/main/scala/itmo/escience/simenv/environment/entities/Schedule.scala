@@ -147,7 +147,8 @@ class Schedule {
    * @param wf
    * @return
    */
-  def restTasks(wf: Workflow): List[Task] = {
+//  def restTasks(wf: Workflow): List[Task] = {
+  def restTasks(): List[Task] = {
     // TODO refactor this shit
     var rest = List[Task]()
     for (nid <- nodeIds()) {

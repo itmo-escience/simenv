@@ -34,6 +34,14 @@ case class TaskScheduleItem(id: ScheduleItemId,
     return new TaskScheduleItem(id=id, name=name, startTime=startTime, endTime=endTime, status=newStatus,
       node=node, task=task)
   }
+
+  def setToFailed(failTime: ModellingTimestamp) : TaskScheduleItem = {
+    if (failTime > endTime || failTime < startTime) {
+      throw new IllegalArgumentException("Fail time is not correct")
+    }
+    return new TaskScheduleItem(id=id, name=name, startTime=startTime, endTime=failTime,
+      status=TaskScheduleItemStatus.FAILED, node=node, task=task)
+  }
 }
 
 //case class StageInScheduleItem(id:ScheduleItemId,
