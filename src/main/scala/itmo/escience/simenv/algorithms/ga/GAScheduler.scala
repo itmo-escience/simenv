@@ -30,7 +30,7 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
     val problem = new WorkflowSchedulingProblem(wf, newSchedule, nodes, context)
 
     val crossover = new WorkflowSchedulingCrossover(crossoverProb)
-    val mutation = new WorkflowSchedulingMutation(mutationProb, swapMutationProb)
+    val mutation = new WorkflowSchedulingMutation(mutationProb, swapMutationProb, context)
     val selection = new BinaryTournamentSelection[WorkflowSchedulingSolution]()
 
     val algorithm: Algorithm[WorkflowSchedulingSolution] =
