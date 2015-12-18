@@ -76,8 +76,7 @@ object WorkflowSchedulingProblem {
     }
 
     val repairedOrdering: java.util.ArrayList[(DaxTask, NodeId)] = new util.ArrayList[(DaxTask, NodeId)](tasksSeq.size())
-    val isReadyToRun = (task: DaxTask) => if (task.parents.size == 1 && task.parents.head.isInstanceOf[HeadDaxTask])
-      true else  task.parents.forall(x => mappedTasks.containsKey(x.id))
+    val isReadyToRun = (task: DaxTask) => task.parents.forall(x => mappedTasks.containsKey(x.id) || x.isInstanceOf[HeadDaxTask])
 
     while (tasksSeq.nonEmpty) {
 

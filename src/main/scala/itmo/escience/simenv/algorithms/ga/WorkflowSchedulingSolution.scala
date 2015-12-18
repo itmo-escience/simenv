@@ -3,6 +3,7 @@ package itmo.escience.simenv.algorithms.ga
 import java.util
 
 import org.uma.jmetal.solution.Solution
+import scala.collection.JavaConversions._
 
 /**
  * individual for genetic algorithm
@@ -17,14 +18,14 @@ class WorkflowSchedulingSolution(mappedTasks: List[MappedTask]) extends Solution
    *          http://riuma.uma.es/xmlui/bitstream/handle/10630/10136/gecco2015.pdf?sequence=1
    */
 
-  def this(that:WorkflowSchedulingSolution) = this(that._genes)
+  def this(that:WorkflowSchedulingSolution) = this(that._genes.toList)
 
   //TODO: do we play for min or max?
   private var _objective:Double = 0.0
 
   private val _attributes = new util.HashMap[scala.Any, scala.Any]()
 
-  private var _genes = mappedTasks
+  private val _genes = new util.ArrayList(mappedTasks)
 
   override def getNumberOfObjectives: Int = 1
 
@@ -45,23 +46,23 @@ class WorkflowSchedulingSolution(mappedTasks: List[MappedTask]) extends Solution
   }
 
   override def setVariableValue(i: Int, t: MappedTask): Unit = {
-    throw new NotImplementedError()
+    _genes.set(i, t)
   }
 
   override def getVariableValue(i: Int): MappedTask = {
-    throw new NotImplementedError()
+    _genes.get(i)
   }
 
   override def getVariableValueString(i: Int): String = {
     throw new NotImplementedError()
   }
 
-  override def copy(): Solution[MappedTask] = {
+  override def copy(): WorkflowSchedulingSolution = {
     new WorkflowSchedulingSolution(this)
   }
 
-  override def getNumberOfVariables: Int = _genes.length
+  override def getNumberOfVariables: Int = _genes.size()
 
-  def tasksSeq() = _genes
+  def tasksSeq() = _genes.toList
 
 }
