@@ -16,7 +16,7 @@ import org.junit.Assert._
 @Test
 class StaticSchedulingTest {
 
-  val basepath = "D:\\wspace\\simenv\\resources\\wf-examples\\"
+  val basepath = ".\\resources\\wf-examples\\"
   val wfs = List("Montage_25", "Montage_30", "Montage_75", "Montage_100",
       "CyberShake_30", "CyberShake_50", "CyberShake_75", "CyberShake_100",
       "Inspiral_30", "Inspiral_50", "Inspiral_72", "Inspiral_100"
@@ -56,8 +56,8 @@ class StaticSchedulingTest {
     runOnWfs(new GAScheduler(crossoverProb = 0.4,
       mutationProb = 0.2,
       swapMutationProb = 0.3,
-      popSize = 50,
-      iterationCount = 100), "GA")
+      popSize = 20,
+      iterationCount = 10), "GA")
   }
 
   private def runOnWfs(scheduler:Scheduler[DaxTask, CapacityBasedNode], schedulerName: String) = {

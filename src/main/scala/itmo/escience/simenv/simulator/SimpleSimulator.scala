@@ -4,7 +4,7 @@ package itmo.escience.simenv.simulator
 import itmo.escience.simenv.algorithms.Scheduler
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.simulator.events.{InitEvent, TaskStarted, _}
-import org.apache.logging.log4j.{Level, LogManager, Logger}
+//import org.apache.logging.log4j.{Level, LogManager, Logger}
 
 import scala.util.Random
 
@@ -16,7 +16,7 @@ import scala.util.Random
  */
 class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var ctx:Context[DaxTask, CapacityBasedNode]) extends Simulator {
 
-  val logger: Logger = LogManager.getLogger("logger")
+//  val logger: Logger = LogManager.getLogger("logger")
   val queue = new EventQueue()
   val rnd = new Random()
 
@@ -26,7 +26,7 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
    */
   def init() = {
     queue.submitEvent(InitEvent.instance)
-    logger.trace("Init event submitted")
+//    logger.trace("Init event submitted")
   }
 
   /**
@@ -69,12 +69,12 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
 
     //val schedule = scheduler.schedule(ctx)
     //TODO: add logging here
-    logger.trace("Init event")
+//    logger.trace("Init event")
     val schedule = scheduler.schedule(ctx)
-    logger.trace("Init schedule is generated")
+//    logger.trace("Init schedule is generated")
     // This function applies new schedule and generates events
     ctx.applySchedule(schedule, queue)
-    logger.trace("Init schedule has been applied")
+//    logger.trace("Init schedule has been applied")
     // Generate initial events
     val schedMap = ctx.schedule.getMap()
     for (n <- ctx.environment.nodes) {
@@ -84,12 +84,12 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
         postTime=ctx.currentTime, eventTime=firstItem.startTime,
         task=firstItem.task, node=firstItem.node))
     }
-    logger.trace("Initial task has been handled")
+//    logger.trace("Initial task has been handled")
   }
 
   private def onTaskStarted(event: TaskStarted) = {
     //TODO: add logging here
-    logger.trace(s"Task has been started ${event.task.name}")
+//    logger.trace(s"Task has been started ${event.task.name}")
     ctx.setTime(event.eventTime)
     val nid = event.node.id
     val schedMap = ctx.schedule.getMap()

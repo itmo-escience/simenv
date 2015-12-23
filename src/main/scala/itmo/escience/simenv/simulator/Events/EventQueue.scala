@@ -1,6 +1,6 @@
 package itmo.escience.simenv.simulator.events
 
-import com.sun.applet2.preloader.event.InitEvent
+//import com.sun.applet2.preloader.event.InitEvent
 import itmo.escience.simenv.environment.entities.ModellingTimestamp
 
 import scala.collection.mutable
