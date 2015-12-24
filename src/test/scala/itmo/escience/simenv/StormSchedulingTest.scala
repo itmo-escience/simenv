@@ -1,6 +1,7 @@
 package itmo.escience.simenv
 
 import itmo.escience.simenv.utilities.Utilities._
+import itmo.escience.simenv.algorithms.storm.StormSimulatedAnnealing
 import org.junit.Test
 
 /**
@@ -12,17 +13,18 @@ class StormSchedulingTest {
   // single pipeline
   val basepath = ".\\resources\\storm-pipelines\\"
   val wfName = "Test1_3"
-  val wf = parseDAX(basepath + wfName + ".xml")
+  val wfPath = basepath + wfName + ".xml"
 
   val pipelines = 3
 
   val cores = 8
-  val bandwidth = 100
+  val bandwidth = 30
 
   @Test
   def testRun() = {
-    println(wf.name)
-    val storm = StormSimulatedAnnealing()
+    val storm = new StormSimulatedAnnealing(wfPath, pipelines, cores, bandwidth)
+    storm.initialization()
+    storm.runAlg()
   }
 
 }

@@ -22,8 +22,12 @@ class DaxTask(val id: TaskId, val name: String, val execTime: Double,
     // TODO: ATTENTION! Situation with ids should be clearified
     val commonFilesID = this.inputData.map(file => file.id).intersect(parent.outputData.map(file => file.id)).toSet
     val files = this.inputData.filter(x => commonFilesID.contains(x.id))
-    val transferVolume = files.foldLeft(0.0)((acc:Double, x:DataFile) => acc + x.cVolume)
+    val transferVolume = files.foldLeft(0.0)((acc:Double, x:DataFile) => acc + x.volume)
     transferVolume
+  }
+
+  def inputVolume(): Double = {
+    inputData.foldLeft(0.0)((s, d) => s + d.volume)
   }
 
   //TODO: reanimate this later

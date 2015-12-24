@@ -12,7 +12,7 @@ import scala.xml.{Node, XML}
  */
 object Utilities {
 
-  def parseDAX(path:String): Workflow = {
+  def parseDAX(path:String, idx:String=""): Workflow = {
 
     //TODO: correct assigning of id
     //TODO: generic should be here
@@ -22,15 +22,15 @@ object Utilities {
     val jobs = dax \ "job"
     val childs = dax \ "child"
 
-    val idf = (job:Node) => job.attribute("id").get.head.text
-    val name = (job:Node) => job.attribute("name").get.head.text
+    val idf = (job:Node) => job.attribute("id").get.head.text + idx
+    val name = (job:Node) => job.attribute("name").get.head.text + idx
     val runtime = (job:Node) => job.attribute("runtime").get.head.text.toDouble
-    val refId = (job:Node) => job.attribute("ref").get.head.text
+    val refId = (job:Node) => job.attribute("ref").get.head.text + idx
 
     def toDataFile(y:Node):DataFile = {
       val file = y.attribute("file").get.head.text
       val size = y.attribute("size").get.head.text.toDouble
-      new DataFile(id=file, name=file, cVolume = size)
+      new DataFile(id=file, name=file, volume = size)
     }
 
     val tasks = jobs.map(x => {
@@ -59,7 +59,7 @@ object Utilities {
       }
     }
 
-    val headtask = new HeadDaxTask(id="000", name="headtask", List())
+    val headtask = new HeadDaxTask(id="000" + idx , name="headtask", List())
     val topLevelTasks = tasks.filter(x => x._2.parents.isEmpty).
       map(x => x._2).
       map(x => {
@@ -68,7 +68,7 @@ object Utilities {
     }).toList
     headtask.children = topLevelTasks
 
-    new Workflow(id=Utilities.generateId(), name=file.getName, headTask=headtask)
+    new Workflow(id=Utilities.generateId(), name=file.getName + idx, headTask=headtask)
 
   }
 
