@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<adag>
+  <job id="ID000" namespace="Test" name="pipeline" version="1.0" runtime="4">
+    <uses file="input0" link="input" register="true" transfer="true" optional="false" type="data" size="30"/>
+    <uses file="output0" link="output" register="true" transfer="true" optional="false" type="data" size="30"/>
+  </job>
+  <job id="ID001" namespace="Test" name="pipeline" version="1.0" runtime="2">
+    <uses file="output0" link="input" register="true" transfer="true" optional="false" type="data" size="20"/>
+    <uses file="output1" link="output" register="true" transfer="true" optional="false" type="data" size="10"/>
+  </job>
+  <job id="ID002" namespace="Test" name="pipeline" version="1.0" runtime="1">
+    <uses file="output1" link="input" register="true" transfer="true" optional="false" type="data" size="10"/>
+    <uses file="output2" link="output" register="true" transfer="true" optional="false" type="data" size="20"/>
+  </job>
+  <job id="ID003" namespace="Test" name="pipeline" version="1.0" runtime="2">
+    <uses file="output2" link="input" register="true" transfer="true" optional="false" type="data" size="10"/>
+    <uses file="output3" link="output" register="true" transfer="true" optional="false" type="data" size="20"/>
+  </job>
+  <job id="ID004" namespace="Test" name="pipeline" version="1.0" runtime="1">
+    <uses file="output3" link="input" register="true" transfer="true" optional="false" type="data" size="10"/>
+    <uses file="output4" link="output" register="true" transfer="true" optional="false" type="data" size="20"/>
+  </job>
+  <job id="ID005" namespace="Test" name="pipeline" version="1.0" runtime="2">
+    <uses file="output4" link="input" register="true" transfer="true" optional="false" type="data" size="10"/>
+    <uses file="output5" link="output" register="true" transfer="true" optional="false" type="data" size="20"/>
+  </job>
+  <job id="ID006" namespace="Test" name="pipeline" version="1.0" runtime="4">
+    <uses file="output5" link="input" register="true" transfer="true" optional="false" type="data" size="10"/>
+    <uses file="output6" link="output" register="true" transfer="true" optional="false" type="data" size="20"/>
+  </job>
+  <job id="ID007" namespace="Test" name="pipeline" version="1.0" runtime="2">
+    <uses file="output6" link="input" register="true" transfer="true" optional="false" type="data" size="10"/>
+    <uses file="output7" link="output" register="true" transfer="true" optional="false" type="data" size="20"/>
+  </job>
+  <job id="ID008" namespace="Test" name="pipeline" version="1.0" runtime="1">
+    <uses file="output7" link="input" register="true" transfer="true" optional="false" type="data" size="10"/>
+    <uses file="output8" link="output" register="true" transfer="true" optional="false" type="data" size="20"/>
+  </job>
+  <job id="ID009" namespace="Test" name="pipeline" version="1.0" runtime="2">
+    <uses file="output8" link="input" register="true" transfer="true" optional="false" type="data" size="10"/>
+    <uses file="output9" link="output" register="true" transfer="true" optional="false" type="data" size="20"/>
+  </job>
+<!-- part 3: list of control-flow dependencies (may be empty) -->
+  <child ref="ID001">
+    <parent ref="ID000"/>
+  </child>
+  <child ref="ID002">
+    <parent ref="ID001"/>
+  </child>
+  <child ref="ID003">
+    <parent ref="ID002"/>
+  </child>
+  <child ref="ID004">
+    <parent ref="ID003"/>
+  </child>
+  <child ref="ID005">
+    <parent ref="ID004"/>
+  </child>
+  <child ref="ID006">
+    <parent ref="ID005"/>
+  </child>
+  <child ref="ID007">
+    <parent ref="ID006"/>
+  </child>
+  <child ref="ID008">
+    <parent ref="ID007"/>
+  </child>
+  <child ref="ID009">
+    <parent ref="ID008"/>
+  </child>
+</adag>

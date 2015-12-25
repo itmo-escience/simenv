@@ -4,6 +4,7 @@ import java.util
 import java.util.Random
 
 import itmo.escience.simenv.environment.entities._
+import itmo.escience.simenv.utilities.StormScheduleVisualizer
 import itmo.escience.simenv.utilities.Utilities.parseDAX
 
 
@@ -18,9 +19,13 @@ class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int
 
   val rnd: Random = new Random()
 
+  var vis: StormScheduleVisualizer = null
+
   def initialization(): Unit = {
     val sweeps = generateSweeps()
     schedule = initialSchedule(sweeps)
+    vis = new StormScheduleVisualizer(tasks)
+
     println(schedule.toString)
     println("Initialization complete")
   }
@@ -28,7 +33,7 @@ class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int
   def runAlg() = {
     println("RUN!!!")
     val generations = 10000
-
+    vis.drawSched(nodes)
     var bestSchedule = schedule.clone().asInstanceOf[util.HashMap[NodeId, List[TaskId]]]
     var bestFitness: Double = evaluateFitness(bestSchedule)
     var bestNodes: util.HashMap[NodeId, CapacityBandwidthResource] = nodes.clone().asInstanceOf[util.HashMap[NodeId, CapacityBandwidthResource]]
@@ -37,7 +42,7 @@ class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int
     var curFitness: Double = bestFitness
     var curNodes: util.HashMap[NodeId, CapacityBandwidthResource] = nodes.clone().asInstanceOf[util.HashMap[NodeId, CapacityBandwidthResource]]
 
-//    println(s"Best: $bestFitness; current: $curFitness")
+    println(s"Init: $bestFitness")
 
     for (g <- 0 to generations) {
       val (newSchedule, newNodes) = mutation(curSchedule, curNodes)
@@ -66,6 +71,8 @@ class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int
     schedule = bestSchedule
     nodes = bestNodes
     println(s"Result = $bestFitness")
+    println(schedule.toString)
+    vis.drawSched(nodes)
   }
 
   def initialSchedule(sweeps: List[Workflow]): util.HashMap[NodeId, List[TaskId]] = {
@@ -124,7 +131,7 @@ class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int
 //    val nodesNumber = solution.keySet().size()
 
     val overTransferNodes = evaluateOverTransferNodes(solution)
-    println(s"mutant fit: nodes = $nodesNumber; overtransfer = $overTransferNodes")
+//    println(s"mutant fit: nodes = $nodesNumber; overtransfer = $overTransferNodes")
     nodesNumber + overTransferNodes
   }
 
