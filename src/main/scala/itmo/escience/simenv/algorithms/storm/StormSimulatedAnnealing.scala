@@ -27,7 +27,7 @@ class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int
 
   def runAlg() = {
     println("RUN!!!")
-    val generations = 100
+    val generations = 10000
 
     var bestSchedule = schedule.clone().asInstanceOf[util.HashMap[NodeId, List[TaskId]]]
     var bestFitness: Double = evaluateFitness(bestSchedule)
@@ -37,22 +37,31 @@ class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int
     var curFitness: Double = bestFitness
     var curNodes: util.HashMap[NodeId, CapacityBandwidthResource] = nodes.clone().asInstanceOf[util.HashMap[NodeId, CapacityBandwidthResource]]
 
-    println(s"Best: $bestFitness; current: $curFitness")
+//    println(s"Best: $bestFitness; current: $curFitness")
 
     for (g <- 0 to generations) {
       val (newSchedule, newNodes) = mutation(curSchedule, curNodes)
       val newFitness: Double = evaluateFitness(newSchedule)
+//      println(s"Mutant fitness = $newFitness")
       if (newFitness < bestFitness) {
         bestSchedule = newSchedule
         bestFitness = newFitness
         bestNodes = newNodes
       }
-      if (newFitness < curFitness || rnd.nextDouble() < energy(g, newFitness, curFitness)) {
+      var enrg = 1.0
+      if (newFitness > curFitness) {
+//        val temperature = 10 - (10 * (generations - g) / generations)
+        val temperature = 5 -  4 * (generations - g + 1) / generations
+        enrg = energy(temperature, newFitness, curFitness)
+
+      }
+//      println(s"energy = $enrg")
+      if (rnd.nextDouble() < enrg) {
         curFitness = newFitness
         curSchedule = newSchedule
         curNodes = newNodes
       }
-      println(s"Best: $bestFitness; current: $curFitness")
+//      println(s"Best: $bestFitness; current: $curFitness")
     }
     schedule = bestSchedule
     nodes = bestNodes
@@ -103,7 +112,17 @@ class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int
   }
 
   def evaluateFitness(solution: util.HashMap[NodeId, List[TaskId]]): Double = {
-    val nodesNumber = solution.keySet().size()
+    var nodesNumber = 0
+    val nodeIter = solution.keySet().iterator()
+    while (nodeIter.hasNext) {
+      val node = nodeIter.next()
+      if (solution.get(node).nonEmpty) {
+        nodesNumber += 1
+      }
+    }
+
+//    val nodesNumber = solution.keySet().size()
+
     val overTransferNodes = evaluateOverTransferNodes(solution)
     println(s"mutant fit: nodes = $nodesNumber; overtransfer = $overTransferNodes")
     nodesNumber + overTransferNodes
@@ -173,6 +192,9 @@ class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int
   }
 
   def deleteEmptyNodes(solution: util.HashMap[NodeId, List[TaskId]]): util.HashMap[NodeId, List[TaskId]] = {
+    if (evaluateOverTransferNodes(solution) > 0) {
+      return solution
+    }
     val repairedSolution: util.HashMap[NodeId, List[TaskId]] = new util.HashMap[NodeId, List[TaskId]]
     val iter = solution.keySet().iterator()
     while (iter.hasNext) {
@@ -182,6 +204,7 @@ class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int
       }
     }
     repairedSolution
+//    solution
   }
 
   def evaluateOverTransferNodes(solution: util.HashMap[NodeId, List[TaskId]]): Double = {

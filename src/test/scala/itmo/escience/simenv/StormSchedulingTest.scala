@@ -18,7 +18,7 @@ class StormSchedulingTest {
   val pipelines = 3
 
   val cores = 10
-  val bandwidth = 100
+  val bandwidth = 80
 
   @Test
   def testRun() = {
