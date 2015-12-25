@@ -17,7 +17,7 @@ class StormSchedulingTest {
 
   val pipelines = 3
 
-  val cores = 8
+  val cores = 6
   val bandwidth = 30
 
   @Test

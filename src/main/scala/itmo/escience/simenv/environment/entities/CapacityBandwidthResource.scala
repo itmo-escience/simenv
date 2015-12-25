@@ -21,25 +21,15 @@ class CapacityBandwidthResource(val id: NodeId,
 
   def addTask(t: DaxTask) = {
     taskList.put(t.id, t)
-    if (!taskList.keySet().contains(t.parents.head.id)) {
-      currentBandwidth -= t.inputVolume()
-    }
     currentCapacity -= t.execTime
   }
 
   def canPlaceTask(t: DaxTask): Boolean = {
-    if (taskList.keySet().contains(t.parents.head.id)) {
-      t.execTime <= currentCapacity
-    } else {
-      t.execTime <= currentCapacity && t.inputVolume() <= currentBandwidth
-    }
+    t.execTime <= currentCapacity
   }
 
-  def removeNode(key: TaskId): DaxTask = {
+  def removeTask(key: TaskId): DaxTask = {
     val task = taskList.remove(key)
-    if (!taskList.keySet().contains(task.parents.head.id)) {
-      currentBandwidth += task.inputVolume()
-    }
     currentCapacity += task.execTime
     task
   }

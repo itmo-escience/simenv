@@ -30,6 +30,10 @@ class DaxTask(val id: TaskId, val name: String, val execTime: Double,
     inputData.foldLeft(0.0)((s, d) => s + d.volume)
   }
 
+  def outputVolume(): Double = {
+    outputData.foldLeft(0.0)((s, d) => s + d.volume)
+  }
+
   //TODO: reanimate this later
 //  override def equals(obj: scala.Any): Boolean = obj match {
 //    case x:DaxTask => id.equals(x.id) && name.equals(x.name) &&
