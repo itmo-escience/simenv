@@ -29,6 +29,10 @@ class CapacityBandwidthResource(val id: NodeId,
   }
 
   def removeTask(key: TaskId): DaxTask = {
+    if (!taskList.containsKey(key)) {
+      //TODO delete this comment
+      println("PIZDA")
+    }
     val task = taskList.remove(key)
     currentCapacity += task.execTime
     task

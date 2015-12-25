@@ -27,26 +27,35 @@ class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int
 
   def runAlg() = {
     println("RUN!!!")
+    val generations = 100
+
     var bestSchedule = schedule.clone().asInstanceOf[util.HashMap[NodeId, List[TaskId]]]
     var bestFitness: Double = evaluateFitness(bestSchedule)
+    var bestNodes: util.HashMap[NodeId, CapacityBandwidthResource] = nodes.clone().asInstanceOf[util.HashMap[NodeId, CapacityBandwidthResource]]
+
     var curSchedule = bestSchedule.clone().asInstanceOf[util.HashMap[NodeId, List[TaskId]]]
     var curFitness: Double = bestFitness
+    var curNodes: util.HashMap[NodeId, CapacityBandwidthResource] = nodes.clone().asInstanceOf[util.HashMap[NodeId, CapacityBandwidthResource]]
 
     println(s"Best: $bestFitness; current: $curFitness")
-    for (g <- 0 to 10) {
-      val newSchedule = mutation(curSchedule)
+
+    for (g <- 0 to generations) {
+      val (newSchedule, newNodes) = mutation(curSchedule, curNodes)
       val newFitness: Double = evaluateFitness(newSchedule)
       if (newFitness < bestFitness) {
         bestSchedule = newSchedule
         bestFitness = newFitness
+        bestNodes = newNodes
       }
       if (newFitness < curFitness || rnd.nextDouble() < energy(g, newFitness, curFitness)) {
         curFitness = newFitness
         curSchedule = newSchedule
+        curNodes = newNodes
       }
       println(s"Best: $bestFitness; current: $curFitness")
     }
     schedule = bestSchedule
+    nodes = bestNodes
     println(s"Result = $bestFitness")
   }
 
@@ -96,44 +105,91 @@ class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int
   def evaluateFitness(solution: util.HashMap[NodeId, List[TaskId]]): Double = {
     val nodesNumber = solution.keySet().size()
     val overTransferNodes = evaluateOverTransferNodes(solution)
-    println(s"nodes = $nodesNumber; overtransfer = $overTransferNodes")
+    println(s"mutant fit: nodes = $nodesNumber; overtransfer = $overTransferNodes")
     nodesNumber + overTransferNodes
   }
 
-  def mutation(solution: util.HashMap[NodeId, List[TaskId]]): util.HashMap[NodeId, List[TaskId]] = {
+
+  def mutation(solution: util.HashMap[NodeId, List[TaskId]],
+               curNodes: util.HashMap[NodeId, CapacityBandwidthResource]):
+  (util.HashMap[NodeId, List[TaskId]], util.HashMap[NodeId, CapacityBandwidthResource]) = {
+
     val mutant = solution.clone().asInstanceOf[util.HashMap[NodeId, List[TaskId]]]
-    if (mutant.keySet().size < 2) {
-      mutant
+//    val newNodes = curNodes.clone().asInstanceOf[util.HashMap[NodeId, CapacityBandwidthResource]]
+    val newNodes = new util.HashMap[NodeId, CapacityBandwidthResource]
+    val cloneIter = curNodes.keySet().iterator()
+    while (cloneIter.hasNext) {
+      val key = cloneIter.next()
+      val curNode = curNodes.get(key)
+      val newNode = new CapacityBandwidthResource(id=curNode.id,
+        name=curNode.name, nominalCapacity=curNode.nominalCapacity,
+        bandwidth=curNode.bandwidth)
+
+      val tIter = curNode.taskList.keySet().iterator()
+      while (tIter.hasNext) {
+        val tId = tIter.next()
+        newNode.addTask(tasks.get(tId))
+      }
+
+      newNodes.put(key, newNode)
     }
+
+
+    if (mutant.keySet().size < 2) {
+      (deleteEmptyNodes(mutant), newNodes)
+    }
+
     var placed: Boolean = false
-    val keyset = solution.keySet().toArray
-//    while (!placed) {
-      val node1 = keyset(rnd.nextInt(keyset.size)).asInstanceOf[NodeId]
-      val nodeTasks = mutant.get(node1)
-      val task = nodeTasks(rnd.nextInt(nodeTasks.size))
-      for (node2 <- keyset.filter(x => x != node1)) {
-        if (nodes.get(node2).canPlaceTask(tasks.get(task)) && !placed) {
-          nodes.get(node1).removeTask(task)
-          nodes.get(node2).addTask(tasks.get(task))
-          mutant.put(node1, mutant.get(node1).filter(x => x != task))
-          mutant.put(node2.asInstanceOf[NodeId], schedule.get(node1) :+ task)
-          if (nodes.get(node1).taskList.isEmpty) {
-            mutant.remove(node1)
+    val keyset = solution.keySet().toArray.reverse
+    val nodeIterator = keyset.iterator
+    while (nodeIterator.hasNext && !placed) {
+      val nodeId = nodeIterator.next()
+      val nodeTasks = mutant.get(nodeId)
+      val taskIterator = nodeTasks.iterator
+      while (taskIterator.hasNext && !placed) {
+        val taskId = taskIterator.next()
+        val task = tasks.get(taskId)
+
+        val availableNodes = keyset.filter(x => x != nodeId && newNodes.get(x).currentCapacity >= task.execTime)
+        if (availableNodes.length > 0) {
+          val transNodeId = availableNodes(rnd.nextInt(availableNodes.length))
+          val transNode = newNodes.get(transNodeId)
+
+          if (!transNode.canPlaceTask(task)) {
+            throw new IllegalStateException("This node must be able to contain this task")
           }
+
+          mutant.put(nodeId.asInstanceOf[NodeId], mutant.get(nodeId).filter(x => x != taskId))
+          mutant.put(transNodeId.asInstanceOf[NodeId], mutant.get(transNodeId) :+ taskId)
+
+          newNodes.get(nodeId).removeTask(taskId)
+          newNodes.get(transNodeId).addTask(task)
+
           placed = true
         }
-//      }
-
+      }
     }
-    mutant
+    (deleteEmptyNodes(mutant), newNodes)
+  }
+
+  def deleteEmptyNodes(solution: util.HashMap[NodeId, List[TaskId]]): util.HashMap[NodeId, List[TaskId]] = {
+    val repairedSolution: util.HashMap[NodeId, List[TaskId]] = new util.HashMap[NodeId, List[TaskId]]
+    val iter = solution.keySet().iterator()
+    while (iter.hasNext) {
+      val n = iter.next()
+      if (solution.get(n).nonEmpty) {
+        repairedSolution.put(n, solution.get(n))
+      }
+    }
+    repairedSolution
   }
 
   def evaluateOverTransferNodes(solution: util.HashMap[NodeId, List[TaskId]]): Double = {
     var overTransfer: Double = 0
     var overTransferNodes: Int = 0
-    var iterator = solution.keySet().iterator()
+    val iterator = solution.keySet().iterator()
     while (iterator.hasNext) {
-      var n = iterator.next()
+      val n = iterator.next()
       var transfer = 0.0
       val nodeTasks = solution.get(n)
       for (t <- nodeTasks) {
