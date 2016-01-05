@@ -12,9 +12,9 @@ import org.uma.jmetal.util.{AlgorithmRunner, JMetalLogger}
  * Created by user on 02.12.2015.
  */
 class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: Double,
-                   popSize:Int, iterationCount: Int) extends Scheduler[DaxTask, CapacityBasedNode]{
+                   popSize:Int, iterationCount: Int) extends Scheduler[DaxTask, CoreRamHddBasedNode]{
 
-  override def schedule(context: Context[DaxTask, CapacityBasedNode]): Schedule = {
+  override def schedule(context: Context[DaxTask, CoreRamHddBasedNode]): Schedule = {
 
     if (!context.workload.isInstanceOf[SingleAppWorkload]) {
       throw new UnsupportedOperationException(s"Invalid workload type ${context.workload.getClass}. " +

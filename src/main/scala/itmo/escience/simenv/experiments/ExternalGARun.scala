@@ -19,19 +19,19 @@ object ExternalGARun {
     //    val yaml = new Yaml(new org.yaml.snakeyaml.Loader(new Constructor(classOf[SimpleConfig])))
     //    val config = yaml.load(ymlStr).asInstanceOf[SimpleConfig]
 
-    val ctx = makeContext(config)
-
-    val schedule = new GAScheduler(crossoverProb = config.crossoverProbability,
-      mutationProb = config.mutationProbability,
-      swapMutationProb = config.swapMutationProbability,
-      popSize = config.populationSize,
-      iterationCount = config.iterationCount).schedule(ctx)
-
-    ctx.schedule = schedule
-    ScheduleHelper.checkStaticSchedule(ctx)
-    val makespan = schedule.makespan()
-
-    makespan
+//    val ctx = makeContext(config)
+//
+//    val schedule = new GAScheduler(crossoverProb = config.crossoverProbability,
+//      mutationProb = config.mutationProbability,
+//      swapMutationProb = config.swapMutationProbability,
+//      popSize = config.populationSize,
+//      iterationCount = config.iterationCount).schedule(ctx)
+//
+//    ctx.schedule = schedule
+//    ScheduleHelper.checkStaticSchedule(ctx)
+//    val makespan = schedule.makespan()
+//
+//    makespan
   }
 
   private def makeContext(config: SimpleConfig) = {

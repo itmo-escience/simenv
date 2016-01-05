@@ -32,22 +32,22 @@ class SolutionToScheduleTest {
   val environment = new BasicEnvironment(nodes, networks)
   val estimator = new BasicEstimator(idealCapacity = 20.0, environment)
 
-  @Test
-  def testSolutionToScheduleTransformations() = {
-    for (wf <- wfs){
-      val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule(),
-        estimator, 0.0, new SingleAppWorkload(wf))
-      val schedule = RandomScheduler.schedule(ctx)
-
-      val solution = WorkflowSchedulingProblem.scheduleToSolution(schedule, ctx)
-      val backSchedule = WorkflowSchedulingProblem.solutionToSchedule(solution, ctx)
-
-      ScheduleHelper.checkStaticSchedule(wf, schedule, ctx, haveToBeFinished = false)
-      ScheduleHelper.checkStaticSchedule(wf, backSchedule, ctx, haveToBeFinished = false)
-
-      println(s"Makespan before: ${schedule.makespan()} and after: ${backSchedule.makespan()}")
-    }
-  }
+//  @Test
+//  def testSolutionToScheduleTransformations() = {
+//    for (wf <- wfs){
+//      val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule(),
+//        estimator, 0.0, new SingleAppWorkload(wf))
+//      val schedule = RandomScheduler.schedule(ctx)
+//
+//      val solution = WorkflowSchedulingProblem.scheduleToSolution(schedule, ctx)
+//      val backSchedule = WorkflowSchedulingProblem.solutionToSchedule(solution, ctx)
+//
+//      ScheduleHelper.checkStaticSchedule(wf, schedule, ctx, haveToBeFinished = false)
+//      ScheduleHelper.checkStaticSchedule(wf, backSchedule, ctx, haveToBeFinished = false)
+//
+//      println(s"Makespan before: ${schedule.makespan()} and after: ${backSchedule.makespan()}")
+//    }
+//  }
 
   private def runOnWfs() = {
 

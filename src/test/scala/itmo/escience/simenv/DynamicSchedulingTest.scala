@@ -1,9 +1,9 @@
 package itmo.escience.simenv
 
 import itmo.escience.simenv.algorithms.ga.GAScheduler
-import itmo.escience.simenv.environment.entities.{Schedule, DaxTask, Network, CapacityBasedNode}
-import itmo.escience.simenv.environment.entitiesimpl.{SingleAppWorkload, BasicContext, BasicEstimator, BasicEnvironment}
-import itmo.escience.simenv.simulator.SimpleSimulator
+import itmo.escience.simenv.environment.entities._
+import itmo.escience.simenv.environment.entitiesimpl._
+import itmo.escience.simenv.simulator.{VmBasedSimulator, SimpleSimulator}
 import itmo.escience.simenv.utilities.ScheduleHelper
 import itmo.escience.simenv.utilities.Utilities._
 import org.junit.Test
@@ -25,18 +25,32 @@ class DynamicSchedulingTest {
   ).map(x => basepath + x + ".xml" ).map(x => parseDAX(x))
   val wf = wfs(0)
 
+  val res1: PhysicalResource = new PhysicalResource(id=generateId(), name="res1",
+    cores=16, ram=1024*16,
+    storage=new SimpleStorage(id=generateId(), name="storage1", volume=1024),
+    reliability=0.95
+    )
+  res1.runVM(8, 1024*8, 512)
+  res1.runVM(4, 1024*4, 256)
+  res1.runVM(4, 1024*4, 256)
 
-  val nodes = List(new CapacityBasedNode(id=generateId(), name="", nominalCapacity=30, reliability=0.95),
-    new CapacityBasedNode(id=generateId(), name="", nominalCapacity=25, reliability=0.95),
-    new CapacityBasedNode(id=generateId(), name="", nominalCapacity=15, reliability=0.95),
-    new CapacityBasedNode(id=generateId(), name="", nominalCapacity=10, reliability=0.95))
+  val res2: PhysicalResource = new PhysicalResource(id=generateId(), name="res2",
+    cores=16, ram=1024*16,
+    storage=new SimpleStorage(id=generateId(), name="storage2", volume=1024),
+    reliability=0.95
+  )
+  res2.runVM(8, 1024*8, 512)
+  res2.runVM(4, 1024*4, 256)
+  res2.runVM(4, 1024*4, 256)
+
+  val nodes = List(res1, res2)
 
   val Mb_sec_100 = 1024*1024*100/8
 
   val networks = List(new Network(id=generateId(), name="", bandwidth=Mb_sec_100, nodes))
 
-  val environment = new BasicEnvironment(nodes, networks)
-  val estimator = new BasicEstimator(idealCapacity = 20.0, environment)
+  val environment = new PhysResourceEnvironment(nodes, networks)
+  val estimator = new PhysEnvEstimator(environment)
 
   @Test
   def testDynamic() = {
@@ -46,15 +60,12 @@ class DynamicSchedulingTest {
       popSize = 50,
       iterationCount = 10)
 
-    var ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule(),
+    val ctx = new BasicContext[DaxTask, CoreRamHddBasedNode](environment, Schedule.emptySchedule(),
       estimator, 0.0, new SingleAppWorkload(wf))
 
-    val simulator = new SimpleSimulator(scheduler, ctx)
+    val simulator = new VmBasedSimulator(scheduler, ctx)
     simulator.init()
     simulator.runSimulation()
-
-//    val schedule = scheduler.schedule(ctx)
-//    ctx.schedule = schedule
 
     ScheduleHelper.checkStaticSchedule(ctx)
     print("Finished")

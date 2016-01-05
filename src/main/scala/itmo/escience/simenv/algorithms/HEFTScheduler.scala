@@ -9,8 +9,8 @@ import scala.collection.JavaConversions._
 /**
  * Created by Nikolay on 12/1/2015.
  */
-object HEFTScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
-  override def schedule(context: Context[DaxTask, CapacityBasedNode]): Schedule = {
+object HEFTScheduler extends Scheduler[DaxTask, CoreRamHddBasedNode]{
+  override def schedule(context: Context[DaxTask, CoreRamHddBasedNode]): Schedule = {
 
     if (!context.workload.isInstanceOf[SingleAppWorkload]) {
       throw new UnsupportedOperationException(s"Invalid workload type ${context.workload.getClass}. " +
@@ -38,14 +38,14 @@ object HEFTScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
    * @param context
    * @return
    */
-  private def prioritize(wf:Workflow, nodes:Seq[CapacityBasedNode], context:Context[DaxTask, CapacityBasedNode]):Seq[DaxTask] = {
+  private def prioritize(wf:Workflow, nodes:Seq[CoreRamHddBasedNode], context:Context[DaxTask, CoreRamHddBasedNode]):Seq[DaxTask] = {
 
     // prioritization
     // start with the end tasks
     val endTasks = wf.tasks.filter(task => task.children.isEmpty).map(x => x.asInstanceOf[DaxTask])
     // construct all nodes couples
-    val nodeCouples: List[(CapacityBasedNode, CapacityBasedNode)] =
-      nodes.foldLeft(List[(CapacityBasedNode, CapacityBasedNode)]()) ((acc, node) =>
+    val nodeCouples: List[(CoreRamHddBasedNode, CoreRamHddBasedNode)] =
+      nodes.foldLeft(List[(CoreRamHddBasedNode, CoreRamHddBasedNode)]()) ((acc, node) =>
         acc ++ nodes.dropWhile(x => x != node).drop(1).map(x => (node,x)))
 
     val rankMap = new util.HashMap[TaskId, Double]()

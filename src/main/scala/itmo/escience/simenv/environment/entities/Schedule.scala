@@ -15,7 +15,7 @@ class InvalidScheduleException(msg:String) extends RuntimeException(msg)
  */
 class Schedule {
 
-  def findTimeSlot(task: DaxTask, node: CapacityBasedNode, context: Context[DaxTask, CapacityBasedNode]): TaskScheduleItem = {
+  def findTimeSlot(task: DaxTask, node: CoreRamHddBasedNode, context: Context[DaxTask, CoreRamHddBasedNode]): TaskScheduleItem = {
     // calculate time when all transfer from each node will be ended
     val stageInEndTime = task.parents.map({
       case _:HeadDaxTask => 0.0
@@ -32,7 +32,7 @@ class Schedule {
 
     // searching for a slot
     if (map.containsKey(node.id)) {
-      val endOfLastTask =  if (map.get(node.id).size == 0) 0.0 else map.get(node.id).last.endTime
+      val endOfLastTask =  if (map.get(node.id).isEmpty) 0.0 else map.get(node.id).last.endTime
       if (map.get(node.id).nonEmpty && endOfLastTask > earliestStartTime ) {
 
         foundStartTime = endOfLastTask
@@ -71,7 +71,7 @@ class Schedule {
 
   // TODO: should be moved out of here or remade it universally
 
-  def placeTask(task: DaxTask, node: CapacityBasedNode, context: Context[DaxTask, CapacityBasedNode]): TaskScheduleItem= {
+  def placeTask(task: DaxTask, node: CoreRamHddBasedNode, context: Context[DaxTask, CoreRamHddBasedNode]): TaskScheduleItem= {
 
     if (!map.containsKey(node.id)) {
       addNode(node.id)
@@ -144,8 +144,6 @@ class Schedule {
 
   /**
    * This method have to return list of tasks that need to be scheduled
-   * @param wf
-   * @return
    */
 //  def restTasks(wf: Workflow): List[Task] = {
   def restTasks(): List[Task] = {

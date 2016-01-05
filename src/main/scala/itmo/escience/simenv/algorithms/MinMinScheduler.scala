@@ -6,9 +6,9 @@ import itmo.escience.simenv.environment.entitiesimpl.SingleAppWorkload
 /**
  * Created by user on 27.11.2015.
  */
-object MinMinScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
+object MinMinScheduler extends Scheduler[DaxTask, CoreRamHddBasedNode]{
 
-  override def schedule(context: Context[DaxTask, CapacityBasedNode]): Schedule = {
+  override def schedule(context: Context[DaxTask, CoreRamHddBasedNode]): Schedule = {
     val currentSchedule = context.schedule
 
     // get unscheduled tasks.

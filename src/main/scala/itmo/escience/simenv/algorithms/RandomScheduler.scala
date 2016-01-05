@@ -1,15 +1,15 @@
 package itmo.escience.simenv.algorithms
 
 import itmo.escience.simenv.environment.entities._
-import itmo.escience.simenv.environment.entitiesimpl.SingleAppWorkload
+import itmo.escience.simenv.environment.entitiesimpl.{PhysResourceEnvironment, SingleAppWorkload}
 
 import scala.util.Random
 
 /**
  * Created by user on 02.12.2015.
  */
-object RandomScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
-  override def schedule(context: Context[DaxTask, CapacityBasedNode]): Schedule = {
+object RandomScheduler extends Scheduler[DaxTask, CoreRamHddBasedNode]{
+  override def schedule(context: Context[DaxTask, CoreRamHddBasedNode]): Schedule = {
 
     if (!context.workload.isInstanceOf[SingleAppWorkload]) {
       throw new UnsupportedOperationException(s"Invalid workload type ${context.workload.getClass}. " +
@@ -19,7 +19,8 @@ object RandomScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
     val wf = context.workload.asInstanceOf[SingleAppWorkload].app
     val newSchedule = Schedule.emptySchedule()
     var tasksToSchedule = wf.headTask.asInstanceOf[DaxTask].children
-    val nodes = context.environment.nodes.filter(x => x.status == Node.UP)
+//    val nodes = context.environment.nodes.filter(x => x.status == Node.UP)
+    val nodes = context.environment.asInstanceOf[PhysResourceEnvironment].vms.filter(x => x.status == Node.UP)
 
     var scheduledTasks = tasksToSchedule.map(task => task.id).toSet
     val isReadyToRun = (x:Task) => x.parents.forall(p => scheduledTasks.contains(p.id))

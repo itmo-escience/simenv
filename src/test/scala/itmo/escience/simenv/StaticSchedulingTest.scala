@@ -37,28 +37,28 @@ class StaticSchedulingTest {
   val estimator = new BasicEstimator(idealCapacity = 20.0, environment)
 
  //@Test
-  def testMinMinScheduler() = {
-    runOnWfs(MinMinScheduler, "MinMin")
-  }
-
-  //@Test
-  def testHEFTScheduler() = {
-    runOnWfs(HEFTScheduler, "HEFT")
-  }
-
-  //@Test
-  def testRandomScheduler() = {
-    runOnWfs(RandomScheduler, "Random")
-  }
-
-  @Test
-  def testGAScheduler() = {
-    runOnWfs(new GAScheduler(crossoverProb = 0.4,
-      mutationProb = 0.2,
-      swapMutationProb = 0.3,
-      popSize = 50,
-      iterationCount = 100), "GA")
-  }
+//  def testMinMinScheduler() = {
+//    runOnWfs(MinMinScheduler, "MinMin")
+//  }
+//
+//  //@Test
+//  def testHEFTScheduler() = {
+//    runOnWfs(HEFTScheduler, "HEFT")
+//  }
+//
+//  //@Test
+//  def testRandomScheduler() = {
+//    runOnWfs(RandomScheduler, "Random")
+//  }
+//
+//  @Test
+//  def testGAScheduler() = {
+//    runOnWfs(new GAScheduler(crossoverProb = 0.4,
+//      mutationProb = 0.2,
+//      swapMutationProb = 0.3,
+//      popSize = 50,
+//      iterationCount = 100), "GA")
+//  }
 
   private def runOnWfs(scheduler:Scheduler[DaxTask, CapacityBasedNode], schedulerName: String) = {
     for (wf <- wfs){

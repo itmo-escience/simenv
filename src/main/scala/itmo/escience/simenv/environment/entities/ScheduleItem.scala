@@ -22,7 +22,7 @@ case class TaskScheduleItem(id: ScheduleItemId,
                             startTime: ModellingTimestamp,
                             endTime: ModellingTimestamp,
                             status: ScheduleItemStatus,
-                            node: CapacityBasedNode,
+                            node: CoreRamHddBasedNode,
                             task: DaxTask) extends ScheduleItem {
   override def entity: NameAndId[String] = task
 

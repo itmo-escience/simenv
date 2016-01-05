@@ -5,7 +5,7 @@ import java.util.Map.Entry
 
 import itmo.escience.simenv.algorithms.RandomScheduler
 import itmo.escience.simenv.environment.entities._
-import itmo.escience.simenv.environment.entitiesimpl.SingleAppWorkload
+import itmo.escience.simenv.environment.entitiesimpl.{PhysResourceEnvironment, SingleAppWorkload}
 import org.uma.jmetal.problem.Problem
 import scala.collection.JavaConversions._
 
@@ -19,7 +19,7 @@ import scala.collection.JavaConversions._
 object WorkflowSchedulingProblem {
 
   // TODO: ATTENTION! Now it does NOT work for dynamic case. It needs to be implemented. Context will be needed for it
-  def scheduleToSolution(schedule:Schedule, context: Context[DaxTask, CapacityBasedNode]):WorkflowSchedulingSolution = {
+  def scheduleToSolution(schedule:Schedule, context: Context[DaxTask, CoreRamHddBasedNode]):WorkflowSchedulingSolution = {
     //TODO: implement dealing with dynamics (implemented with fails of tasks)
     val taskItems = schedule.scheduleItemsSeq().filter({
       case x: TaskScheduleItem => true
@@ -37,7 +37,7 @@ object WorkflowSchedulingProblem {
     new WorkflowSchedulingSolution(genes)
   }
 
-  def solutionToSchedule(solution: WorkflowSchedulingSolution, context: Context[DaxTask, CapacityBasedNode]): Schedule = {
+  def solutionToSchedule(solution: WorkflowSchedulingSolution, context: Context[DaxTask, CoreRamHddBasedNode]): Schedule = {
     //TODO: implement dealing with dynamics (implemented with fails of tasks)
     val newSchedule = context.schedule.fixedSchedule()
 
@@ -48,13 +48,13 @@ object WorkflowSchedulingProblem {
     for (x <- repairedOrdering) {
       val (task, nodeId) = x
       newSchedule.placeTask(task,
-        context.environment.nodeOrContainerById(nodeId).asInstanceOf[CapacityBasedNode],
+        context.environment.asInstanceOf[PhysResourceEnvironment].vmById(nodeId).asInstanceOf[CoreRamHddBasedNode],
         context)
     }
     newSchedule
   }
 
-  private def repairOrdering(solution: WorkflowSchedulingSolution, context: Context[DaxTask, CapacityBasedNode]):List[(DaxTask, NodeId)] = {
+  private def repairOrdering(solution: WorkflowSchedulingSolution, context: Context[DaxTask, CoreRamHddBasedNode]):List[(DaxTask, NodeId)] = {
     val wf = context.workload.asInstanceOf[SingleAppWorkload].app
     val tasksSeq = new util.TreeSet[Pair[(DaxTask, NodeId)]](solution.tasksSeq().zipWithIndex
       .map( { case (x, i) =>
@@ -99,7 +99,7 @@ object WorkflowSchedulingProblem {
   }
 }
 
-class WorkflowSchedulingProblem(wf:Workflow, newSchedule:Schedule, nodes:Seq[CapacityBasedNode], context:Context[DaxTask, CapacityBasedNode]) extends Problem[WorkflowSchedulingSolution]{
+class WorkflowSchedulingProblem(wf:Workflow, newSchedule:Schedule, nodes:Seq[CoreRamHddBasedNode], context:Context[DaxTask, CoreRamHddBasedNode]) extends Problem[WorkflowSchedulingSolution]{
 
   override def getNumberOfObjectives: Int = 1
 
