@@ -35,10 +35,10 @@ class PhysicalResource(id: NodeId,
                                                                   status) {
 
 
-  def runVM(vmCores: Int, vmRam: Int, vmStorage: Int): Unit = {
+  def runVM(vmCores: Int, vmRam: Int, vmStorage: Int, vmId: NodeId=generateId()): Unit = {
     //TODO check available space for this vm
-    val newStorage = new SimpleStorage(id=generateId(), name="vm", volume=vmStorage, parent=storage)
-    val newVm: VirtualMachine = new VirtualMachine(id=generateId(), name="vm", cores=vmCores,
+    val newStorage = new SimpleStorage(id=generateId(), name="storage", volume=vmStorage, parent=storage)
+    val newVm: VirtualMachine = new VirtualMachine(id=vmId, name="vm", cores=vmCores,
       ram=vmRam, storage=newStorage, parent=id, reliability=reliability)
     children :+= newVm
   }

@@ -64,7 +64,7 @@ class StaticSchedulingTest {
     for (wf <- wfs){
       val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule(),
         estimator, 0.0, new SingleAppWorkload(wf))
-      val schedule = scheduler.schedule(ctx)
+      val schedule = scheduler.schedule(ctx, ctx.environment)
       ctx.schedule = schedule
 
       ScheduleHelper.checkStaticSchedule(ctx)

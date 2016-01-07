@@ -2,6 +2,7 @@ package itmo.escience.simenv.algorithms
 
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl.{PhysResourceEnvironment, SingleAppWorkload}
+import itmo.escience.simenv.environment.modelling.Environment
 
 import scala.util.Random
 
@@ -9,7 +10,7 @@ import scala.util.Random
  * Created by user on 02.12.2015.
  */
 object RandomScheduler extends Scheduler[DaxTask, CoreRamHddBasedNode]{
-  override def schedule(context: Context[DaxTask, CoreRamHddBasedNode]): Schedule = {
+  override def schedule(context: Context[DaxTask, CoreRamHddBasedNode], environment: Environment[CoreRamHddBasedNode]): Schedule = {
 
     if (!context.workload.isInstanceOf[SingleAppWorkload]) {
       throw new UnsupportedOperationException(s"Invalid workload type ${context.workload.getClass}. " +

@@ -2,7 +2,8 @@ package itmo.escience.simenv.algorithms.ga
 
 import itmo.escience.simenv.algorithms.Scheduler
 import itmo.escience.simenv.environment.entities._
-import itmo.escience.simenv.environment.entitiesimpl.SingleAppWorkload
+import itmo.escience.simenv.environment.entitiesimpl.{PhysResourceEnvironment, SingleAppWorkload}
+import itmo.escience.simenv.environment.modelling.Environment
 import org.uma.jmetal.algorithm.Algorithm
 import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.GeneticAlgorithmBuilder
 import org.uma.jmetal.operator.impl.selection.BinaryTournamentSelection
@@ -14,7 +15,7 @@ import org.uma.jmetal.util.{AlgorithmRunner, JMetalLogger}
 class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: Double,
                    popSize:Int, iterationCount: Int) extends Scheduler[DaxTask, CoreRamHddBasedNode]{
 
-  override def schedule(context: Context[DaxTask, CoreRamHddBasedNode]): Schedule = {
+  override def schedule(context: Context[DaxTask, CoreRamHddBasedNode], environment: Environment[CoreRamHddBasedNode]): Schedule = {
 
     if (!context.workload.isInstanceOf[SingleAppWorkload]) {
       throw new UnsupportedOperationException(s"Invalid workload type ${context.workload.getClass}. " +
@@ -27,7 +28,7 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
 
 
     val problemName = "WorkflowScheduling"
-    val problem = new WorkflowSchedulingProblem(wf, newSchedule, nodes, context)
+    val problem = new WorkflowSchedulingProblem(wf, newSchedule, nodes, context, environment.asInstanceOf[PhysResourceEnvironment])
 
     val crossover = new WorkflowSchedulingCrossover(crossoverProb)
     val mutation = new WorkflowSchedulingMutation(mutationProb, swapMutationProb, context)
@@ -48,7 +49,7 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
 
 
     //throw new NotImplementedError()
-    WorkflowSchedulingProblem.solutionToSchedule(best, context)
+    WorkflowSchedulingProblem.solutionToSchedule(best, context, environment.asInstanceOf[PhysResourceEnvironment])
   }
 
 }

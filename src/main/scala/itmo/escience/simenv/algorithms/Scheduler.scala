@@ -1,6 +1,8 @@
 package itmo.escience.simenv.algorithms
 
 import itmo.escience.simenv.environment.entities.{Task, Node, Context, Schedule}
+import itmo.escience.simenv.environment.entitiesimpl.PhysResourceEnvironment
+import itmo.escience.simenv.environment.modelling.Environment
 
 
 /**
@@ -8,6 +10,6 @@ import itmo.escience.simenv.environment.entities.{Task, Node, Context, Schedule}
  */
 trait Scheduler[T, N] {
 
-  def schedule(context: Context[T,N]):Schedule
+  def schedule(context: Context[T,N], environment: Environment[N]):Schedule
 
 }

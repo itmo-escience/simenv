@@ -19,6 +19,8 @@ trait Context[T, N] {
   def applySchedule(newSched: Schedule, queue: EventQueue)
 
   def setTime(newTime: ModellingTimestamp)
+
+  def setEnvironment(newEnv: Environment[N])
 }
 
 

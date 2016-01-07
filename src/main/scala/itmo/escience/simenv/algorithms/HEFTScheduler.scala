@@ -4,13 +4,14 @@ import java.util
 
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl.SingleAppWorkload
+import itmo.escience.simenv.environment.modelling.Environment
 import scala.collection.JavaConversions._
 
 /**
  * Created by Nikolay on 12/1/2015.
  */
 object HEFTScheduler extends Scheduler[DaxTask, CoreRamHddBasedNode]{
-  override def schedule(context: Context[DaxTask, CoreRamHddBasedNode]): Schedule = {
+  override def schedule(context: Context[DaxTask, CoreRamHddBasedNode], environment: Environment[CoreRamHddBasedNode]): Schedule = {
 
     if (!context.workload.isInstanceOf[SingleAppWorkload]) {
       throw new UnsupportedOperationException(s"Invalid workload type ${context.workload.getClass}. " +

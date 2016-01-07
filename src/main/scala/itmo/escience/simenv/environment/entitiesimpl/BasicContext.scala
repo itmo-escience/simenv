@@ -21,4 +21,8 @@ class BasicContext[T, N](var environment:Environment[N], var schedule: Schedule,
     }
     currentTime = newTime
   }
+
+  def setEnvironment(env: Environment[N]) = {
+    environment = env
+  }
 }

@@ -70,7 +70,7 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
     //val schedule = scheduler.schedule(ctx)
     //TODO: add logging here
     logger.trace("Init event")
-    val schedule = scheduler.schedule(ctx)
+    val schedule = scheduler.schedule(ctx, ctx.environment)
     logger.trace("Init schedule is generated")
     // This function applies new schedule and generates events
     ctx.applySchedule(schedule, queue)
@@ -147,7 +147,7 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
     }
 
     // Reschedule
-    val sc = scheduler.schedule(ctx)
+    val sc = scheduler.schedule(ctx, ctx.environment)
 
     println(s"Rescheduled schedule:\n ${sc.prettyPrint()}")
     queue.eq = queue.eq.filter(x => !x.isInstanceOf[TaskStarted])
