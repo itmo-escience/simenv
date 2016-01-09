@@ -1,10 +1,10 @@
 package itmo.escience.simenv
 
-import itmo.escience.simenv.algorithms.ga.GAScheduler
+import itmo.escience.simenv.algorithms.HEFTScheduler
 import itmo.escience.simenv.algorithms.ga.cga.CoevGAScheduler
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl._
-import itmo.escience.simenv.simulator.VmBasedSimulator
+import itmo.escience.simenv.simulator.{HEFTSimulator, VmBasedSimulator}
 import itmo.escience.simenv.utilities.ScheduleHelper
 import itmo.escience.simenv.utilities.Utilities._
 import org.junit.Test
@@ -13,7 +13,7 @@ import org.junit.Test
   * Created by Mishanya on 14.12.2015.
   */
 @Test
-class DynamicSchedulingConfigurationTest {
+class DynamicHEFTTest {
   val basepath = ".\\resources\\wf-examples\\"
   //  val wfs = List("Montage_25", "Montage_30", "Montage_75", "Montage_100",
   //      "CyberShake_30", "CyberShake_50", "CyberShake_75", "CyberShake_100",
@@ -53,21 +53,12 @@ class DynamicSchedulingConfigurationTest {
 
   @Test
   def testDynamic() = {
-    val scheduler = new CoevGAScheduler(crossoverProb = 0.4,
-      mutationProb = 0.2,
-      swapMutationProb = 0.3,
-      popSize = 50,
-      iterationCount = 50,
-      vmMutationProb = 0.2,
-      vmCrossoverProb = 0.4,
-      vmPopSize = 50,
-      vmIterationCount = 50,
-      coevCycles = 1)
+    val scheduler = HEFTScheduler
 
     val ctx = new BasicContext[DaxTask, CoreRamHddBasedNode](environment, Schedule.emptySchedule(),
       estimator, 0.0, new SingleAppWorkload(wf))
 
-    val simulator = new VmBasedSimulator(scheduler, ctx)
+    val simulator = new HEFTSimulator(scheduler, ctx)
     simulator.init()
     simulator.runSimulation()
 

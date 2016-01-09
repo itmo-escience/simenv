@@ -19,12 +19,20 @@ object HEFTScheduler extends Scheduler[DaxTask, CoreRamHddBasedNode]{
     }
 
     val wf = context.workload.asInstanceOf[SingleAppWorkload].app
-    val newSchedule = Schedule.emptySchedule()
+    val newSchedule = context.schedule.fixedSchedule()
+//    val nodes = context.environment.nodes.filter(x => x.status == Node.UP)
     val nodes = context.environment.nodes.filter(x => x.status == Node.UP)
+      .foldLeft(List[VirtualMachine]())((s, x) => s ++: x.asInstanceOf[PhysicalResource].children)
 
     val tasks = prioritize(wf, nodes, context)
 
-    for (task <- tasks) {
+    var fixed_tasks = List[String]()
+    for (n <- newSchedule.nodeIds()) {
+      fixed_tasks = fixed_tasks ++ newSchedule.getMap().get(n).toList.filter(x => x.status != TaskScheduleItemStatus.FAILED
+      ).map(x => x.asInstanceOf[TaskScheduleItem].task.id)
+    }
+
+    for (task <- tasks.filter(x => !fixed_tasks.contains(x.id))) {
       val item = nodes.map((node) => newSchedule.findTimeSlot(task, node, context)).minBy(x => x.endTime)
       newSchedule.placeTask(item)
     }

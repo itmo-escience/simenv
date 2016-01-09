@@ -4,7 +4,6 @@ import itmo.escience.simenv.algorithms.Scheduler
 import itmo.escience.simenv.algorithms.ga.cga.CoevGAScheduler
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl.{BasicContext, PhysResourceEnvironment}
-import itmo.escience.simenv.environment.modelling.Environment
 import itmo.escience.simenv.simulator.events.{InitEvent, TaskStarted, _}
 import org.apache.logging.log4j.{LogManager, Logger}
 
@@ -16,7 +15,7 @@ import scala.util.Random
  * @param scheduler algorithm for scheduling, must implement Scheduler interface
  * @param ctx contains description of computational environments and may perform actions on it
  */
-class VmBasedSimulator(val scheduler: Scheduler[DaxTask, CoreRamHddBasedNode], var ctx:Context[DaxTask, CoreRamHddBasedNode]) extends Simulator {
+class HEFTSimulator(val scheduler: Scheduler[DaxTask, CoreRamHddBasedNode], var ctx:Context[DaxTask, CoreRamHddBasedNode]) extends Simulator {
 
   val logger: Logger = LogManager.getLogger("logger")
   val queue = new EventQueue()
@@ -78,8 +77,8 @@ class VmBasedSimulator(val scheduler: Scheduler[DaxTask, CoreRamHddBasedNode], v
     //val schedule = scheduler.schedule(ctx)
     //TODO: add logging here
     logger.trace("Init event")
-    val (schedule, env) = scheduler.asInstanceOf[CoevGAScheduler].scheduleAndConfiguration(ctx, ctx.environment)
-    ctx.asInstanceOf[BasicContext[DaxTask, CoreRamHddBasedNode]].setEnvironment(env)
+    val schedule = scheduler.schedule(ctx, ctx.environment)
+//    ctx.asInstanceOf[BasicContext[DaxTask, CoreRamHddBasedNode]].setEnvironment(env)
     logger.trace("Init schedule is generated")
     // This function applies new schedule and generates events
     ctx.applySchedule(schedule, queue)
@@ -161,8 +160,7 @@ class VmBasedSimulator(val scheduler: Scheduler[DaxTask, CoreRamHddBasedNode], v
     }
 
     // Reschedule
-    val (sc, env) = scheduler.asInstanceOf[CoevGAScheduler].scheduleAndConfiguration(ctx, ctx.environment)
-    ctx.asInstanceOf[BasicContext[DaxTask, CoreRamHddBasedNode]].setEnvironment(env)
+    val sc = scheduler.schedule(ctx, ctx.environment)
 
 //    println(s"Rescheduled schedule:\n ${sc.prettyPrint()}")
     queue.eq = queue.eq.filter(x => !x.isInstanceOf[TaskStarted])
