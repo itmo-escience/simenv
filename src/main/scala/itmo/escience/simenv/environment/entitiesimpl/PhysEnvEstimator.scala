@@ -10,7 +10,7 @@ import itmo.escience.simenv.environment.modelling.{Environment, Estimator}
 class PhysEnvEstimator(env: Environment[CoreRamHddBasedNode]) extends Estimator[DaxTask, CoreRamHddBasedNode]{
 
   override def calcTime(task: DaxTask, node: CoreRamHddBasedNode): Double = {
-    task.execTime / node.cores
+    task.execTime / node.cores + task.execTime / node.ram
   }
 
   override def calcTransferTime(from: (DaxTask, CoreRamHddBasedNode), to: (DaxTask, CoreRamHddBasedNode)): Double = {

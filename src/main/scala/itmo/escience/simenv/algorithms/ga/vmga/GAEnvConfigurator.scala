@@ -36,7 +36,7 @@ class GAEnvConfigurator(crossoverProb:Double, mutationProb: Double,
       new ExtGeneticAlgorithmBuilder[EnvConfigurationSolution](problem, crossover, mutation)
       .setSelectionOperator(selection)
       .setMaxEvaluations(iterationCount * popSize)
-      .setPopulationSize(50)
+      .setPopulationSize(popSize)
       .build()
 
     val algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute()

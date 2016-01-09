@@ -16,15 +16,15 @@ class CoevGAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationPr
                               vmPopSize:Int, vmIterationCount: Int, coevCycles: Int) extends Scheduler[DaxTask, CoreRamHddBasedNode]{
 
   def scheduleAndConfiguration(context: Context[DaxTask, CoreRamHddBasedNode], environment: Environment[CoreRamHddBasedNode]): (Schedule, PhysResourceEnvironment) = {
-    val scheduler = new GAScheduler(crossoverProb = 0.4,
-      mutationProb = 0.2,
-      swapMutationProb = 0.3,
-      popSize = 50,
-      iterationCount = 10)
-    val configurator = new GAEnvConfigurator(crossoverProb = 0.4,
-      mutationProb = 0.2,
-      popSize = 50,
-      iterationCount = 10)
+    val scheduler = new GAScheduler(crossoverProb = crossoverProb,
+      mutationProb = mutationProb,
+      swapMutationProb = swapMutationProb,
+      popSize = popSize,
+      iterationCount = iterationCount)
+    val configurator = new GAEnvConfigurator(crossoverProb = vmCrossoverProb,
+      mutationProb = vmMutationProb,
+      popSize = vmPopSize,
+      iterationCount = vmIterationCount)
 
     var curSched: Schedule = scheduler.schedule(context, environment)
     var curEnvironment: PhysResourceEnvironment = configurator.environmentConfig(context, curSched)

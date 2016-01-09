@@ -1,10 +1,13 @@
 package itmo.escience.simenv
 
+import itmo.escience.simenv.algorithms.RandomScheduler
 import itmo.escience.simenv.algorithms.ga.GAScheduler
 import itmo.escience.simenv.algorithms.ga.cga.CoevGAScheduler
+import itmo.escience.simenv.algorithms.ga.vmga.GAEnvConfigurator
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl._
 import itmo.escience.simenv.simulator.VmBasedSimulator
+import itmo.escience.simenv.simulator.events.EventQueue
 import itmo.escience.simenv.utilities.ScheduleHelper
 import itmo.escience.simenv.utilities.Utilities._
 import org.junit.Test
@@ -13,7 +16,7 @@ import org.junit.Test
   * Created by Mishanya on 14.12.2015.
   */
 @Test
-class DynamicSchedulingConfigurationTest {
+class StaticConfigurationTest {
   val basepath = ".\\resources\\wf-examples\\"
   //  val wfs = List("Montage_25", "Montage_30", "Montage_75", "Montage_100",
   //      "CyberShake_30", "CyberShake_50", "CyberShake_75", "CyberShake_100",
@@ -31,8 +34,8 @@ class DynamicSchedulingConfigurationTest {
     storage=new SimpleStorage(id=generateId(), name="storage1", volume=1024),
     reliability=0.95
     )
-  res1.runVM(14, 14, 512)
-  res1.runVM(2, 2, 256)
+  res1.runVM(12, 12, 512)
+  res1.runVM(4, 4, 256)
 
   val res2: PhysicalResource = new PhysicalResource(id=generateId(), name="res2",
     cores=16, ram=16,
@@ -53,25 +56,29 @@ class DynamicSchedulingConfigurationTest {
 
   @Test
   def testDynamic() = {
-    val scheduler = new CoevGAScheduler(crossoverProb = 0.4,
+//    val scheduler = RandomScheduler
+    val scheduler = new GAScheduler(crossoverProb = 0.4,
       mutationProb = 0.2,
       swapMutationProb = 0.3,
       popSize = 50,
-      iterationCount = 50,
-      vmMutationProb = 0.2,
-      vmCrossoverProb = 0.4,
-      vmPopSize = 50,
-      vmIterationCount = 50,
-      coevCycles = 1)
+      iterationCount = 50)
+    val configurator = new GAEnvConfigurator(crossoverProb = 0.4,
+      mutationProb = 0.3,
+      popSize = 50,
+      iterationCount = 50)
 
     val ctx = new BasicContext[DaxTask, CoreRamHddBasedNode](environment, Schedule.emptySchedule(),
       estimator, 0.0, new SingleAppWorkload(wf))
 
-    val simulator = new VmBasedSimulator(scheduler, ctx)
-    simulator.init()
-    simulator.runSimulation()
+    val sched = scheduler.schedule(ctx, ctx.environment)
+    println("Schedule makespan = " + sched.makespan())
+
+    ctx.applySchedule(sched, new EventQueue())
+    val env = configurator.environmentConfig(ctx, sched)
 
     ScheduleHelper.checkStaticSchedule(ctx)
+    println(ctx.schedule.prettyPrint())
+    println(env.asInstanceOf[PhysResourceEnvironment].vms.map(x => s"${x.cores}; ${x.ram}"))
     print("Finished")
   }
 }

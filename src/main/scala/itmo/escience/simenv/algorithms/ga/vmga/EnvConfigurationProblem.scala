@@ -35,7 +35,8 @@ object EnvConfigurationProblem {
         reliability=n.reliability
       )
       for (vm <- vms.filter(x => x.parent == res.id)) {
-        res.runVM(vmCores=vm.cores, vmRam=vm.ram, vmStorage=vm.storage.asInstanceOf[SimpleStorage].volume, vmId=vm.id)
+        val vmItem = solution.getVmElement(vm.id)
+        res.runVM(vmCores=vmItem.config._1, vmRam=vmItem.config._2, vmStorage=vm.storage.asInstanceOf[SimpleStorage].volume, vmId=vm.id)
       }
       newNodes :+= res
     }

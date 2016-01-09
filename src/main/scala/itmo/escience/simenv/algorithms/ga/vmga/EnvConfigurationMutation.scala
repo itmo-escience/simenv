@@ -38,19 +38,20 @@ class EnvConfigurationMutation(probability:Double, context:Context[DaxTask, Core
     if (nodes.nonEmpty) {
       val node = nodes(random.nextInt(nodes.length)).asInstanceOf[PhysicalResource]
       val vmNumber = node.children.size
-      val vmFrom = node.children(random.nextInt(vmNumber))
-      val vmTo = node.children(random.nextInt(vmNumber))
-      if (random.nextBoolean() && vmFrom.cores > 1) {
+      val nodeChildren = source.vmsSeq().filter(x => node.children.map(y => y.id).contains(x.vmId))
+      val vmFrom = nodeChildren(random.nextInt(vmNumber))
+      val vmTo = nodeChildren(random.nextInt(vmNumber))
+      if (random.nextBoolean() && vmFrom.config._1 > 1) {
         // change cores
-        val coresTrans = random.nextInt(vmFrom.cores - 1) + 1
-        source.addCoresValue(vmFrom.id, coresTrans)
-        source.addCoresValue(vmTo.id, coresTrans)
+        val coresTrans = random.nextInt(vmFrom.config._1 - 1) + 1
+        source.addCoresValue(vmFrom.vmId, -coresTrans)
+        source.addCoresValue(vmTo.vmId, coresTrans)
       } else {
-        if (vmFrom.ram > 1) {
+        if (vmFrom.config._2 > 1) {
           // change ram
-          val ramTrans = random.nextInt(vmFrom.ram - 1) + 1
-          source.addRamValue(vmFrom.id, ramTrans)
-          source.addRamValue(vmTo.id, ramTrans)
+          val ramTrans = random.nextInt(vmFrom.config._2 - 1) + 1
+          source.addRamValue(vmFrom.vmId, -ramTrans)
+          source.addRamValue(vmTo.vmId, ramTrans)
         }
       }
 

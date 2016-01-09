@@ -36,15 +36,20 @@ class VmBasedSimulator(val scheduler: Scheduler[DaxTask, CoreRamHddBasedNode], v
    * The simulation will finish when there is not any event in the queue
    */
   override def runSimulation(): Unit = {
+
     while (!queue.isEmpty) {
-      println(queue.print())
+//      println(queue.print())
       val event = queue.next()
+
       dispatchEvent(event)
 //      println("---next event---")
 //      print(s"current time ${ctx.currentTime}")
 //      println(s"event time ${event.eventTime}")
-//      println(ctx.schedule.prettyPrint())
     }
+
+    println("finish schedule")
+    println(ctx.schedule.prettyPrint())
+    println(ctx.environment.asInstanceOf[PhysResourceEnvironment].vms.map(x => s"${x.cores}; ${x.ram}"))
   }
 
   /**
@@ -77,6 +82,11 @@ class VmBasedSimulator(val scheduler: Scheduler[DaxTask, CoreRamHddBasedNode], v
     logger.trace("Init schedule is generated")
     // This function applies new schedule and generates events
     ctx.applySchedule(schedule, queue)
+
+    println("Initial schedule:")
+    println(ctx.schedule.prettyPrint())
+    println(ctx.environment.asInstanceOf[PhysResourceEnvironment].vms.map(x => s"${x.cores}; ${x.ram}"))
+
     logger.trace("Init schedule has been applied")
     // Generate initial events
     val schedMap = ctx.schedule.getMap()
@@ -153,7 +163,7 @@ class VmBasedSimulator(val scheduler: Scheduler[DaxTask, CoreRamHddBasedNode], v
     val (sc, env) = scheduler.asInstanceOf[CoevGAScheduler].scheduleAndConfiguration(ctx, ctx.environment)
     ctx.asInstanceOf[BasicContext[DaxTask, CoreRamHddBasedNode]].setEnvironment(env)
 
-    println(s"Rescheduled schedule:\n ${sc.prettyPrint()}")
+//    println(s"Rescheduled schedule:\n ${sc.prettyPrint()}")
     queue.eq = queue.eq.filter(x => !x.isInstanceOf[TaskStarted])
     // Apply new schedule
     ctx.applySchedule(sc, queue)

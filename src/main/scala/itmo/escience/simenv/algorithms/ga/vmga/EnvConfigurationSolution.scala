@@ -43,6 +43,9 @@ class EnvConfigurationSolution(mappedVms: List[MappedVm]) extends Solution[Mappe
     _genes.set(i, t)
   }
 
+  def getVmElement(vmId: NodeId) = {
+    _genes.filter(x => x.vmId == vmId).head
+  }
 
   def addCoresValue(vmId: NodeId, v: Int): Unit = {
     // TODO optimize this and next function
