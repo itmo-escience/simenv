@@ -9,10 +9,10 @@ trait ScheduleItem extends NameAndId[ScheduleItemId] {
   def entity: NameAndId[String]
 }
 
-object TaskScheduleItemStatus {
+object ScheduleItemStatus {
   val RUNNING: ScheduleItemStatus = "running"
   val FINISHED: ScheduleItemStatus = "finished"
-  val NOTSTARTED: ScheduleItemStatus = "notstarted"
+  val UNSTARTED: ScheduleItemStatus = "unstarted"
   val FAILED: ScheduleItemStatus = "failed"
 }
 
@@ -22,13 +22,13 @@ case class TaskScheduleItem(id: ScheduleItemId,
                             startTime: ModellingTimestamp,
                             endTime: ModellingTimestamp,
                             status: ScheduleItemStatus,
-                            node: CoreRamHddBasedNode,
+                            node: Node,
                             task: DaxTask) extends ScheduleItem {
   override def entity: NameAndId[String] = task
 
   def changeStatus(newStatus: String) : TaskScheduleItem = {
-    if (newStatus != TaskScheduleItemStatus.RUNNING && newStatus != TaskScheduleItemStatus.FINISHED &&
-      newStatus != TaskScheduleItemStatus.NOTSTARTED && newStatus != TaskScheduleItemStatus.FAILED) {
+    if (newStatus != ScheduleItemStatus.RUNNING && newStatus != ScheduleItemStatus.FINISHED &&
+      newStatus != ScheduleItemStatus.UNSTARTED && newStatus != ScheduleItemStatus.FAILED) {
       throw new IllegalArgumentException("Status is not correct")
     }
     return new TaskScheduleItem(id=id, name=name, startTime=startTime, endTime=endTime, status=newStatus,
@@ -40,7 +40,7 @@ case class TaskScheduleItem(id: ScheduleItemId,
       throw new IllegalArgumentException("Fail time is not correct")
     }
     return new TaskScheduleItem(id=id, name=name, startTime=startTime, endTime=failTime,
-      status=TaskScheduleItemStatus.FAILED, node=node, task=task)
+      status=ScheduleItemStatus.FAILED, node=node, task=task)
   }
 }
 

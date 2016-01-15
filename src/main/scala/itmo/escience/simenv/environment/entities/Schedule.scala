@@ -15,7 +15,7 @@ class InvalidScheduleException(msg:String) extends RuntimeException(msg)
  */
 class Schedule {
 
-  def findTimeSlot(task: DaxTask, node: CoreRamHddBasedNode, context: Context[DaxTask, CoreRamHddBasedNode]): TaskScheduleItem = {
+  def findTimeSlot(task: DaxTask, node: Node, context: Context[DaxTask, Node]): TaskScheduleItem = {
     // calculate time when all transfer from each node will be ended
     val stageInEndTime = task.parents.map({
       case _:HeadDaxTask => 0.0
@@ -63,7 +63,7 @@ class Schedule {
       name = task.name,
       startTime=foundStartTime,
       endTime=foundStartTime + runningTime,
-      status = TaskScheduleItemStatus.NOTSTARTED,
+      status = ScheduleItemStatus.UNSTARTED,
       node,
       task)
     newItem
@@ -71,7 +71,7 @@ class Schedule {
 
   // TODO: should be moved out of here or remade it universally
 
-  def placeTask(task: DaxTask, node: CoreRamHddBasedNode, context: Context[DaxTask, CoreRamHddBasedNode]): TaskScheduleItem= {
+  def placeTask(task: DaxTask, node: Node, context: Context[DaxTask, Node]): TaskScheduleItem = {
 
     if (!map.containsKey(node.id)) {
       addNode(node.id)
@@ -119,7 +119,7 @@ class Schedule {
 
   }
 
-  def makespan():Double = {
+  def makespan():ModellingTimestamp = {
     val occupationTime = map.map({case (nodeId,items) => if (items.isEmpty) 0.0 else items.last.endTime})
     if(occupationTime.isEmpty) 0.0 else occupationTime.max
   }
@@ -134,7 +134,7 @@ class Schedule {
       fixed.addNode(nid)
       val items = map.get(nid)
       for (item <- items) {
-        if (item.status != TaskScheduleItemStatus.NOTSTARTED) {
+        if (item.status != ScheduleItemStatus.UNSTARTED) {
           fixed.map.get(nid).add(item)
         }
       }
@@ -152,7 +152,7 @@ class Schedule {
     for (nid <- nodeIds()) {
       val items = map.get(nid)
       for (item <- items) {
-        if (item.status == TaskScheduleItemStatus.NOTSTARTED) {
+        if (item.status == ScheduleItemStatus.UNSTARTED) {
           rest = rest
         }
       }
@@ -256,7 +256,7 @@ class Schedule {
 //  }
 }
 
-object Schedule {
+object Schedule{
   def emptySchedule():Schedule = {
     new Schedule()
   }

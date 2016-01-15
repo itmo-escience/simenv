@@ -1,8 +1,6 @@
 package itmo.escience.simenv.algorithms.ga
 
-import itmo.escience.simenv.environment.entities.{Node, CoreRamHddBasedNode, DaxTask, Context}
-import itmo.escience.simenv.environment.entitiesimpl.PhysResourceEnvironment
-import jdk.nashorn.internal.runtime.regexp.joni.constants.NodeStatus
+import itmo.escience.simenv.environment.entities._
 import org.uma.jmetal.operator.MutationOperator
 import org.uma.jmetal.util.JMetalException
 
@@ -11,7 +9,7 @@ import scala.util.Random
 /**
  * Created by user on 02.12.2015.
  */
-class WorkflowSchedulingMutation(probability:Double, swapProbability: Double, context:Context[DaxTask, CoreRamHddBasedNode]) extends MutationOperator[WorkflowSchedulingSolution]{
+class WorkflowSchedulingMutation(probability:Double, swapProbability: Double, context:Context[DaxTask, Node]) extends MutationOperator[WorkflowSchedulingSolution]{
 
   private val random = new Random(System.currentTimeMillis)
 
@@ -39,7 +37,7 @@ class WorkflowSchedulingMutation(probability:Double, swapProbability: Double, co
 
   private def doMutation(source:WorkflowSchedulingSolution) = {
 
-    val liveNodes = context.environment.asInstanceOf[PhysResourceEnvironment].vms.filter(x => x.status == Node.UP).toList
+    val liveNodes = context.environment.nodes.filter(x => x.status == NodeStatus.UP).toList
     val node = liveNodes(random.nextInt(liveNodes.length))
 
     val i = random.nextInt(source.getNumberOfVariables)

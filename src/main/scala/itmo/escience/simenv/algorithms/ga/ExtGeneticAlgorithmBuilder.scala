@@ -53,7 +53,7 @@ private class ExtGenerationalGeneticAlgorithm[T <: Solution[_]](problem:Problem[
     Collections.sort(pop, comparator)
     val makespan = pop.head.getObjective(0)
 
-//    println(s"Makespan - ${makespan}")
+    println(s"Makespan - ${makespan}")
   }
 }
 

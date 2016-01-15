@@ -1,13 +1,13 @@
 package itmo.escience.simenv.environment.entitiesimpl
 
-import itmo.escience.simenv.environment.entities.{Context, ModellingTimestamp, Schedule}
+import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.modelling.{Environment, Estimator, Workload}
 import itmo.escience.simenv.simulator.events.EventQueue
 
 /**
  * Created by Nikolay on 11/29/2015.
  */
-class BasicContext[T, N](var environment:Environment[N], var schedule: Schedule, var estimator: Estimator[T, N],
+class BasicContext[T <: Task, N <: Node](var environment:Environment[N], var schedule: Schedule, var estimator: Estimator[T, N],
                          var currentTime:ModellingTimestamp,
                          var workload: Workload) extends Context[T, N] {
 

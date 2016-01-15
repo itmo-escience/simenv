@@ -4,7 +4,6 @@
 //import itmo.escience.simenv.algorithms.ga.cga.CoevGAScheduler
 //import itmo.escience.simenv.environment.entities._
 //import itmo.escience.simenv.environment.entitiesimpl.{BasicContext, CoreRamEnvironment}
-//import itmo.escience.simenv.environment.modelling.Environment
 //import itmo.escience.simenv.simulator.events.{InitEvent, TaskStarted, _}
 //import org.apache.logging.log4j.{LogManager, Logger}
 //
@@ -16,7 +15,7 @@
 // * @param scheduler algorithm for scheduling, must implement Scheduler interface
 // * @param ctx contains description of computational environments and may perform actions on it
 // */
-//class VmBasedSimulator(val scheduler: Scheduler[DaxTask, CoreRamNode], var ctx:Context[DaxTask, CoreRamNode]) extends Simulator {
+//class CoevSimulator(val scheduler: Scheduler[DaxTask, Node], var ctx:Context[DaxTask, Node]) extends Simulator {
 //
 //  val logger: Logger = LogManager.getLogger("logger")
 //  val queue = new EventQueue()
@@ -79,7 +78,7 @@
 //    //TODO: add logging here
 //    logger.trace("Init event")
 //    val (schedule, env) = scheduler.asInstanceOf[CoevGAScheduler].scheduleAndConfiguration(ctx, ctx.environment)
-//    ctx.asInstanceOf[BasicContext[DaxTask, CoreRamNode]].setEnvironment(env)
+//    ctx.setEnvironment(env)
 //    logger.trace("Init schedule is generated")
 //    // This function applies new schedule and generates events
 //    ctx.applySchedule(schedule, queue)

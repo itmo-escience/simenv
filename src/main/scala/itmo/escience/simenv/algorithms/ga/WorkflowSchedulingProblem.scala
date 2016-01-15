@@ -5,7 +5,8 @@ import java.util.Map.Entry
 
 import itmo.escience.simenv.algorithms.RandomScheduler
 import itmo.escience.simenv.environment.entities._
-import itmo.escience.simenv.environment.entitiesimpl.{PhysResourceEnvironment, SingleAppWorkload}
+import itmo.escience.simenv.environment.entitiesimpl.SingleAppWorkload
+import itmo.escience.simenv.environment.modelling.Environment
 import org.uma.jmetal.problem.Problem
 import scala.collection.JavaConversions._
 
@@ -19,7 +20,7 @@ import scala.collection.JavaConversions._
 object WorkflowSchedulingProblem {
 
   // TODO: ATTENTION! Now it does NOT work for dynamic case. It needs to be implemented. Context will be needed for it
-  def scheduleToSolution(schedule:Schedule, context: Context[DaxTask, CoreRamHddBasedNode]):WorkflowSchedulingSolution = {
+  def scheduleToSolution(schedule:Schedule, context: Context[DaxTask, Node]):WorkflowSchedulingSolution = {
     val taskItems = schedule.scheduleItemsSeq().filter({
       case x: TaskScheduleItem => true
       case _ => false
@@ -27,7 +28,7 @@ object WorkflowSchedulingProblem {
     val fixed = context.schedule.fixedSchedule()
     var fixed_tasks = List[String]()
     for (n <- fixed.nodeIds()) {
-      fixed_tasks = fixed_tasks ++ fixed.getMap().get(n).toList.filter(x => x.status != TaskScheduleItemStatus.FAILED
+      fixed_tasks = fixed_tasks ++ fixed.getMap().get(n).toList.filter(x => x.status != ScheduleItemStatus.FAILED
       ).map(x => x.asInstanceOf[TaskScheduleItem].task.id)
     }
     val restTasks = taskItems.filter(x => !fixed_tasks.contains(x.task.id))
@@ -36,7 +37,7 @@ object WorkflowSchedulingProblem {
     new WorkflowSchedulingSolution(genes)
   }
 
-  def solutionToSchedule(solution: WorkflowSchedulingSolution, context: Context[DaxTask, CoreRamHddBasedNode], environment: PhysResourceEnvironment): Schedule = {
+  def solutionToSchedule(solution: WorkflowSchedulingSolution, context: Context[DaxTask, Node], environment: Environment[Node]): Schedule = {
     //TODO: implement dealing with dynamics (implemented with fails of tasks)
     val newSchedule = context.schedule.fixedSchedule()
 
@@ -47,13 +48,13 @@ object WorkflowSchedulingProblem {
     for (x <- repairedOrdering) {
       val (task, nodeId) = x
       newSchedule.placeTask(task,
-        environment.asInstanceOf[PhysResourceEnvironment].vmById(nodeId).asInstanceOf[CoreRamHddBasedNode],
-        context)
+        environment.nodeById(nodeId),
+        context.asInstanceOf[Context[DaxTask, Node]])
     }
     newSchedule
   }
 
-  def repairOrdering(solution: WorkflowSchedulingSolution, context: Context[DaxTask, CoreRamHddBasedNode]):List[(DaxTask, NodeId)] = {
+  def repairOrdering(solution: WorkflowSchedulingSolution, context: Context[DaxTask, Node]):List[(DaxTask, NodeId)] = {
     val wf = context.workload.asInstanceOf[SingleAppWorkload].app
     val tasksSeq = new util.TreeSet[Pair[(DaxTask, NodeId)]](solution.tasksSeq().zipWithIndex
       .map( { case (x, i) =>
@@ -68,7 +69,7 @@ object WorkflowSchedulingProblem {
     for (nid <- fixedSched.nodeIds()) {
       for (item <- fixedSched.getMap().get(nid)) {
         val taskScItem = item.asInstanceOf[TaskScheduleItem]
-        if (taskScItem.status != TaskScheduleItemStatus.FAILED) {
+        if (taskScItem.status != ScheduleItemStatus.FAILED) {
           mappedTasks.put(taskScItem.task.id, (taskScItem.task, taskScItem.node.id))
         }
       }
@@ -98,7 +99,7 @@ object WorkflowSchedulingProblem {
   }
 }
 
-class WorkflowSchedulingProblem(wf:Workflow, newSchedule:Schedule, nodes:Seq[CoreRamHddBasedNode], context:Context[DaxTask, CoreRamHddBasedNode], environment: PhysResourceEnvironment) extends Problem[WorkflowSchedulingSolution]{
+class WorkflowSchedulingProblem(wf:Workflow, newSchedule:Schedule, context:Context[DaxTask, Node], environment: Environment[Node]) extends Problem[WorkflowSchedulingSolution]{
 
   override def getNumberOfObjectives: Int = 1
 
@@ -118,7 +119,7 @@ class WorkflowSchedulingProblem(wf:Workflow, newSchedule:Schedule, nodes:Seq[Cor
     // schedule = RandomScheduler.schedule()
     // convert to chromosome
     // return it
-    val schedule = RandomScheduler.schedule(context, environment)
+    val schedule = RandomScheduler.schedule(context.asInstanceOf[Context[DaxTask, Node]], environment.asInstanceOf[Environment[Node]])
 
     val solution = WorkflowSchedulingProblem.scheduleToSolution(schedule, context)
     solution

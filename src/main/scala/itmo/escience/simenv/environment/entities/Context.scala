@@ -4,7 +4,7 @@ import itmo.escience.simenv.environment.modelling.{Environment, Estimator, Workl
 import itmo.escience.simenv.simulator.events.EventQueue
 
 
-trait Context[T, N] {
+trait Context[T <: Task, N <: Node] {
 
   def environment: Environment[N]
 

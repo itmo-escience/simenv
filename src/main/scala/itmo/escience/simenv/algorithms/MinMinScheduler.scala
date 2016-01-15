@@ -7,9 +7,9 @@ import itmo.escience.simenv.environment.modelling.Environment
 /**
  * Created by user on 27.11.2015.
  */
-object MinMinScheduler extends Scheduler[DaxTask, CoreRamHddBasedNode]{
+object MinMinScheduler extends Scheduler[DaxTask, Node]{
 
-  override def schedule(context: Context[DaxTask, CoreRamHddBasedNode], environment: Environment[CoreRamHddBasedNode]): Schedule = {
+  override def schedule(context: Context[DaxTask, Node], environment: Environment[Node]): Schedule = {
     val currentSchedule = context.schedule
 
     // get unscheduled tasks.
@@ -34,7 +34,7 @@ object MinMinScheduler extends Scheduler[DaxTask, CoreRamHddBasedNode]{
     //Only for static case
     val newSchedule = Schedule.emptySchedule()
     var tasksToSchedule = wf.headTask.asInstanceOf[DaxTask].children
-    val nodes = context.environment.nodes.filter(x => x.status == Node.UP)
+    val nodes = context.environment.nodes.filter(x => x.status == NodeStatus.UP)
 
 
     var scheduledTasks = tasksToSchedule.map(task => task.id).toSet

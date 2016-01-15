@@ -30,7 +30,7 @@ object Utilities {
     def toDataFile(y:Node):DataFile = {
       val file = y.attribute("file").get.head.text
       val size = y.attribute("size").get.head.text.toDouble
-      new DataFile(id=file, name=file, cVolume = size)
+      new DataFile(id=file, name=file, volume = size)
     }
 
     val tasks = jobs.map(x => {
