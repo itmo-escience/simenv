@@ -1,6 +1,6 @@
 package itmo.escience.simenv.environment.entitiesimpl
 
-import itmo.escience.simenv.environment.entities.{Carrier, Node, NodeId, Network}
+import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.modelling.Environment
 
 import scala.collection.mutable
@@ -72,7 +72,16 @@ class CarrierNodeEnvironment[N <: Node](nodesSeq: Seq[Node], networksSeq: Seq[Ne
     }
   }
 
-  override def carriers: Seq[Node] = _nodes.map({case (nodeId, node) => node}).toSeq.filter(x => x.isInstanceOf[Carrier[N]])
+  override def carriers: Seq[Carrier[N]] = _nodes.map({case (nodeId, node) => node}).
+    toSeq.filter(x => x.isInstanceOf[Carrier[N]]).map(x => x.asInstanceOf[Carrier[N]])
 
   override def networks: Seq[Network] = _networks.toSeq
+
+  def envPrint(): String = {
+    var res: String = ""
+    for (n <- nodes) {
+      res += s"(${n.asInstanceOf[CpuTimeNode].printNode()})\n"
+    }
+    res
+  }
 }

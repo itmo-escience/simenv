@@ -47,19 +47,19 @@ class EnvConfigurationSolution(mappedVms: List[MappedVm]) extends Solution[Mappe
     _genes.filter(x => x.vmId == vmId).head
   }
 
-  def addCoresValue(vmId: NodeId, v: Int): Unit = {
+  def addValue(vmId: NodeId, v: Double): Unit = {
     // TODO optimize this and next function
     val item = _genes.filter(x => x.vmId == vmId).head
     _genes.remove(item)
-    _genes.add(new MappedVm(item.vmId, (item.config._1 + v, item.config._2)))
+    _genes.add(new MappedVm(item.vmId, item.cpuTime + v))
   }
 
-  def addRamValue(vmId: NodeId, v: Int): Unit = {
-    val item = _genes.filter(x => x.vmId == vmId).head
-    _genes.remove(item)
-    _genes.add(new MappedVm(item.vmId, (item.config._1, item.config._2 + v)))
-  }
-
+//  def addRamValue(vmId: NodeId, v: Int): Unit = {
+//    val item = _genes.filter(x => x.vmId == vmId).head
+//    _genes.remove(item)
+//    _genes.add(new MappedVm(item.vmId, (item.config._1, item.config._2 + v)))
+//  }
+//
   def addDeleteItems(delete: List[MappedVm], add: List[MappedVm]) = {
     for (i <- delete) {
       _genes.remove(i)

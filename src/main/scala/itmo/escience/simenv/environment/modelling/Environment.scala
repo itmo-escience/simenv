@@ -6,7 +6,7 @@ import itmo.escience.simenv.environment.entities.Node
 /**
  * Created by user on 27.11.2015.
  */
-trait Environment[N] {
+trait Environment[N <: Node] {
 
   /**
    * Adds physical or virtual nodes to the pool of resources
@@ -21,7 +21,7 @@ trait Environment[N] {
 
   def nodes: Seq[N]
 
-  def carriers: Seq[Node]
+  def carriers: Seq[Carrier[N]]
 
   def networks: Seq[Network]
 

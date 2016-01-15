@@ -13,6 +13,10 @@ class CpuTimeNode (val id: NodeId,
                    var parent: NodeId = NullNode.id,
                    var status: NodeStatus = NodeStatus.UP) extends Node {
 
+  def printNode(): String = {
+    s"$id, $cpu:$cpuTime%"
+  }
+
 }
 
 class CpuTimeCarrier(val id: NodeId,
