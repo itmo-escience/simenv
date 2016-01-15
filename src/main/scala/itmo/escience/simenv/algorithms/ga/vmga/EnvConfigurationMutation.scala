@@ -39,12 +39,13 @@ class EnvConfigurationMutation(probability:Double, context:Context[DaxTask, CpuT
       val vmNumber = node.children.size
       val nodeChildren = source.vmsSeq().filter(x => node.children.map(y => y.id).contains(x.vmId))
       val vmFrom = nodeChildren(random.nextInt(vmNumber))
-      if (vmFrom > 1 && )
-      val vmTo = nodeChildren(random.nextInt(vmNumber))
-      // change cpuTime
-      val cpuTrans = random.nextDouble() * (vmFrom.cpuTime - 1)
-      source.addValue(vmFrom.vmId, -cpuTrans)
-      source.addValue(vmTo.vmId, cpuTrans)
+      if (vmFrom.cpuTime > 1 && vmFrom.cpuTime < 99) {
+        val vmTo = nodeChildren(random.nextInt(vmNumber))
+        // change cpuTime
+        val cpuTrans = random.nextDouble() * (vmFrom.cpuTime - 1)
+        source.addValue(vmFrom.vmId, -cpuTrans)
+        source.addValue(vmTo.vmId, cpuTrans)
+      }
 
     }
   }
