@@ -75,3 +75,25 @@ object Utilities {
   def generateId(): String = UUID.randomUUID().toString
 
 }
+
+object Units {
+  implicit def toUnits(a:Int):Units = new Units(a)
+
+}
+
+class Units(a:Int) {
+  //Volume
+  def GB = a * 1024*1024*1024
+  def MB = a * 1024*1024
+  def KB = a * 1024
+  //Network bandwidth
+  def Mbit_Sec = a * 1024*1024 / 8
+  def Gbit_Sec = a * 1024*1024*1024 / 8
+  def Kbit_Sec = a * 1024 /8
+  //Calculation time
+  def Sec = a
+  def Min = a * 60
+  def Hour = a * 60
+
+  def % = a / 100
+}

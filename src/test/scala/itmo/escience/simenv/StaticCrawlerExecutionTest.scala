@@ -9,6 +9,7 @@ import itmo.escience.simenv.environment.entitiesimpl._
 import itmo.escience.simenv.environment.modelling.Environment
 import itmo.escience.simenv.simulator.events.EventQueue
 import itmo.escience.simenv.utilities.ScheduleHelper
+import itmo.escience.simenv.utilities.Units._
 import itmo.escience.simenv.utilities.Utilities._
 import org.junit.Test
 
@@ -37,7 +38,7 @@ class StaticCrawlerExecutionTest {
   }
 
 //  val Mb_sec_100 = 1024*1024*100/8
-  val Mb_sec_100 = 1024*1024/8 * 0.1
+  val Mb_sec_100 = 100 Mbit_Sec
 //  val bandwidth = 1000 так в 2 раза выигрыш
   val bandwidth = Mb_sec_100 //1000
   val globalNet = new Network(id=generateId(), name="global net", bandwidth=bandwidth, nodes)
@@ -91,6 +92,9 @@ class StaticCrawlerExecutionTest {
     println(s"MinMin makespan: ${minmin_schedule.makespan()}")
     println("_________")
     println(s"HEFT makespan: ${heft_schedule.makespan()}")
+    println("Schedule after Heft")
+    println(heft_schedule.prettyPrint())
+    heft_schedule.prettyPrint()
 
 //    println("________")
 //    println("Configuration")
@@ -100,10 +104,14 @@ class StaticCrawlerExecutionTest {
 
     println("________")
     val (coev_schedule, coev_env) = coevScheduler.scheduleAndConfiguration(ctx.asInstanceOf[Context[DaxTask, Node]], environment.asInstanceOf[Environment[Node]])
+
+    println("Schedule after coevolution")
     println(coev_schedule.prettyPrint())
     println(coev_env.envPrint())
     println(s"coev makespan: ${coev_schedule.makespan()}")
 
     println("Finished")
+
+    println(coev_schedule.makespan() / minmin_schedule.makespan() )
   }
 }
