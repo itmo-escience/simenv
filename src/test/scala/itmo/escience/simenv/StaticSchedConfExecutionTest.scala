@@ -17,10 +17,10 @@ import org.junit.Test
   */
 @Test
 class StaticSchedConfExecutionTest {
-  val basepath = ".\\resources\\wf-examples\\"
-//  val basepath = ".\\resources\\"
-//  val wf_name = "crawlerWf"
-  val wf_name = "Montage_250"
+//  val basepath = ".\\resources\\wf-examples\\"
+  val basepath = ".\\resources\\"
+  val wf_name = "crawlerWf"
+//  val wf_name = "Montage_25"
   val wf = parseDAX(basepath + wf_name + ".xml")
 
   var nodes = List[Node]()
