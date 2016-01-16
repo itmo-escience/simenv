@@ -26,7 +26,7 @@ class DynamicSchedConfExecutionTest {
       cores=4, reliability = 0.95)
     for (j <- 0 until 2) {
       val node: CpuTimeNode = new CpuTimeNode(id = s"res_${i}_node_$j", name = s"res_${i}_node_$j",
-        cores = 2, cpuTime = 50, parent = res.id, reliability = 0.95)
+        cores = 4, cpuTime = 50, parent = res.id, reliability = 0.95)
       res.addChild(node)
     }
     nodes :+= res
