@@ -8,14 +8,15 @@ import javax.xml.transform.stream.StreamResult
 
 import org.w3c.dom.{Element, Document}
 
+import itmo.escience.simenv.utilities.Units._
 /**
   * Created by Mishanya on 15.01.2016.
   */
 object CrawlerWFGenerator {
 
-    def main(args: Array[String]): Unit = {
+  def main(args: Array[String]): Unit = {
       generateCrawlerWf()
-    }
+  }
 
   def generateCrawlerWf(): Unit = {
     var db: DocumentBuilder = null
@@ -33,55 +34,65 @@ object CrawlerWFGenerator {
     //
     val namespace = "crawler"
 
+//    val GB = 1024*1024*1024
+//    val MB = 1024*1024
+//    val KB = 1024
+
+
+
+    val BIG_DATA_SIZE = 1 GB
+    val MIDDLE_DATA_SIZE = 512 MB
+    val SMALL_DATA_SIZE = 50 MB
+    val TINY_DATA_SIZE = 1 MB
 
     val sweeps0 = 8
-    val input0 = (doc, "dataflow", 1024000)
-    val jobs0: List[Element] = genSweepJob(doc, "T000", namespace, "Data Getter", 200, input0, "data", 102400, sweeps0)
+    val input0 = (doc, "dataflow", MIDDLE_DATA_SIZE)
+    val jobs0: List[Element] = genSweepJob(doc, "T000", namespace, "twitterstreaminglistener", 10 Min, input0, "data", SMALL_DATA_SIZE, sweeps0)
     for (j <- jobs0) {
       adag.appendChild(j)
       
     }
 
-    val output1 = genOutput(doc, "dataqueue", 102400)
-    val job1: Element = genJob(doc, "T001", namespace, "Data Queue", 300, "data", sweeps0, 102400, output1)
+    val output1 = genOutput(doc, "dataqueue", SMALL_DATA_SIZE)
+    val job1: Element = genJob(doc, "T001", namespace, "Data Queue",  3 Min, "data", sweeps0, SMALL_DATA_SIZE, output1)
     adag.appendChild(job1)
     
 
-    val input2_1 = genInput(doc, "dataqueue", 102400)
-    val output2_1 = genOutput(doc, "userstorage", 10240)
-    val job2_1: Element = genJob(doc, "T002_U", namespace, "UserStorage", 100, input2_1, output2_1)
+    val input2_1 = genInput(doc, "dataqueue", SMALL_DATA_SIZE)
+    val output2_1 = genOutput(doc, "userstorage", TINY_DATA_SIZE)
+    val job2_1: Element = genJob(doc, "T002_U", namespace, "UserStorage", 2 Min, input2_1, output2_1)
     adag.appendChild(job2_1)
     
 
 
     val sweeps2 = 6
-    val input2 = (doc, "dataqueue", 102400)
-    val jobs2: List[Element] = genSweepJob(doc, "T002", namespace, "Data Processor", 500, input2, "dataprocessor", 102400, sweeps2)
+    val input2 = (doc, "dataqueue", SMALL_DATA_SIZE)
+    val jobs2: List[Element] = genSweepJob(doc, "T002", namespace, "Data Processor", 20 Min, input2, "dataprocessor", SMALL_DATA_SIZE, sweeps2)
     for (j <- jobs2) {
       adag.appendChild(j)
       
     }
-    val output3 = genOutput(doc, "leveldetector", 1024000)
-    val job3: Element = genJob(doc, "T003", namespace, "Change Level Detector", 100, "dataprocessor", sweeps2, 102400, output3)
+    val output3 = genOutput(doc, "leveldetector", MIDDLE_DATA_SIZE)
+    val job3: Element = genJob(doc, "T003", namespace, "Change Level Detector", 2 Min, "dataprocessor", sweeps2, SMALL_DATA_SIZE, output3)
     adag.appendChild(job3)
 
 
     val sweeps4 = 4
-    val input4 = (doc, "leveldetector", 1024000)
-    val jobs4: List[Element] = genSweepJob(doc, "T004", namespace, "TF-IDF", 200, input4, "tf-idf", 10240, sweeps4)
+    val input4 = (doc, "leveldetector", MIDDLE_DATA_SIZE)
+    val jobs4: List[Element] = genSweepJob(doc, "T004", namespace, "TF-IDF", 12 Min, input4, "tf-idf", TINY_DATA_SIZE, sweeps4)
     for (j <- jobs4) {
       adag.appendChild(j)
 
     }
 
-    val output5 = genOutput(doc, "clusterization", 10240000)
-    val job5: Element = genJob(doc, "T005", namespace, "Clusterization", 300, "tf-idf", sweeps4, 10240, output5)
+    val output5 = genOutput(doc, "clusterization", MIDDLE_DATA_SIZE)
+    val job5: Element = genJob(doc, "T005", namespace, "Clusterization", 10 Min, "tf-idf", sweeps4, TINY_DATA_SIZE, output5)
     adag.appendChild(job5)
 
 
     val sweeps6 = 2
-    val input6 = (doc, "clusterization", 10240000)
-    val jobs6: List[Element] = genSweepJob(doc, "T006", namespace, "Simulation Modelling", 1000, input6, "simulation", 102400, sweeps6)
+    val input6 = (doc, "clusterization", MIDDLE_DATA_SIZE)
+    val jobs6: List[Element] = genSweepJob(doc, "T006", namespace, "Simulation Modelling", 30 Min, input6, "simulation", SMALL_DATA_SIZE, sweeps6)
     for (j <- jobs6) {
       adag.appendChild(j)
 
