@@ -15,7 +15,7 @@ class InvalidScheduleException(msg:String) extends RuntimeException(msg)
  */
 class Schedule {
 
-  def findTimeSlot(task: DaxTask, node: CapacityBasedNode, context: Context[DaxTask, CapacityBasedNode]): TaskScheduleItem = {
+  def findTimeSlot(task: DaxTask, node: Node, context: Context[DaxTask, Node]): TaskScheduleItem = {
     // calculate time when all transfer from each node will be ended
     val stageInEndTime = task.parents.map({
       case _:HeadDaxTask => 0.0
@@ -32,7 +32,7 @@ class Schedule {
 
     // searching for a slot
     if (map.containsKey(node.id)) {
-      val endOfLastTask =  if (map.get(node.id).size == 0) 0.0 else map.get(node.id).last.endTime
+      val endOfLastTask =  if (map.get(node.id).isEmpty) 0.0 else map.get(node.id).last.endTime
       if (map.get(node.id).nonEmpty && endOfLastTask > earliestStartTime ) {
 
         foundStartTime = endOfLastTask
@@ -63,7 +63,7 @@ class Schedule {
       name = task.name,
       startTime=foundStartTime,
       endTime=foundStartTime + runningTime,
-      status = TaskScheduleItemStatus.NOTSTARTED,
+      status = ScheduleItemStatus.UNSTARTED,
       node,
       task)
     newItem
@@ -71,7 +71,7 @@ class Schedule {
 
   // TODO: should be moved out of here or remade it universally
 
-  def placeTask(task: DaxTask, node: CapacityBasedNode, context: Context[DaxTask, CapacityBasedNode]): TaskScheduleItem= {
+  def placeTask(task: DaxTask, node: Node, context: Context[DaxTask, Node]): TaskScheduleItem = {
 
     if (!map.containsKey(node.id)) {
       addNode(node.id)
@@ -119,7 +119,7 @@ class Schedule {
 
   }
 
-  def makespan():Double = {
+  def makespan():ModellingTimestamp = {
     val occupationTime = map.map({case (nodeId,items) => if (items.isEmpty) 0.0 else items.last.endTime})
     if(occupationTime.isEmpty) 0.0 else occupationTime.max
   }
@@ -134,7 +134,7 @@ class Schedule {
       fixed.addNode(nid)
       val items = map.get(nid)
       for (item <- items) {
-        if (item.status != TaskScheduleItemStatus.NOTSTARTED) {
+        if (item.status != ScheduleItemStatus.UNSTARTED) {
           fixed.map.get(nid).add(item)
         }
       }
@@ -144,8 +144,6 @@ class Schedule {
 
   /**
    * This method have to return list of tasks that need to be scheduled
-   * @param wf
-   * @return
    */
 //  def restTasks(wf: Workflow): List[Task] = {
   def restTasks(): List[Task] = {
@@ -154,7 +152,7 @@ class Schedule {
     for (nid <- nodeIds()) {
       val items = map.get(nid)
       for (item <- items) {
-        if (item.status == TaskScheduleItemStatus.NOTSTARTED) {
+        if (item.status == ScheduleItemStatus.UNSTARTED) {
           rest = rest
         }
       }
@@ -258,7 +256,7 @@ class Schedule {
 //  }
 }
 
-object Schedule {
+object Schedule{
   def emptySchedule():Schedule = {
     new Schedule()
   }

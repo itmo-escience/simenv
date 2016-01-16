@@ -30,7 +30,7 @@ object ScheduleHelper {
 //      onlyOnceFinishedOrNotstarted(titems)
       val titem = titems.last
 
-      if (haveToBeFinished && titem.status != TaskStatus.FINISHED){
+      if (haveToBeFinished && titem.status != ScheduleItemStatus.FINISHED){
         throw new InvalidScheduleException("All tasks in the schedule have to be finished (haveToBeFinished == True)")
       }
 
@@ -50,12 +50,12 @@ object ScheduleHelper {
 
           //a child has all parents in "notstarted" or "finished" states
           // TODO, and for "running" ????
-          if (titem.status == TaskScheduleItemStatus.NOTSTARTED && (pitem.status != TaskScheduleItemStatus.FINISHED && pitem.status != TaskScheduleItemStatus.NOTSTARTED)) {
+          if (titem.status == ScheduleItemStatus.UNSTARTED && (pitem.status != ScheduleItemStatus.FINISHED && pitem.status != ScheduleItemStatus.UNSTARTED)) {
             throw new InvalidScheduleException(s"Incorrect status of parent (id: ${p.id}, status: ${pitem.status}}) " +
               s"for child (id: ${task.id}, status: ${titem.status}})")
           }
 
-          if (titem.status == TaskScheduleItemStatus.FINISHED && pitem.status != TaskScheduleItemStatus.FINISHED) {
+          if (titem.status == ScheduleItemStatus.FINISHED && pitem.status != ScheduleItemStatus.FINISHED) {
             throw new InvalidScheduleException(s"Incorrect status of parent (id: ${p.id}, status: ${pitem.status}}) " +
               s"for child (id: ${task.id}, status: ${titem.status}})")
           }

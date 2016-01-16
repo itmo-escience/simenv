@@ -2,13 +2,14 @@ package itmo.escience.simenv.algorithms
 
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl.SingleAppWorkload
+import itmo.escience.simenv.environment.modelling.Environment
 
 /**
  * Created by user on 27.11.2015.
  */
-object MinMinScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
+object MinMinScheduler extends Scheduler[DaxTask, Node]{
 
-  override def schedule(context: Context[DaxTask, CapacityBasedNode]): Schedule = {
+  override def schedule(context: Context[DaxTask, Node], environment: Environment[Node]): Schedule = {
     val currentSchedule = context.schedule
 
     // get unscheduled tasks.
@@ -33,7 +34,7 @@ object MinMinScheduler extends Scheduler[DaxTask, CapacityBasedNode]{
     //Only for static case
     val newSchedule = Schedule.emptySchedule()
     var tasksToSchedule = wf.headTask.asInstanceOf[DaxTask].children
-    val nodes = context.environment.nodes.filter(x => x.status == Node.UP)
+    val nodes = context.environment.nodes.filter(x => x.status == NodeStatus.UP)
 
 
     var scheduledTasks = tasksToSchedule.map(task => task.id).toSet

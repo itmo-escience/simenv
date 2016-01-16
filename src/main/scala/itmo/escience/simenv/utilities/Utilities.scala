@@ -30,7 +30,7 @@ object Utilities {
     def toDataFile(y:Node):DataFile = {
       val file = y.attribute("file").get.head.text
       val size = y.attribute("size").get.head.text.toDouble
-      new DataFile(id=file, name=file, cVolume = size)
+      new DataFile(id=file, name=file, volume = size)
     }
 
     val tasks = jobs.map(x => {
@@ -74,4 +74,26 @@ object Utilities {
 
   def generateId(): String = UUID.randomUUID().toString
 
+}
+
+object Units {
+  implicit def toUnits(a:Int):Units = new Units(a)
+
+}
+
+class Units(a:Int) {
+  //Volume
+  def GB = a * 1024*1024*1024
+  def MB = a * 1024*1024
+  def KB = a * 1024
+  //Network bandwidth
+  def Mbit_Sec = a * 1024*1024 / 8
+  def Gbit_Sec = a * 1024*1024*1024 / 8
+  def Kbit_Sec = a * 1024 /8
+  //Calculation time
+  def Sec = a
+  def Min = a * 60
+  def Hour = a * 60
+
+  def % = a / 100
 }

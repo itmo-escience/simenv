@@ -1,10 +1,11 @@
 package itmo.escience.simenv.simulator
 
-
 import itmo.escience.simenv.algorithms.Scheduler
+import itmo.escience.simenv.algorithms.ga.cga.CoevGAScheduler
 import itmo.escience.simenv.environment.entities._
+import itmo.escience.simenv.environment.modelling.Environment
 import itmo.escience.simenv.simulator.events.{InitEvent, TaskStarted, _}
-import org.apache.logging.log4j.{Level, LogManager, Logger}
+import org.apache.logging.log4j.{LogManager, Logger}
 
 import scala.util.Random
 
@@ -14,7 +15,7 @@ import scala.util.Random
  * @param scheduler algorithm for scheduling, must implement Scheduler interface
  * @param ctx contains description of computational environments and may perform actions on it
  */
-class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var ctx:Context[DaxTask, CapacityBasedNode]) extends Simulator {
+class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler[T, N], var ctx:Context[T, N]) extends Simulator[T, N] {
 
   val logger: Logger = LogManager.getLogger("logger")
   val queue = new EventQueue()
@@ -34,14 +35,10 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
    * The simulation will finish when there is not any event in the queue
    */
   override def runSimulation(): Unit = {
+
     while (!queue.isEmpty) {
-      println(queue.print())
       val event = queue.next()
       dispatchEvent(event)
-      println("---next event---")
-      print(s"current time ${ctx.currentTime}")
-      println(s"event time ${event.eventTime}")
-//      println(ctx.schedule.prettyPrint())
     }
   }
 
@@ -57,7 +54,7 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
     case _ => throw new Exception(s"Unknown type of the event: ${event.getClass}")
   }
 
-  private def onInitEvent() = {
+  def onInitEvent() = {
 
     // for any event there exists a general sequence of steps
     // 1. update context according to the event
@@ -67,13 +64,13 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
     // 5. apply new schedule to eventQueue (if any) and create new context
     // 6. Exit
 
-    //val schedule = scheduler.schedule(ctx)
     //TODO: add logging here
     logger.trace("Init event")
-    val schedule = scheduler.schedule(ctx)
+    val schedule = scheduler.schedule(ctx, ctx.environment)
     logger.trace("Init schedule is generated")
     // This function applies new schedule and generates events
     ctx.applySchedule(schedule, queue)
+
     logger.trace("Init schedule has been applied")
     // Generate initial events
     val schedMap = ctx.schedule.getMap()
@@ -96,7 +93,7 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
     val nodeSched = schedMap.get(nid)
     val (iterator, curItem, counter) = ctx.schedule.findItemInNodeSched(nid, event.id)
     schedMap.put(nid, nodeSched.take(counter))
-    schedMap.get(nid).add(curItem.asInstanceOf[TaskScheduleItem].changeStatus(TaskScheduleItemStatus.RUNNING))
+    schedMap.get(nid).add(curItem.asInstanceOf[TaskScheduleItem].changeStatus(ScheduleItemStatus.RUNNING))
     taskFailer(curItem.asInstanceOf[TaskScheduleItem])
     while (iterator.hasNext) {
       schedMap.get(nid).add(iterator.next())
@@ -113,7 +110,7 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
     val (iterator, curItem, counter) = ctx.schedule.findItemInNodeSched(nid, event.id)
 
     schedMap.put(nid, nodeSched.take(counter))
-    val finishedItem = curItem.asInstanceOf[TaskScheduleItem].changeStatus(TaskScheduleItemStatus.FINISHED)
+    val finishedItem = curItem.asInstanceOf[TaskScheduleItem].changeStatus(ScheduleItemStatus.FINISHED)
     schedMap.get(nid).add(finishedItem)
 
     if (iterator.hasNext) {
@@ -128,7 +125,7 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
     }
   }
 
-  private def onTaskFailed(event: TaskFailed) = {
+  def onTaskFailed(event: TaskFailed) = {
     ctx.setTime(event.eventTime)
     //TODO: add logging here
 
@@ -147,9 +144,7 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
     }
 
     // Reschedule
-    val sc = scheduler.schedule(ctx)
-
-    println(s"Rescheduled schedule:\n ${sc.prettyPrint()}")
+    val sc = scheduler.schedule(ctx, ctx.environment)
     queue.eq = queue.eq.filter(x => !x.isInstanceOf[TaskStarted])
     // Apply new schedule
     ctx.applySchedule(sc, queue)
@@ -159,7 +154,7 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
     val newFixedSchedule = ctx.schedule.fixedSchedule()
     for (nid <- newFixedSchedule.nodeIds()) {
       val fixNodeSched = newFixedSchedule.getMap().get(nid)
-      if (fixNodeSched.nonEmpty && fixNodeSched.last.status != TaskScheduleItemStatus.RUNNING) {
+      if (fixNodeSched.nonEmpty && fixNodeSched.last.status != ScheduleItemStatus.RUNNING) {
         val lastItem = fixNodeSched.last
         val (newIterator, newCurItem, newCounter) = ctx.schedule.findItemInNodeSched(nid, lastItem.id)
         if (newIterator.hasNext) {
@@ -174,7 +169,7 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
         val newNodeSched = ctx.schedule.getMap().get(nid)
         if (newNodeSched.nonEmpty) {
           val firstItem = newNodeSched.head.asInstanceOf[TaskScheduleItem]
-          if (firstItem.status == TaskScheduleItemStatus.NOTSTARTED && !queue.eq.map(x => x.id).toList.contains(firstItem.id)) {
+          if (firstItem.status == ScheduleItemStatus.UNSTARTED && !queue.eq.map(x => x.id).toList.contains(firstItem.id)) {
             queue.submitEvent(new TaskStarted(id = firstItem.id, name = firstItem.name,
               postTime = ctx.currentTime, eventTime = firstItem.startTime,
               task = firstItem.task, node = firstItem.node))
@@ -188,7 +183,8 @@ class SimpleSimulator(val scheduler: Scheduler[DaxTask, CapacityBasedNode], var 
     //TODO: add logging here
 //    taskScheduleItem.status = TaskScheduleItemStatus.RUNNING
     val dice = rnd.nextDouble()
-    if (dice < taskScheduleItem.node.reliability) {
+    // TODO reliablity not via CpuTimeNode
+    if (dice < taskScheduleItem.node.asInstanceOf[CpuTimeNode].reliability) {
       // Task will be finished
       val taskFinishedEvent = new TaskFinished(id=taskScheduleItem.id, name=taskScheduleItem.name, postTime=ctx.currentTime,
         eventTime = taskScheduleItem.endTime, taskScheduleItem.task, taskScheduleItem.node)

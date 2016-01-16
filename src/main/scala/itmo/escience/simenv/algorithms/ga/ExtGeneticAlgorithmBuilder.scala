@@ -17,12 +17,13 @@ import scala.collection.JavaConversions._
  */
 class ExtGeneticAlgorithmBuilder[T <: Solution[_]](problem:Problem[T],
                                        crossoverOperator:CrossoverOperator[T],
-                                       mutationOperator:MutationOperator[T])
+                                       mutationOperator:MutationOperator[T],
+                                                  population: List[T])
   extends GeneticAlgorithmBuilder[T](problem, crossoverOperator, mutationOperator){
   override def build(): Algorithm[T] = {
     if(getVariant == GeneticAlgorithmBuilder.GeneticAlgorithmVariant.GENERATIONAL) {
       new ExtGenerationalGeneticAlgorithm(this.problem, getMaxEvaluations, getPopulationSize,
-        this.crossoverOperator, this.mutationOperator, getSelectionOperator, getEvaluator)
+        this.crossoverOperator, this.mutationOperator, getSelectionOperator, getEvaluator, population)
     } else if(getVariant == GeneticAlgorithmBuilder.GeneticAlgorithmVariant.STEADY_STATE) {
       new ExtSteadyStateGeneticAlgorithm(this.problem, getMaxEvaluations, getPopulationSize,
         this.crossoverOperator, this.mutationOperator, getSelectionOperator)
@@ -38,7 +39,8 @@ private class ExtGenerationalGeneticAlgorithm[T <: Solution[_]](problem:Problem[
                                                                 crossoverOperator:CrossoverOperator[T],
                                                                 mutationOperator:MutationOperator[T],
                                                                 selectionOperator:SelectionOperator[java.util.List[T], T],
-                                                                evaluator:SolutionListEvaluator[T])
+                                                                evaluator:SolutionListEvaluator[T],
+                                                                population: List[T])
 
   extends GenerationalGeneticAlgorithm[T](problem,maxEvaluations, populationSize,crossoverOperator,
     mutationOperator,
@@ -53,7 +55,20 @@ private class ExtGenerationalGeneticAlgorithm[T <: Solution[_]](problem:Problem[
     Collections.sort(pop, comparator)
     val makespan = pop.head.getObjective(0)
 
-    println(s"Makespan - ${makespan}")
+//    println(s"Makespan - ${makespan}")
+  }
+
+  override def createInitialPopulation() = {
+    if (population == null)
+    {
+      super.createInitialPopulation()
+    } else {
+      val res = new util.ArrayList[T]()
+      for (p <- population) {
+        res.add(p)
+      }
+      res
+    }
   }
 }
 
