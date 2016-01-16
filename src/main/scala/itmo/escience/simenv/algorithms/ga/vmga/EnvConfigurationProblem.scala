@@ -30,12 +30,12 @@ object EnvConfigurationProblem {
     var newNodes: List[CpuTimeCarrier] = List()
     for (n <- carriers) {
       val res: CpuTimeCarrier = new CpuTimeCarrier(id=n.id, name=n.name,
-        cpu=n.cpu, cpuTime=n.cpuTime,
+        cores=n.cores, cpuTime=n.cpuTime,
         reliability=n.reliability
       )
       for (vm <- vms.filter(x => x.parent == res.id)) {
         val vmItem = solution.getVmElement(vm.id)
-        res.addChild(new CpuTimeNode(id=vm.id, name=vm.name, cpu=vm.cpu, cpuTime=vmItem.cpuTime, parent=res.id, reliability=vm.reliability))
+        res.addChild(new CpuTimeNode(id=vm.id, name=vm.name, cores=vm.cores, cpuTime=vmItem.cpuTime, parent=res.id, reliability=vm.reliability))
       }
       newNodes :+= res
     }

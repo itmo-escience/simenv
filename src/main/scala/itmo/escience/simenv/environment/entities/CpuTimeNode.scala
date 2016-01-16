@@ -7,21 +7,21 @@ import itmo.escience.simenv.utilities.Utilities._
   */
 class CpuTimeNode (val id: NodeId,
                    val name: String,
-                   val cpu: Int,
+                   val cores: Int,
                    var cpuTime: Double = 100,
                    var reliability: Double = 1,
                    var parent: NodeId = NullNode.id,
                    var status: NodeStatus = NodeStatus.UP) extends Node {
 
   def printNode(): String = {
-    s"$id, $cpu:$cpuTime%"
+    s"$id, $cores:$cpuTime%"
   }
 
 }
 
 class CpuTimeCarrier(val id: NodeId,
                      val name: String,
-                     val cpu: Int,
+                     val cores: Int,
                      var cpuTime: Double = 100,
                      var reliability: Double = 1,
                      var parent: NodeId = NullNode.id,

@@ -9,7 +9,7 @@ import itmo.escience.simenv.environment.modelling.{Environment, Estimator}
 class CpuTimeEstimator(env: Environment[CpuTimeNode]) extends Estimator[DaxTask, CpuTimeNode]{
 
   override def calcTime(task: DaxTask, node: CpuTimeNode): Double = {
-    task.execTime / (node.cpu * node.cpuTime / 100)
+    task.execTime / (node.cores * node.cpuTime / 100)
   }
 
   override def calcTransferTime(from: (DaxTask, CpuTimeNode), to: (DaxTask, CpuTimeNode)): Double = {
