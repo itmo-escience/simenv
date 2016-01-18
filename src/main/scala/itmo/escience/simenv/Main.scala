@@ -1,6 +1,5 @@
 package itmo.escience.simenv
 
-
 /**
  * Created by Mishanya on 12.10.2015.
  */
@@ -10,16 +9,22 @@ package itmo.escience.simenv
 object Main {
   def main(args: Array[String]) {
 
-    import itmo.escience.simenv.utilities.Utilities
+    // Указываем путь к файлу с вф или пайплайном
+    val basepath = ".\\resources\\storm-pipelines\\"
+    val wfName = "Test1_10"
+    val wfPath = basepath + wfName + ".xml"
+    // В utilities есть функция parseDAX, которая считывает файлы такого формата
 
-    val path = ".\\resources\\wf-examples\\Montage_25.xml"
+    // сколько будет копий одного и того же вф
+    val sweeps = 2
 
-    val wf = Utilities.parseDAX(path)
+    // ресурсы описываются числом ядер и максимальным размером канала передачи данных
+    val cores = 8
+    val bandwidth = 100
 
-  //TODO:
-    // 1. read parameters or config
-    // 2. create instance or use object of appropriate Experiment
-    // 3. Run experiment
-    // 4. Exit
+    // запуск
+    val storm = new StormSimulatedAnnealing(wfPath, sweeps, cores, bandwidth)
+    storm.initialization()
+    storm.runAlg()
   }
 }

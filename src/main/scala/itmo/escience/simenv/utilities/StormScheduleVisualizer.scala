@@ -28,7 +28,7 @@ class StormScheduleVisualizer(tasks: util.HashMap[TaskId, DaxTask]) {
 
   var cmapString: String =
     "<cmap name=\"default\">" +
-      "<conf name=\"min_font_size_label\" value=\"14\" />" +
+      "<conf name=\"min_font_size_label\" value=\"20\" />" +
       "<conf name=\"font_size_label\" value=\"18\" />" +
       "<conf name=\"font_size_axes\" value=\"18\" />"
   for (wf <- wfNames) {
@@ -97,7 +97,7 @@ class StormScheduleVisualizer(tasks: util.HashMap[TaskId, DaxTask]) {
     jedArgs(2) = "-f"
     jedArgs(3) = "./temp/lastRunSchedules/jedule.jed"
     jedArgs(4) = "-d"
-    jedArgs(5) = "1024x512"
+    jedArgs(5) = "10000x512"
     jedArgs(6) = "-o"
     jedArgs(7) = "./temp/lastRunSchedules/schedule" + counter + ".png"
     jedArgs(8) = "-gt"
@@ -165,7 +165,9 @@ class StormScheduleVisualizer(tasks: util.HashMap[TaskId, DaxTask]) {
 
         val node_endTime: Element = doc.createElement("node_property")
         node_endTime.setAttribute("name", "end_time")
-        node_endTime.setAttribute("value", "" + (task.inputVolume() + task.outputVolume()))
+//        node_endTime.setAttribute("value", "" + (task.inputVolume() + task.outputVolume()))
+        val endTime = evaluateChannel(task, n)
+        node_endTime.setAttribute("value", "" + endTime)
 
         node_statistics.appendChild(node_id)
         node_statistics.appendChild(node_type)
@@ -220,5 +222,16 @@ class StormScheduleVisualizer(tasks: util.HashMap[TaskId, DaxTask]) {
     }
     colors
   }
-
+  def evaluateChannel(task: DaxTask, node: CapacityBandwidthResource): Double = {
+    var transfer = 1.0
+    if (task.parents.head.isInstanceOf[HeadDaxTask] ||
+      !node.taskList.keySet().contains(task.parents.head.id)) {
+      transfer += task.inputVolume()
+    }
+    if (task.children.isEmpty ||
+      !node.taskList.keySet().contains(task.children.head.id)) {
+      transfer += task.outputVolume()
+    }
+    transfer
+  }
 }

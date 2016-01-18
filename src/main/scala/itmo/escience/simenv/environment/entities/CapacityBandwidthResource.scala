@@ -19,15 +19,18 @@ class CapacityBandwidthResource(val id: NodeId,
   var currentCapacity = nominalCapacity
   var currentBandwidth = bandwidth
 
+  // Добавляет таску на нод, забирает ядра от нода
   def addTask(t: DaxTask) = {
     taskList.put(t.id, t)
     currentCapacity -= t.execTime
   }
 
+  // Помещается ли данная таска на этом ноде?
   def canPlaceTask(t: DaxTask): Boolean = {
     t.execTime <= currentCapacity
   }
 
+  // Удаляет таску с нода, возвращает занятые ядра
   def removeTask(key: TaskId): DaxTask = {
     val task = taskList.remove(key)
     currentCapacity += task.execTime
