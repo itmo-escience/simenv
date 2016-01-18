@@ -18,7 +18,7 @@ class CoevGAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationPr
 
   def scheduleAndConfiguration(context: Context[DaxTask, Node], environment: Environment[Node]):
                                 (Schedule, CarrierNodeEnvironment[CpuTimeNode]) = {
-    val scheduler = new GAScheduler(crossoverProb = crossoverProb,
+    val scheduler = new GAScheduler[Node](crossoverProb = crossoverProb,
       mutationProb = mutationProb,
       swapMutationProb = swapMutationProb,
       popSize = popSize,

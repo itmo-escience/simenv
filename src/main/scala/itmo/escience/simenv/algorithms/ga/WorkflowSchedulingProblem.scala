@@ -20,7 +20,7 @@ import scala.collection.JavaConversions._
 object WorkflowSchedulingProblem {
 
   // TODO: ATTENTION! Now it does NOT work for dynamic case. It needs to be implemented. Context will be needed for it
-  def scheduleToSolution(schedule:Schedule, context: Context[DaxTask, Node]):WorkflowSchedulingSolution = {
+  def scheduleToSolution[T <: Node](schedule:Schedule, context: Context[DaxTask, T]):WorkflowSchedulingSolution = {
     val taskItems = schedule.scheduleItemsSeq().filter({
       case x: TaskScheduleItem => true
       case _ => false
@@ -37,7 +37,7 @@ object WorkflowSchedulingProblem {
     new WorkflowSchedulingSolution(genes)
   }
 
-  def solutionToSchedule(solution: WorkflowSchedulingSolution, context: Context[DaxTask, Node], environment: Environment[Node]): Schedule = {
+  def solutionToSchedule[T <: Node](solution: WorkflowSchedulingSolution, context: Context[DaxTask, T], environment: Environment[T]): Schedule = {
     //TODO: implement dealing with dynamics (implemented with fails of tasks)
     val newSchedule = context.schedule.fixedSchedule()
 
@@ -54,7 +54,7 @@ object WorkflowSchedulingProblem {
     newSchedule
   }
 
-  def repairOrdering(solution: WorkflowSchedulingSolution, context: Context[DaxTask, Node]):List[(DaxTask, NodeId)] = {
+  def repairOrdering[T <: Node](solution: WorkflowSchedulingSolution, context: Context[DaxTask, T]):List[(DaxTask, NodeId)] = {
     val wf = context.workload.asInstanceOf[SingleAppWorkload].app
     val tasksSeq = new util.TreeSet[Pair[(DaxTask, NodeId)]](solution.tasksSeq().zipWithIndex
       .map( { case (x, i) =>
@@ -99,7 +99,7 @@ object WorkflowSchedulingProblem {
   }
 }
 
-class WorkflowSchedulingProblem(wf:Workflow, newSchedule:Schedule, context:Context[DaxTask, Node], environment: Environment[Node]) extends Problem[WorkflowSchedulingSolution]{
+class WorkflowSchedulingProblem[T <: Node](wf:Workflow, newSchedule:Schedule, context:Context[DaxTask, T], environment: Environment[T]) extends Problem[WorkflowSchedulingSolution]{
 
   override def getNumberOfObjectives: Int = 1
 

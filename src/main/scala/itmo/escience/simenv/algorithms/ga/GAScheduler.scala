@@ -13,10 +13,10 @@ import scala.collection.JavaConversions._
 /**
  * Created by user on 02.12.2015.
  */
-class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: Double,
-                   popSize:Int, iterationCount: Int) extends Scheduler[DaxTask, Node]{
+class GAScheduler[T <: Node](crossoverProb:Double, mutationProb: Double, swapMutationProb: Double,
+                   popSize:Int, iterationCount: Int) extends Scheduler[DaxTask, T]{
 
-  def coevSchedule(context: Context[DaxTask, Node], environment: Environment[Node], schedPop: List[WorkflowSchedulingSolution]): (Schedule, List[WorkflowSchedulingSolution]) = {
+  def coevSchedule(context: Context[DaxTask, T], environment: Environment[T], schedPop: List[WorkflowSchedulingSolution]): (Schedule, List[WorkflowSchedulingSolution]) = {
 
     if (!context.workload.isInstanceOf[SingleAppWorkload]) {
       throw new UnsupportedOperationException(s"Invalid workload type ${context.workload.getClass}. " +
@@ -55,7 +55,7 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
     (WorkflowSchedulingProblem.solutionToSchedule(best, context, environment), pop)
   }
 
-  override def schedule(context: Context[DaxTask, Node], environment: Environment[Node]): Schedule = {
+  override def schedule(context: Context[DaxTask, T], environment: Environment[T]): Schedule = {
 
     if (!context.workload.isInstanceOf[SingleAppWorkload]) {
       throw new UnsupportedOperationException(s"Invalid workload type ${context.workload.getClass}. " +

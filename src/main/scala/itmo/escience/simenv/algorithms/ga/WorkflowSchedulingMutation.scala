@@ -9,7 +9,7 @@ import scala.util.Random
 /**
  * Created by user on 02.12.2015.
  */
-class WorkflowSchedulingMutation(probability:Double, swapProbability: Double, context:Context[DaxTask, Node]) extends MutationOperator[WorkflowSchedulingSolution]{
+class WorkflowSchedulingMutation[T <: Node](probability:Double, swapProbability: Double, context:Context[DaxTask, T]) extends MutationOperator[WorkflowSchedulingSolution]{
 
   private val random = new Random(System.currentTimeMillis)
 
