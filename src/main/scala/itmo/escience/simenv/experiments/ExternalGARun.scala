@@ -40,7 +40,7 @@ object ExternalGARun {
     val nodes = config.nodes.map(x => new CapacityBasedNode(id=generateId(), name="", nominalCapacity=x))
     val wf = parseDAX(config.wfPath)
 
-    val Mb_sec_100 = 100Mbit_Sec
+    val Mb_sec_100 = 100 Mbit_Sec
 
 
     val networks = List(new Network(id=generateId(), name="", bandwidth=Mb_sec_100, nodes))
