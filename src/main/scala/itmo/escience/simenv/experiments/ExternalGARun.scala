@@ -7,6 +7,7 @@ import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl.{BasicContext, BasicEnvironment, BasicEstimator, SingleAppWorkload}
 import itmo.escience.simenv.environment.modelling.Environment
 import itmo.escience.simenv.utilities.ScheduleHelper
+import itmo.escience.simenv.utilities.Units.toUnits
 import itmo.escience.simenv.utilities.Utilities._
 
 import scala.beans.BeanProperty
@@ -39,7 +40,8 @@ object ExternalGARun {
     val nodes = config.nodes.map(x => new CapacityBasedNode(id=generateId(), name="", nominalCapacity=x))
     val wf = parseDAX(config.wfPath)
 
-    val Mb_sec_100 = 1024*1024*100/8
+    val Mb_sec_100 = 100Mbit_Sec
+
 
     val networks = List(new Network(id=generateId(), name="", bandwidth=Mb_sec_100, nodes))
     val environment = new BasicEnvironment(nodes, networks)
