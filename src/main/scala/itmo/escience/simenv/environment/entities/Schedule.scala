@@ -251,6 +251,10 @@ class Schedule {
     return (iterator, item, counter)
   }
 
+  def VmNodes():util.Set[Node] = {
+    null
+  }
+
 //  def setMap(newMap: java.util.HashMap[NodeId, scala.collection.mutable.SortedSet[ScheduleItem]]) = {
 //    map = newMap
 //  }
