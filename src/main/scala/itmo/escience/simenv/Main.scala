@@ -1,5 +1,6 @@
 package itmo.escience.simenv
 
+import itmo.escience.simenv.experiments.{GADynamicScheduling, GAStaticScheduling}
 
 /**
  * Created by Mishanya on 12.10.2015.
@@ -10,12 +11,10 @@ package itmo.escience.simenv
 object Main {
   def main(args: Array[String]) {
 
-    import itmo.escience.simenv.utilities.Utilities
+    val exp = new GADynamicScheduling()
 
-    val path = ".\\resources\\wf-examples\\Montage_25.xml"
-
-    val wf = Utilities.parseDAX(path)
-
+    exp.init()
+    exp.run()
   //TODO:
     // 1. read parameters or config
     // 2. create instance or use object of appropriate Experiment

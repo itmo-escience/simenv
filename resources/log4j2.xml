@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+        </Console>
+        <File name="info" fileName="logger.log" immediateFlush="false" append="false">
+            <MarkerFilter marker="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="INFO [%t] - %msg%n"/>
+        </File>
+        <File name="event" fileName="logger.log" immediateFlush="false" append="false">
+            <MarkerFilter marker="event" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="[%t] - %msg%n"/>
+        </File>
+        <File name="schedule" fileName="logger.log" immediateFlush="false" append="false">
+            <MarkerFilter marker="schedule" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="[%t] - %msg%n"/>
+        </File>
+        <File name="task" fileName="logger.log" immediateFlush="false" append="false">
+            <MarkerFilter marker="task" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="[%t] - %msg%n"/>
+        </File>
+        <File name="node" fileName="logger.log" immediateFlush="false" append="false">
+            <MarkerFilter marker="node" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="[%t] - %msg%n"/>
+        </File>
+        <File name="environment" fileName="logger.log" immediateFlush="false" append="false">
+            <MarkerFilter marker="environment" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="[%t] - %msg%n"/>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Root level="trace">
+            <AppenderRef ref="info"/>
+            <AppenderRef ref="event"/>
+            <AppenderRef ref="schedule"/>
+            <AppenderRef ref="task"/>
+            <AppenderRef ref="node"/>
+            <AppenderRef ref="environment"/>
+        </Root>
+    </Loggers>
+</Configuration>

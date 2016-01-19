@@ -23,10 +23,10 @@ class DynamicSchedConfExecutionTest {
   var nodes = List[Node]()
   for (i <- 0 until 9) {
     val res: CpuTimeCarrier = new CpuTimeCarrier(id=s"res_$i", name=s"res_$i",
-      cores=4, reliability = 0.95)
+      cores=4, reliability = 0.90)
     for (j <- 0 until 2) {
       val node: CpuTimeNode = new CpuTimeNode(id = s"res_${i}_node_$j", name = s"res_${i}_node_$j",
-        cores = 4, cpuTime = 50, parent = res.id, reliability = 0.95)
+        cores = 4, cpuTime = 50, parent = res.id, reliability = 0.90)
       res.addChild(node)
     }
     nodes :+= res
