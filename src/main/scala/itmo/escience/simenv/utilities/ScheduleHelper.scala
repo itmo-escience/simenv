@@ -15,7 +15,7 @@ object ScheduleHelper {
       checkStaticSchedule(app, ctx.schedule, ctx, haveToBeFinished)
     }
   }
-  def checkStaticSchedule[T <: Task, N <: Node](wf: Workflow[T], schedule: Schedule, ctx: Context[T, N], haveToBeFinished:Boolean):Unit = {
+  def checkStaticSchedule[T <: Task, N <: Node](wf: Workflow[T], schedule: Schedule[T, N], ctx: Context[T, N], haveToBeFinished:Boolean):Unit = {
 
     // Check schedule for each app:
     // check dependency validaty:

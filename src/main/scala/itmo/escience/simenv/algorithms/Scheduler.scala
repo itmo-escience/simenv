@@ -9,6 +9,6 @@ import itmo.escience.simenv.environment.modelling.Environment
  */
 trait Scheduler {
 
-  def schedule[T <: Task, N <: Node](context: Context[T,N], environment: Environment[N]): Schedule
+  def schedule[T <: Task, N <: Node](context: Context[T,N], environment: Environment[N]): Schedule[T, N]
 
 }

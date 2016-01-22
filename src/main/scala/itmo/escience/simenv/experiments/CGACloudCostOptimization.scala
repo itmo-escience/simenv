@@ -1,7 +1,7 @@
 package itmo.escience.simenv.experiments
 
 import itmo.escience.simenv.algorithms.{RandomScheduler, Scheduler}
-import itmo.escience.simenv.algorithms.ga.GAScheduler
+import itmo.escience.simenv.algorithms.wm.GAScheduler
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl._
 import itmo.escience.simenv.environment.modelling.Environment
@@ -14,22 +14,25 @@ import itmo.escience.simenv.utilities.Units._
 class CGACloudCostOptimization extends Experiment {
   var ctx: Context[DaxTask, CapacityBasedNode] = null
   var env: Environment[CapacityBasedNode] = null
-  var scheduler: Scheduler[DaxTask, CapacityBasedNode] = null
+  var scheduler: Scheduler = null
 
   def init(): Unit = {
     val basepath = ".\\resources\\wf-examples\\"
 //    val basepath = ".\\resources\\"
 //    val wf_name = "crawlerWf"
-      val wf_name = "Montage_25"
+      val wf_name = "Montage_50"
     val wf1 = parseDAX(basepath + wf_name + ".xml", "M1", 200)
     val wf2 = parseDAX(basepath + wf_name + ".xml", "M2", 200)
+    val wf3 = parseDAX(basepath + wf_name + ".xml", "M3", 200)
+    val wf4 = parseDAX(basepath + wf_name + ".xml", "M4", 200)
+    val workload = new MultiWfWorkload(List(wf1, wf2, wf3, wf4))
 
     val idealCapacity: Double = 20
 
     var nodes = List[CapacityBasedNode]()
     for (i <- 0 until 4) {
       val res: CapacityBasedNode = new CapacityBasedNode(id=s"res_$i", name=s"res_$i",
-        capacity = 50)
+        capacity = i*10 + 5)
       nodes :+= res
     }
 
@@ -47,23 +50,23 @@ class CGACloudCostOptimization extends Experiment {
     scheduler = new GAScheduler(crossoverProb=0.4,
       mutationProb=0.2,
       swapMutationProb=0.3,
-      popSize=50,
-      iterationCount=30)
+      popSize=500,
+      iterationCount=100)
 
     ctx = new BasicContext[DaxTask, CapacityBasedNode](env, Schedule.emptySchedule(),
-      estimator, 0.0, new MultiWfWorkload(List(wf1, wf2)))
+      estimator, 0.0, workload)
   }
 
   override def run(): Unit = {
 
-    val random_schedule = RandomScheduler.schedule(ctx.asInstanceOf[Context[DaxTask, Node]], env.asInstanceOf[Environment[Node]])
+    val random_schedule = RandomScheduler.schedule[DaxTask, CapacityBasedNode](ctx, env)
     println(s"Random makespan: ${random_schedule.makespan()}")
 
     println("Init environment:")
     println(env.envPrint())
     val ga_schedule = scheduler.schedule(ctx, env)
     println("GA SCHEDULE:")
-    println(ga_schedule.prettyPrint())
+//    println(ga_schedule.prettyPrint())
     println(s"GA makespan: ${ga_schedule.makespan()}")
     println("Finished")
   }

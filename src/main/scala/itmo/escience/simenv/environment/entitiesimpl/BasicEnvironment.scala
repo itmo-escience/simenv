@@ -41,7 +41,7 @@ class BasicEnvironment(nodesSeq:Seq[CapacityBasedNode], networksSeq: Seq[Network
 
   override def removeNodes(nodesIds: scala.Seq[NodeId]): Unit = throw new Exception("Invalid Operation")
 
-  override def nodeById(nodeId: NodeId): Node = _nodes.get(nodeId)
+  override def nodeById(nodeId: NodeId): CapacityBasedNode = _nodes.get(nodeId)
 
   override def carriers: scala.Seq[Carrier[CapacityBasedNode]] = throw new Exception("Invalid Operation")
 

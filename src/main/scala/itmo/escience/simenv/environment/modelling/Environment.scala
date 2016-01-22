@@ -31,7 +31,7 @@ trait Environment[N <: Node] {
 
 //  def nodeOrContainerById(nodeId:NodeId):Node
 
-  def nodeById(nodeId:NodeId):Node
+  def nodeById(nodeId:NodeId):N
 
   def changeNodeParams(newNodeDescription: N)
 

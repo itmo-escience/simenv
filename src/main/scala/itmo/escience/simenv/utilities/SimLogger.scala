@@ -36,7 +36,7 @@ object SimLogger {
     logger.trace(event, s"time: ${_ctx.currentTime}; Event - ${log.getClass.getSimpleName} ${log.name} ${log.eventTime}")
   }
 
-  def logSched(log: Schedule) = {
+  def logSched(log: Schedule[Task, Node]) = {
     logger.trace(schedule, s"time: ${_ctx.currentTime}; Schedule - \n${log.prettyPrint()}")
   }
 

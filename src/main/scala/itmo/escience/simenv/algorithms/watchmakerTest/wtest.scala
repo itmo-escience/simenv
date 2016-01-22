@@ -8,7 +8,7 @@ import org.uncommons.watchmaker.framework.factories.StringFactory
 import org.uncommons.watchmaker.framework.operators.{EvolutionPipeline, StringMutation, StringCrossover}
 import org.uncommons.watchmaker.framework.selection.RouletteWheelSelection
 import org.uncommons.watchmaker.framework._
-import org.uncommons.watchmaker.framework.termination.TargetFitness
+import org.uncommons.watchmaker.framework.termination.{GenerationCount, TargetFitness}
 
 /**
   * Created by mikhail on 21.01.2016.
@@ -60,7 +60,7 @@ object wtest {
   })
 
   def main(args: Array[String]) {
-    val result = engine.evolve(10, 1, new TargetFitness(11, true))
+    val result = engine.evolve(100, 1, new GenerationCount(100))
     println(result)
   }
 

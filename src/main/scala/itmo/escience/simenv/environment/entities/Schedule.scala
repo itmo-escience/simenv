@@ -223,7 +223,7 @@ class Schedule[T <: Task, N <: Node] {
       // we need to use conversion toList here due to
       // map will not preserve the order of SortedSet (map don't know about custom ordering anything)
       val itemStr = x._2.toList.map({
-        case y: TaskScheduleItem =>
+        case y: TaskScheduleItem[T, N] =>
           s"\tTask - id: ${y.entity.id} start: ${y.startTime} end: ${y.endTime} status: ${y.status}\n"
         case y =>
           s"\tItem (${y.getClass}) - id: ${y.entity.id} start: ${y.startTime} end: ${y.endTime} status: ${y.status}\n"

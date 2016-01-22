@@ -2,10 +2,8 @@ package itmo.escience.simenv.algorithms.wm
 
 import java.util
 
-import itmo.escience.simenv.algorithms.RandomScheduler
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.modelling.Environment
-import org.uma.jmetal.problem.Problem
 
 import scala.collection.JavaConversions._
 
@@ -15,7 +13,7 @@ import scala.collection.JavaConversions._
 
 object WorkflowSchedulingProblem {
 
-  def scheduleToSolution[T <: Task, N <: Node](schedule:Schedule[T, N], context: Context[T, N]):WorkflowSchedulingSolution = {
+  def scheduleToSolution[T <: Task, N <: Node](schedule:Schedule[T, N], context: Context[T, N]):WFSchedSolution = {
     val taskItems = schedule.scheduleItemsSeq().filter({
       case x: TaskScheduleItem[T, N] => true
       case _ => false
@@ -24,14 +22,14 @@ object WorkflowSchedulingProblem {
     var fixed_tasks = List[String]()
     for (n <- fixed.nodeIds()) {
       fixed_tasks = fixed_tasks ++ fixed.getMap.get(n).toList.filter(x => x.status != ScheduleItemStatus.FAILED
-      ).map(x => x.asInstanceOf[TaskScheduleItem].task.id)
+      ).map(x => x.asInstanceOf[TaskScheduleItem[T, N]].task.id)
     }
     val restTasks = taskItems.filter(x => !fixed_tasks.contains(x.task.id))
     val genes = restTasks.map(x => MappedTask(x.task.id, x.node.id)).toList
-    new WorkflowSchedulingSolution(genes)
+    new WFSchedSolution(genes)
   }
 
-  def solutionToSchedule[T <: Task, N <: Node](task1:T, solution: WorkflowSchedulingSolution, context: Context[T, N], environment: Environment[N]): Schedule[T, N] = {
+  def solutionToSchedule[T <: Task, N <: Node](solution: WFSchedSolution, context: Context[T, N], environment: Environment[N]): Schedule[T, N] = {
     val newSchedule = context.schedule.fixedSchedule()
 
     // repair sequence in relation with parent-child dependencies
@@ -40,14 +38,14 @@ object WorkflowSchedulingProblem {
 
     for (x <- repairedOrdering) {
       val (task, nodeId) = x
-      newSchedule.placeTask(task1,
+      newSchedule.placeTask(task,
         environment.nodeById(nodeId),
         context)
     }
     newSchedule.asInstanceOf[Schedule[T, N]]
   }
 
-  def repairOrdering[T <: Task, N <: Node](solution: WorkflowSchedulingSolution, context: Context[T, N]): List[(T, NodeId)] = {
+  def repairOrdering[T <: Task, N <: Node](solution: WFSchedSolution, context: Context[T, N]): List[(T, NodeId)] = {
     val wf = context.workload.apps.head
     val tasksSeq = new util.TreeSet[Pair[(T, NodeId)]](solution.tasksSeq().zipWithIndex
       .map( { case (x, i) =>
@@ -91,31 +89,3 @@ object WorkflowSchedulingProblem {
     override def compareTo(o: Pair[T]): Int = num.compareTo(o.num)
   }
 }
-
-class WorkflowSchedulingProblem[T <: Task, N <: Node](wf:Workflow[T], newSchedule:Schedule[T, N], context:Context[T, N], environment: Environment[N]) extends Problem[WorkflowSchedulingSolution]{
-
-  override def getNumberOfObjectives: Int = 1
-
-  override def getNumberOfConstraints: Int = 0
-
-  override def getName: String = "WorkflowSchedulingProblem"
-
-  override def evaluate(s: WorkflowSchedulingSolution): Unit = {
-    val schedule = WorkflowSchedulingProblem.solutionToSchedule[T, N](s, context, environment)
-    val makespan = schedule.makespan()
-    s.setObjective(0, makespan)
-  }
-
-  override def getNumberOfVariables: Int = wf.tasks.length
-
-  override def createSolution(): WorkflowSchedulingSolution = {
-    // schedule = RandomScheduler.schedule()
-    // convert to chromosome
-    // return it
-    val schedule = RandomScheduler.schedule(context, environment)
-
-    val solution = WorkflowSchedulingProblem.scheduleToSolution(schedule, context)
-    solution
-  }
-}
-

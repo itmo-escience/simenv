@@ -7,11 +7,11 @@ import itmo.escience.simenv.simulator.events.EventQueue
 /**
  * Created by Nikolay on 11/29/2015.
  */
-class BasicContext[T <: Task, N <: Node](var environment:Environment[N], var schedule: Schedule, var estimator: Estimator[T, N],
+class BasicContext[T <: Task, N <: Node](var environment:Environment[N], var schedule: Schedule[T, N], var estimator: Estimator[T, N],
                          var currentTime:ModellingTimestamp,
                          var workload: Workload[T]) extends Context[T, N] {
 
-  def applySchedule(newSched: Schedule, queue: EventQueue) = {
+  def applySchedule(newSched: Schedule[T, N], queue: EventQueue) = {
     schedule = newSched
   }
 
