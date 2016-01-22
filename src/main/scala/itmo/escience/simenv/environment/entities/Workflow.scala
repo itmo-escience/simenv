@@ -10,17 +10,17 @@ import collection.JavaConversions._
 /**
  * Created by user on 02.11.2015.
  */
-class Workflow(val id: WorkflowId, val name:String, val headTask:Task) extends NameAndId[WorkflowId] {
-  private var _idToTasks:Map[TaskId, Task] = null
-  private var _allTasks:Seq[Task] = null
-  def tasks: Seq[Task] = {
+class Workflow[T <: Task](val id: WorkflowId, val name:String, val headTask:Task, val deadline: ModellingTimestamp) extends NameAndId[WorkflowId] {
+  private var _idToTasks:Map[TaskId, T] = null
+  private var _allTasks:Seq[T] = null
+  def tasks: Seq[T] = {
 
     if (_allTasks == null) {
-      val allTasks: ArrayBuffer[Task] = new ArrayBuffer[Task]()
+      val allTasks: ArrayBuffer[T] = new ArrayBuffer[T]()
       val deque = new util.ArrayDeque[Task](headTask.children)
       while (!deque.isEmpty) {
         val task = deque.removeFirst()
-        allTasks += task
+        allTasks += task.asInstanceOf[T]
         for (t <- task.children) {
           deque.addLast(t)
         }

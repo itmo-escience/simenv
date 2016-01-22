@@ -12,7 +12,7 @@ trait Context[T <: Task, N <: Node] {
 
   def schedule: Schedule
 
-  def workload: Workload
+  def workload: Workload[T]
 
   def currentTime: ModellingTimestamp
 

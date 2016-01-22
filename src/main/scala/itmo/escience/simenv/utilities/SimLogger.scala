@@ -3,7 +3,6 @@ package itmo.escience.simenv.utilities
 import java.io.File
 
 import itmo.escience.simenv.environment.entities._
-import itmo.escience.simenv.environment.entitiesimpl.CarrierNodeEnvironment
 import itmo.escience.simenv.environment.modelling.Environment
 import itmo.escience.simenv.simulator.events.Event
 import org.apache.logging.log4j.core.LoggerContext
@@ -27,9 +26,9 @@ object SimLogger {
   val env: Marker = MarkerManager.getMarker("environment")
   val node: Marker = MarkerManager.getMarker("node")
 
-  var _ctx: Context[DaxTask, CpuTimeNode] = null
+  var _ctx: Context[DaxTask, Node] = null
 
-  def setCtx(ctx: Context[DaxTask, CpuTimeNode]) = {
+  def setCtx(ctx: Context[DaxTask, Node]) = {
     _ctx = ctx
   }
 
@@ -45,8 +44,8 @@ object SimLogger {
     logger.trace(task, s"time: ${_ctx.currentTime}; Task - ${log.id}")
   }
 
-  def logEnv(log: Environment[CpuTimeNode]) = {
-    logger.trace(env, s"time: ${_ctx.currentTime}; Environment - \n${log.asInstanceOf[CarrierNodeEnvironment[CpuTimeNode]].envPrint()}")
+  def logEnv(log: Environment[Node]) = {
+    logger.trace(env, s"time: ${_ctx.currentTime}; Environment - \n${log.envPrint()}")
   }
 
   def logNode(log: Node) = {

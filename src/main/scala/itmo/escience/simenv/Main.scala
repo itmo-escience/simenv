@@ -1,6 +1,6 @@
 package itmo.escience.simenv
 
-import itmo.escience.simenv.experiments.{GADynamicScheduling, GAStaticScheduling}
+import itmo.escience.simenv.experiments.CGACloudCostOptimization
 
 /**
  * Created by Mishanya on 12.10.2015.
@@ -10,15 +10,15 @@ import itmo.escience.simenv.experiments.{GADynamicScheduling, GAStaticScheduling
   */
 object Main {
   def main(args: Array[String]) {
-
-    val exp = new GADynamicScheduling()
-
-    exp.init()
-    exp.run()
-  //TODO:
     // 1. read parameters or config
     // 2. create instance or use object of appropriate Experiment
     // 3. Run experiment
     // 4. Exit
+
+    val exp = new CGACloudCostOptimization()
+
+    exp.init()
+    exp.run()
+
   }
 }

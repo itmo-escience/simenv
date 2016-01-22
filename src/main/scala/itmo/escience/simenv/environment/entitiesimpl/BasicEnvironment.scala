@@ -15,13 +15,7 @@ class BasicEnvironment(nodesSeq:Seq[CapacityBasedNode], networksSeq: Seq[Network
   }
 
   var _networks = mutable.HashSet(networksSeq:_*)
-  /**
-   * Adds physical or virtual nodes to the pool of resources
-   * the node is virtual if we cannot directly control physical machine when it runs
-   * (for example, a node which has been bought of Amazon EC2 or GAE)
-   * @param nodes sequence of nodes
-   * @return
-   */
+
   override def addNodes(nodes: Seq[CapacityBasedNode]): Unit = {
     for (node <- nodes){
       if (_nodes.containsKey(node.id)){
@@ -50,4 +44,6 @@ class BasicEnvironment(nodesSeq:Seq[CapacityBasedNode], networksSeq: Seq[Network
   override def nodeById(nodeId: NodeId): Node = _nodes.get(nodeId)
 
   override def carriers: scala.Seq[Carrier[CapacityBasedNode]] = throw new Exception("Invalid Operation")
+
+  override def envPrint: String = "Nodes: (" + nodes.map(x => x.capacity + " ") + ")"
 }

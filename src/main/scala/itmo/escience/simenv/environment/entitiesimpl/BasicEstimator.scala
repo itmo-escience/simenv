@@ -9,7 +9,7 @@ import itmo.escience.simenv.environment.modelling.{Environment, Estimator}
 class BasicEstimator[N <: CapacityBasedNode](idealCapacity:Double, env: Environment[N]) extends Estimator[DaxTask, N]{
 
   override def calcTime(task: DaxTask, node: N): Double = {
-    (idealCapacity / node.currentCapacity) * task.execTime
+    (idealCapacity / node.capacity) * task.execTime
   }
 
   override def calcTransferTime(from: (DaxTask, N), to: (DaxTask, N)): Double = {

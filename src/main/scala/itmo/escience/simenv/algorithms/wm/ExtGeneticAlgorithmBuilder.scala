@@ -1,17 +1,19 @@
-package itmo.escience.simenv.algorithms.ga
+package itmo.escience.simenv.algorithms.wm
 
 import java.util
 import java.util.Collections
 
 import org.uma.jmetal.algorithm.Algorithm
-import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.{SteadyStateGeneticAlgorithm, GenerationalGeneticAlgorithm, GeneticAlgorithmBuilder}
-import org.uma.jmetal.operator.{SelectionOperator, MutationOperator, CrossoverOperator}
+import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.{GenerationalGeneticAlgorithm, GeneticAlgorithmBuilder, SteadyStateGeneticAlgorithm}
+import org.uma.jmetal.operator.{CrossoverOperator, MutationOperator, SelectionOperator}
 import org.uma.jmetal.problem.Problem
 import org.uma.jmetal.solution.Solution
 import org.uma.jmetal.util.JMetalException
 import org.uma.jmetal.util.comparator.ObjectiveComparator
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator
+
 import scala.collection.JavaConversions._
+
 /**
  * Created by user on 02.12.2015.
  */

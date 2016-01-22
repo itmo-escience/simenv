@@ -1,6 +1,6 @@
 package itmo.escience.simenv.environment.modelling
 
-import itmo.escience.simenv.environment.entities.Workflow
+import itmo.escience.simenv.environment.entities.{Task, Workflow}
 
 /**
  * Created by user on 27.11.2015.
@@ -8,6 +8,6 @@ import itmo.escience.simenv.environment.entities.Workflow
  *  as currently executed as have been added to the queue
  *  TODO: methods will be added here during development process
  */
-trait Workload {
-  def apps: Seq[Workflow]
+trait Workload[T <: Task] {
+  def apps: Seq[Workflow[T]]
 }

@@ -1,13 +1,18 @@
-package itmo.escience.simenv.algorithms.ga
+package itmo.escience.simenv.algorithms.wm
+
+import java.util.Random
 
 import itmo.escience.simenv.algorithms.Scheduler
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl.SingleAppWorkload
 import itmo.escience.simenv.environment.modelling.Environment
 import org.uma.jmetal.algorithm.Algorithm
-import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.GeneticAlgorithmBuilder
 import org.uma.jmetal.operator.impl.selection.BinaryTournamentSelection
 import org.uma.jmetal.util.{AlgorithmRunner, JMetalLogger}
+import org.uncommons.maths.random.MersenneTwisterRNG
+import org.uncommons.watchmaker.framework.factories.StringFactory
+import org.uncommons.watchmaker.framework.{CandidateFactory, GenerationalEvolutionEngine, EvolutionEngine}
+
 import scala.collection.JavaConversions._
 
 /**
@@ -61,7 +66,6 @@ class GAScheduler[N <: Node](crossoverProb:Double, mutationProb: Double, swapMut
     val newSchedule = Schedule.emptySchedule()
     val nodes = context.environment.nodes.filter(x => x.status == NodeStatus.UP)
 
-
     val problemName = "WorkflowScheduling"
     val problem = new WorkflowSchedulingProblem(wf, newSchedule, context, environment)
 
@@ -85,6 +89,23 @@ class GAScheduler[N <: Node](crossoverProb:Double, mutationProb: Double, swapMut
 
     //throw new NotImplementedError()
     WorkflowSchedulingProblem.solutionToSchedule(best, context, environment)
+  }
+
+  override def schedule(context: Context[DaxTask, N], environment: Environment[N]): Schedule = {
+    val wf = context.workload.apps.head
+    val newSchedule = Schedule.emptySchedule()
+    val nodes = context.environment.nodes.filter(x => x.status == NodeStatus.UP)
+
+
+    val factory: CandidateFactory[String] = new StringFactory(chars, 11)
+
+    val rng: Random = new MersenneTwisterRNG()
+
+    val  engine: EvolutionEngine[String] = new GenerationalEvolutionEngine[String](factory,
+      pipeline,
+      fitnessEvaluator,
+      selector,
+      rng)
   }
 
 }
