@@ -1,7 +1,7 @@
 package itmo.escience.simenv.experiments
 
 import itmo.escience.simenv.algorithms.{RandomScheduler, Scheduler}
-import itmo.escience.simenv.algorithms.wm.GAScheduler
+import itmo.escience.simenv.algorithms.wm.{CGAScheduler, GAScheduler}
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl._
 import itmo.escience.simenv.environment.modelling.Environment
@@ -47,10 +47,10 @@ class CGACloudCostOptimization extends Experiment {
     env = new BasicEnvironment(nodes, networks)
     val estimator = new BasicEstimator[CapacityBasedNode](idealCapacity, env)
 
-    scheduler = new GAScheduler(crossoverProb=0.4,
+    scheduler = new CGAScheduler(crossoverProb=0.4,
       mutationProb=0.2,
       swapMutationProb=0.3,
-      popSize=500,
+      popSize=100,
       iterationCount=100)
 
     ctx = new BasicContext[DaxTask, CapacityBasedNode](env, Schedule.emptySchedule(),

@@ -7,7 +7,7 @@ import scala.collection.JavaConversions._
 /**
  * individual for genetic algorithm
  */
-class WFSchedSolution(mappedTasks: List[MappedTask]) {
+class WFSchedSolution(mappedTasks: List[MappedTask]) extends EvSolution {
 
   def this(that:WFSchedSolution) = this(that._genes.toList)
 
