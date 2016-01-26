@@ -5,4 +5,4 @@ import itmo.escience.simenv.environment.entities.NodeId
 /**
  * gene for genetic algorithm
  */
-case class MappedEnv(vmId: NodeId, cpuTime: Double)
+case class MappedEnv(capacity: Double)

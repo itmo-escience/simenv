@@ -1,9 +1,9 @@
-//package itmo.escience.simenv.algorithms.ga.vmga
+//package itmo.escience.simenv.algorithms.vm.env
 //
 //import java.util
 //
 //import itmo.escience.simenv.algorithms.RandomScheduler
-//import itmo.escience.simenv.algorithms.ga.{WorkflowSchedulingSolution, WorkflowSchedulingProblem}
+//import itmo.escience.simenv.algorithms.wm.WorkflowSchedulingSolution
 //import itmo.escience.simenv.environment.entities._
 //import itmo.escience.simenv.utilities.Utilities._
 //import org.uma.jmetal.problem.Problem

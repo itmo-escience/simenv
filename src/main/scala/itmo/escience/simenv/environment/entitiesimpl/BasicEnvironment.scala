@@ -7,7 +7,7 @@ import scala.collection.JavaConversions._
 /**
  * Created by Nikolay on 11/29/2015.
  */
-class BasicEnvironment(nodesSeq:Seq[CapacityBasedNode], networksSeq: Seq[Network]) extends Environment[CapacityBasedNode]{
+class BasicEnvironment(nodesSeq:Seq[CapacityBasedNode], networksSeq: Seq[Network], types: List[Double]) extends Environment[CapacityBasedNode]{
   val _nodes:java.util.HashMap[NodeId, CapacityBasedNode] = new java.util.HashMap()
 
   for (x <- nodesSeq){
@@ -42,6 +42,10 @@ class BasicEnvironment(nodesSeq:Seq[CapacityBasedNode], networksSeq: Seq[Network
   override def removeNodes(nodesIds: scala.Seq[NodeId]): Unit = throw new Exception("Invalid Operation")
 
   override def nodeById(nodeId: NodeId): CapacityBasedNode = _nodes.get(nodeId)
+
+  def indexOfNode(nodeId: NodeId): Int = {
+    nodes.indexOf(nodeById(nodeId))
+  }
 
   override def carriers: scala.Seq[Carrier[CapacityBasedNode]] = throw new Exception("Invalid Operation")
 

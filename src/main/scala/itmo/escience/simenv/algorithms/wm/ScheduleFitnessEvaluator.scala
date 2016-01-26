@@ -2,6 +2,7 @@ package itmo.escience.simenv.algorithms.wm
 
 import java.util
 
+import itmo.escience.simenv.algorithms.wm.env.EnvConfSolution
 import itmo.escience.simenv.environment.entities.{Context, Task, Node}
 import itmo.escience.simenv.environment.modelling.Environment
 import org.uncommons.watchmaker.framework.FitnessEvaluator
@@ -14,6 +15,12 @@ class ScheduleFitnessEvaluator[T <: Task, N <: Node](ctx: Context[T, N], env: En
 
   override def getFitness(t: WFSchedSolution, list: util.List[_ <: WFSchedSolution]): Double = {
     val schedule = WorkflowSchedulingProblem.solutionToSchedule[T, N](t, ctx, env)
+    schedule.makespan()
+  }
+
+  def getFitness(s: WFSchedSolution, e: EnvConfSolution): Double = {
+    // ENV!!
+    val schedule = WorkflowSchedulingProblem.solutionToSchedule[T, N](s, ctx, env)
     schedule.makespan()
   }
 }

@@ -38,8 +38,8 @@ class ScheduleCrossoverOperator(crossoverPoints: Int = 1)
 
     for ((taskId, i) <- genesToBeReplaced_1) {
       val j = genesToBeReplaced_2(taskId)
-      val node_1 = p1.getVariableValue(i).nodeId
-      val node_2 = p2.getVariableValue(j).nodeId
+      val node_1 = p1.getVariableValue(i).nodeIdx
+      val node_2 = p2.getVariableValue(j).nodeIdx
       p1.setVariableValue(i, MappedTask(taskId, node_2))
       p2.setVariableValue(j, MappedTask(taskId, node_1))
     }

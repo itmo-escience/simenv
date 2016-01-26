@@ -21,15 +21,12 @@ class EnvConfSolution(mappedVms: List[MappedEnv]) extends EvSolution {
     _genes.set(i, t)
   }
 
-  def getVmElement(vmId: NodeId) = {
-    _genes.filter(x => x.vmId == vmId).head
-  }
+//  def getVmElement(vmId: NodeId) = {
+//    _genes.filter(x => x.vmId == vmId).head
+//  }
 
-  def addValue(vmId: NodeId, v: Double): Unit = {
-    // TODO optimize this and next function
-    val item = _genes.filter(x => x.vmId == vmId).head
-    _genes.remove(item)
-    _genes.add(new MappedEnv(item.vmId, item.cpuTime + v))
+  def addValue(c: Double): Unit = {
+    _genes.add(new MappedEnv(c))
   }
 
   def addDeleteItems(delete: List[MappedEnv], add: List[MappedEnv]) = {
@@ -49,12 +46,13 @@ class EnvConfSolution(mappedVms: List[MappedEnv]) extends EvSolution {
     throw new NotImplementedError()
   }
 
-  def copy(): EnvConfSolution = {
+  override def copy: EnvConfSolution = {
     new EnvConfSolution(this)
   }
 
   def getNumberOfVariables: Int = _genes.size()
 
-  def vmsSeq() = _genes.toList
+  override def genSeq = _genes.toList
 
+  def size = _genes.size
 }

@@ -25,12 +25,23 @@ class WFSchedSolution(mappedTasks: List[MappedTask]) extends EvSolution {
     throw new NotImplementedError()
   }
 
-  def copy(): WFSchedSolution = {
+  override def copy: WFSchedSolution = {
     new WFSchedSolution(this)
   }
 
   def getNumberOfVariables: Int = _genes.size()
 
-  def tasksSeq() = _genes.toList
+  override def genSeq = _genes.toList
 
+  def maxNodeIdx: Int = {
+    var max = 0
+    for (item <-_genes) {
+      if (item.nodeIdx > max) {
+        max = item.nodeIdx
+      }
+    }
+    max
+  }
+
+  override var fitness: Double = _
 }

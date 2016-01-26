@@ -3,6 +3,7 @@ package itmo.escience.simenv.algorithms.wm
 import java.util
 
 import itmo.escience.simenv.environment.entities._
+import itmo.escience.simenv.environment.entitiesimpl.BasicEnvironment
 import itmo.escience.simenv.environment.modelling.Environment
 
 import scala.collection.JavaConversions._
@@ -25,7 +26,7 @@ object WorkflowSchedulingProblem {
       ).map(x => x.asInstanceOf[TaskScheduleItem[T, N]].task.id)
     }
     val restTasks = taskItems.filter(x => !fixed_tasks.contains(x.task.id))
-    val genes = restTasks.map(x => MappedTask(x.task.id, x.node.id)).toList
+    val genes = restTasks.map(x => MappedTask(x.task.id, context.environment.asInstanceOf[BasicEnvironment].indexOfNode(x.node.id))).toList
     new WFSchedSolution(genes)
   }
 
@@ -47,7 +48,7 @@ object WorkflowSchedulingProblem {
 
   def repairOrdering[T <: Task, N <: Node](solution: WFSchedSolution, context: Context[T, N]): List[(T, NodeId)] = {
     val wf = context.workload.apps.head
-    val tasksSeq = new util.TreeSet[Pair[(T, NodeId)]](solution.tasksSeq().zipWithIndex
+    val tasksSeq = new util.TreeSet[Pair[(T, NodeId)]](solution.genSeq().zipWithIndex
       .map( { case (x, i) =>
         new Pair(i,
           (wf.taskById(x.taskId), x.nodeId)
