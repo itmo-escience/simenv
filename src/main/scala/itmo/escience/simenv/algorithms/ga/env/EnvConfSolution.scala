@@ -1,8 +1,8 @@
-package itmo.escience.simenv.algorithms.wm.env
+package itmo.escience.simenv.algorithms.ga.env
 
 import java.util
 
-import itmo.escience.simenv.algorithms.wm.EvSolution
+import itmo.escience.simenv.algorithms.ga.EvSolution
 import itmo.escience.simenv.environment.entities.NodeId
 import org.uma.jmetal.solution.Solution
 
@@ -29,6 +29,10 @@ class EnvConfSolution(mappedVms: List[MappedEnv]) extends EvSolution {
     _genes.add(new MappedEnv(c))
   }
 
+  def deleteValue(i: Int): MappedEnv = {
+    _genes.remove(i)
+  }
+
   def addDeleteItems(delete: List[MappedEnv], add: List[MappedEnv]) = {
     for (i <- delete) {
       _genes.remove(i)
@@ -52,7 +56,9 @@ class EnvConfSolution(mappedVms: List[MappedEnv]) extends EvSolution {
 
   def getNumberOfVariables: Int = _genes.size()
 
-  override def genSeq = _genes.toList
+  def genSeq: List[MappedEnv] = _genes.toList
 
   def size = _genes.size
+
+  override var fitness: Double = _
 }

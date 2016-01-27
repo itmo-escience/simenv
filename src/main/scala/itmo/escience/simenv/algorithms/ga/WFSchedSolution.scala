@@ -1,4 +1,4 @@
-package itmo.escience.simenv.algorithms.wm
+package itmo.escience.simenv.algorithms.ga
 
 import java.util
 
@@ -7,7 +7,7 @@ import scala.collection.JavaConversions._
 /**
  * individual for genetic algorithm
  */
-class WFSchedSolution(mappedTasks: List[MappedTask]) extends EvSolution {
+class WFSchedSolution(mappedTasks: List[MappedTask]) extends EvSolution[MappedTask] {
 
   def this(that:WFSchedSolution) = this(that._genes.toList)
 
@@ -31,7 +31,7 @@ class WFSchedSolution(mappedTasks: List[MappedTask]) extends EvSolution {
 
   def getNumberOfVariables: Int = _genes.size()
 
-  override def genSeq = _genes.toList
+  def genSeq: List[MappedTask] = _genes.toList
 
   def maxNodeIdx: Int = {
     var max = 0

@@ -1,4 +1,4 @@
-package itmo.escience.simenv.algorithms.wm
+package itmo.escience.simenv.algorithms.ga
 
 import java.util
 import java.util.Random

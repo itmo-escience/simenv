@@ -1,8 +1,9 @@
-package itmo.escience.simenv.algorithms.wm
+package itmo.escience.simenv.algorithms.ga
 
 import java.util
 
-import itmo.escience.simenv.algorithms.wm.env.EnvConfSolution
+import itmo.escience.simenv.algorithms.ga.env.EnvConfSolution
+import itmo.escience.simenv.algorithms.vm.env.EnvConfigurationProblem
 import itmo.escience.simenv.environment.entities.{Context, Task, Node}
 import itmo.escience.simenv.environment.modelling.Environment
 import org.uncommons.watchmaker.framework.FitnessEvaluator
@@ -19,18 +20,8 @@ class ScheduleFitnessEvaluator[T <: Task, N <: Node](ctx: Context[T, N], env: En
   }
 
   def getFitness(s: WFSchedSolution, e: EnvConfSolution): Double = {
-    // ENV!!
-    val schedule = WorkflowSchedulingProblem.solutionToSchedule[T, N](s, ctx, env)
+    val environment = EnvConfigurationProblem.solutionToEnvironment[T, N](e, ctx)
+    val schedule = WorkflowSchedulingProblem.solutionToSchedule[T, N](s, ctx, environment)
     schedule.makespan()
   }
 }
-
-//trait FitnessCounter {
-//
-//  var counter:Int
-//
-//  abstract override def getFitness(t: WFSchedSolution, list: util.List[_ <: WFSchedSolution]): Double = {
-//    super.getFitness(t, list)
-//    coounter += 1
-//  }
-//}

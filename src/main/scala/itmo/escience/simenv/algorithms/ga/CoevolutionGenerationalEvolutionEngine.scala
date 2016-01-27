@@ -1,10 +1,11 @@
-package itmo.escience.simenv.algorithms.wm
+package itmo.escience.simenv.algorithms.ga
 
 import java.util
 import java.util.concurrent._
 import java.util.{Collections, Random}
 
-import itmo.escience.simenv.algorithms.wm.env.{EnvCandidateFactory, EnvConfSolution}
+import itmo.escience.simenv.algorithms.ga.env.{EnvCandidateFactory, EnvConfSolution}
+import itmo.escience.simenv.environment.entities.{Node, Task}
 import org.uncommons.util.concurrent.ConfigurableThreadFactory
 import org.uncommons.util.id.{IntSequenceIDSource, IDSource, StringPrefixIDSource}
 import org.uncommons.watchmaker.framework._
@@ -13,18 +14,19 @@ import scala.collection.JavaConversions._
 /**
   * Created by mikhail on 25.01.2016.
   */
-class CoevolutionGenerationalEvolutionEngine(schedFactory: ScheduleCandidateFactory, envFactory: EnvCandidateFactory,
+class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory: ScheduleCandidateFactory[T, N], envFactory: EnvCandidateFactory[T, N],
    schedOperators: EvolutionaryOperator[WFSchedSolution], envOperators: EvolutionaryOperator[EnvConfSolution],
-   fitnessEvaluator: ScheduleFitnessEvaluator,
+   fitnessEvaluator: ScheduleFitnessEvaluator[T, N],
    selectionStrategy: SelectionStrategy[Object], rng: Random) extends GenerationalEvolutionEngine[WFSchedSolution](schedFactory,
   schedOperators, fitnessEvaluator, selectionStrategy, rng) {
 
   private var concurrentWorker: BuddiesEvaluationWorker = null
-  private val observers: util.Set[EvolutionObserver[_ >: WFSchedSolution]] = null
+  private val observers: util.Set[EvolutionObserver[_ >: WFSchedSolution]] = new util.HashSet[EvolutionObserver[_ >: WFSchedSolution]]
 
   var best: (WFSchedSolution, EnvConfSolution, Double) = null
 
-  def nextEvolutionStep(evalSchedPop: util.List[EvaluatedCandidate[WFSchedSolution]], evalEnvPop: util.List[EvaluatedCandidate[EnvConfSolution]], eliteCount: Int, rng: Random) = {
+  def nextEvolutionStep(evalSchedPop: util.List[EvaluatedCandidate[WFSchedSolution]], evalEnvPop: util.List[EvaluatedCandidate[EnvConfSolution]], eliteCount: Int, rng: Random):
+                                                                            (util.List[EvaluatedCandidate[WFSchedSolution]], util.List[EvaluatedCandidate[EnvConfSolution]]) = {
     val schedPop: util.List[WFSchedSolution]  = new util.ArrayList[WFSchedSolution](evalSchedPop.size())
     val envPop: util.List[EnvConfSolution] = new util.ArrayList[EnvConfSolution](evalEnvPop.size())
 
@@ -52,11 +54,8 @@ class CoevolutionGenerationalEvolutionEngine(schedFactory: ScheduleCandidateFact
     evaluatePopulation(schedPop1, envPop1)
   }
 
-  override def nextEvolutionStep(evaluatedPopulation: util.List[EvaluatedCandidate[WFSchedSolution]], eliteCount: Int, rng: Random): NotImplementedError = new NotImplementedError()
-
-  override def evaluatePopulation(population: util.List[WFSchedSolution]): NotImplementedError = new NotImplementedError()
-
-  def evaluatePopulation(schedPop: util.List[WFSchedSolution], envPop: util.List[EnvConfSolution]): (util.List[EvaluatedCandidate[WFSchedSolution]], util.List[EvaluatedCandidate[EnvConfSolution]]) = {
+  def evaluatePopulation(schedPop: util.List[WFSchedSolution], envPop: util.List[EnvConfSolution]):
+          (util.List[EvaluatedCandidate[WFSchedSolution]], util.List[EvaluatedCandidate[EnvConfSolution]]) = {
     val buddies: util.List[(WFSchedSolution, EnvConfSolution)] = createBuddies(schedPop, envPop)
     val friendship: util.Map[(WFSchedSolution, EnvConfSolution), Double] = evaluateFriendship(buddies)
     val (schedBuddies, envBuddies) = parseFriendship(friendship)
@@ -67,9 +66,13 @@ class CoevolutionGenerationalEvolutionEngine(schedFactory: ScheduleCandidateFact
     (evalSchedPop, evalEnvPop)
   }
 
-  def evolvePopulation(populationSize: Int, eliteCount: Int, seedCandidates: util.Collection[EvSolution], conditions: TerminationCondition*): (WFSchedSolution, EnvConfSolution, Double) = {
+  def evolve(populationSize: Int, eliteCount: Int, conditions: TerminationCondition): (WFSchedSolution, EnvConfSolution, Double) = {
+    evolvePopulation(populationSize, eliteCount, Collections.emptySet[EvSolution[_]], conditions)
+  }
+
+  def evolvePopulation(populationSize: Int, eliteCount: Int, seedCandidates: util.Collection[EvSolution[_]], conditions: TerminationCondition): (WFSchedSolution, EnvConfSolution, Double) = {
     if (eliteCount >= 0 && eliteCount < populationSize) {
-      if(conditions.isEmpty) {
+      if(conditions == null) {
         throw new IllegalArgumentException("At least one TerminationCondition must be specified.");
       } else {
         var gen: Int = 0
@@ -87,7 +90,10 @@ class CoevolutionGenerationalEvolutionEngine(schedFactory: ScheduleCandidateFact
           x.fitness = 66613666
         }
 
-        var (evalSchedPop, evalEnvPop) = evaluatePopulation(schedPop, envPop)
+
+        var res = evaluatePopulation(schedPop, envPop)
+        var evalSchedPop: util.List[EvaluatedCandidate[WFSchedSolution]] = res._1
+        var evalEnvPop: util.List[EvaluatedCandidate[EnvConfSolution]] = res._2
 
         EvolutionUtils.sortEvaluatedPopulation(evalSchedPop, fitnessEvaluator.isNatural)
         EvolutionUtils.sortEvaluatedPopulation(evalEnvPop, fitnessEvaluator.isNatural)
@@ -96,11 +102,13 @@ class CoevolutionGenerationalEvolutionEngine(schedFactory: ScheduleCandidateFact
         var envData = EvolutionUtils.getPopulationData(evalEnvPop, fitnessEvaluator.isNatural, eliteCount, gen, startTime)
         notifyPopulationChange(schedData)
 
-        var satisfiedConditions: util.List[TerminationCondition] = EvolutionUtils.shouldContinue(schedData, conditions.head)
+        var satisfiedConditions: util.List[TerminationCondition] = EvolutionUtils.shouldContinue(schedData, conditions)
 
         while (satisfiedConditions != null) {
           gen += 1
-          (evalSchedPop, evalEnvPop) = nextEvolutionStep(evalSchedPop, evalEnvPop, eliteCount, rng)
+          res = nextEvolutionStep(evalSchedPop, evalEnvPop, eliteCount, rng)
+          evalSchedPop = res._1
+          evalEnvPop = res._2
 
           EvolutionUtils.sortEvaluatedPopulation(evalSchedPop, fitnessEvaluator.isNatural)
           EvolutionUtils.sortEvaluatedPopulation(evalEnvPop, fitnessEvaluator.isNatural)
@@ -110,7 +118,7 @@ class CoevolutionGenerationalEvolutionEngine(schedFactory: ScheduleCandidateFact
           notifyPopulationChange(schedData)
 
           // Increment
-          satisfiedConditions = EvolutionUtils.shouldContinue(schedData, conditions.head)
+          satisfiedConditions = EvolutionUtils.shouldContinue(schedData, conditions)
         }
         best
       }
@@ -120,7 +128,7 @@ class CoevolutionGenerationalEvolutionEngine(schedFactory: ScheduleCandidateFact
   }
 
   def createBuddies(schedPop: util.List[WFSchedSolution], envPop: util.List[EnvConfSolution]): util.List[(WFSchedSolution, EnvConfSolution)] = {
-    val buddies: util.List[(WFSchedSolution, EnvConfSolution)] = util.List[(WFSchedSolution, EnvConfSolution)]
+    val buddies: util.List[(WFSchedSolution, EnvConfSolution)] = new util.ArrayList[(WFSchedSolution, EnvConfSolution)]
     for (s <- schedPop) {
       val availableNodes = envPop.filter(x => s.maxNodeIdx <= x.size)
       if (availableNodes.isEmpty) {
@@ -165,7 +173,7 @@ class CoevolutionGenerationalEvolutionEngine(schedFactory: ScheduleCandidateFact
     for (pair <- buddies) {
       val fit = fitnessEvaluator.getFitness(pair._1, pair._2)
       friendship.put(pair, fit)
-      if (fit < best._3) {
+      if (best == null || fit < best._3) {
         best = (pair._1, pair._2, fit)
       }
     }
@@ -179,10 +187,10 @@ class CoevolutionGenerationalEvolutionEngine(schedFactory: ScheduleCandidateFact
     for ((k, v) <- friendship) {
       val sched = k._1
       val env = k._2
-      if (schedBuddies.containsKey(sched)) {
+      if (!schedBuddies.containsKey(sched)) {
         schedBuddies.put(sched, new util.ArrayList[Double]())
       }
-      if (envBuddies.containsKey(env)) {
+      if (!envBuddies.containsKey(env)) {
         envBuddies.put(env, new util.ArrayList[Double]())
       }
       schedBuddies.get(sched).add(v)
@@ -237,13 +245,13 @@ class CoevolutionGenerationalEvolutionEngine(schedFactory: ScheduleCandidateFact
 
 }
 
-class BuddiesEvaluationTask(fitnessEvaluator: ScheduleFitnessEvaluator, pair: (WFSchedSolution, EnvConfSolution)) extends Callable[(WFSchedSolution, EnvConfSolution, Double)] {
+class BuddiesEvaluationTask(fitnessEvaluator: ScheduleFitnessEvaluator[_ <: Task, _ <: Node], pair: (WFSchedSolution, EnvConfSolution)) extends Callable[(WFSchedSolution, EnvConfSolution, Double)] {
   override def call(): (WFSchedSolution, EnvConfSolution, Double) = {
     (pair._1, pair._2, fitnessEvaluator.getFitness(pair._1, pair._2))
   }
 }
 
-class BuddiesEvaluationWorker extends FitnessEvaluationWorker {
+class BuddiesEvaluationWorker {
   val  WORKER_ID_SOURCE: IDSource[String] = new StringPrefixIDSource("FitnessEvaluationWorker", new IntSequenceIDSource())
   val workQueue: LinkedBlockingQueue[Runnable] = new LinkedBlockingQueue()
   val threadFactory: ConfigurableThreadFactory = new ConfigurableThreadFactory(WORKER_ID_SOURCE.nextID(), 5, true)
@@ -252,6 +260,15 @@ class BuddiesEvaluationWorker extends FitnessEvaluationWorker {
 
   def submit(task: BuddiesEvaluationTask): Future[(WFSchedSolution, EnvConfSolution, Double)] = {
     executor.submit(task)
+  }
+
+  def main(args: Array[String]) = {
+    new BuddiesEvaluationWorker()
+  }
+
+  override def finalize() = {
+    executor.shutdown()
+    super.finalize()
   }
 }
 

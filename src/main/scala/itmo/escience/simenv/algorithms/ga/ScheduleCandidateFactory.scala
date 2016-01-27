@@ -1,4 +1,4 @@
-package itmo.escience.simenv.algorithms.wm
+package itmo.escience.simenv.algorithms.ga
 
 import java.util.Random
 
@@ -14,7 +14,7 @@ class ScheduleCandidateFactory[T <: Task, N <: Node](ctx: Context[T, N], env: En
 
   override def generateRandomCandidate(random: Random): WFSchedSolution = {
     val schedule = RandomScheduler.schedule[T, N](ctx, env)
-    val solution = WorkflowSchedulingProblem.scheduleToSolution[T, N](schedule, ctx)
+    val solution = WorkflowSchedulingProblem.scheduleToSolution[T, N](schedule, ctx, env)
     solution
   }
 }

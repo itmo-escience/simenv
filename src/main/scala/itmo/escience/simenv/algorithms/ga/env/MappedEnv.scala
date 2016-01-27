@@ -1,4 +1,4 @@
-package itmo.escience.simenv.algorithms.wm.env
+package itmo.escience.simenv.algorithms.ga.env
 
 import itmo.escience.simenv.environment.entities.NodeId
 

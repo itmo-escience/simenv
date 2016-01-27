@@ -1,4 +1,4 @@
-package itmo.escience.simenv.algorithms.wm
+package itmo.escience.simenv.algorithms.ga
 
 import java.util
 
@@ -14,7 +14,7 @@ import scala.collection.JavaConversions._
 
 object WorkflowSchedulingProblem {
 
-  def scheduleToSolution[T <: Task, N <: Node](schedule:Schedule[T, N], context: Context[T, N]):WFSchedSolution = {
+  def scheduleToSolution[T <: Task, N <: Node](schedule:Schedule[T, N], context: Context[T, N], environment: Environment[N]):WFSchedSolution = {
     val taskItems = schedule.scheduleItemsSeq().filter({
       case x: TaskScheduleItem[T, N] => true
       case _ => false
@@ -26,7 +26,7 @@ object WorkflowSchedulingProblem {
       ).map(x => x.asInstanceOf[TaskScheduleItem[T, N]].task.id)
     }
     val restTasks = taskItems.filter(x => !fixed_tasks.contains(x.task.id))
-    val genes = restTasks.map(x => MappedTask(x.task.id, context.environment.asInstanceOf[BasicEnvironment].indexOfNode(x.node.id))).toList
+    val genes = restTasks.map(x => MappedTask(x.task.id, environment.asInstanceOf[BasicEnvironment].indexOfNode(x.node.id))).toList
     new WFSchedSolution(genes)
   }
 
@@ -35,7 +35,7 @@ object WorkflowSchedulingProblem {
 
     // repair sequence in relation with parent-child dependencies
     // construct new schedule by placing it in task-by-task manner
-    val repairedOrdering = repairOrdering(solution, context)
+    val repairedOrdering = repairOrdering(solution, context, environment)
 
     for (x <- repairedOrdering) {
       val (task, nodeId) = x
@@ -46,12 +46,12 @@ object WorkflowSchedulingProblem {
     newSchedule.asInstanceOf[Schedule[T, N]]
   }
 
-  def repairOrdering[T <: Task, N <: Node](solution: WFSchedSolution, context: Context[T, N]): List[(T, NodeId)] = {
+  def repairOrdering[T <: Task, N <: Node](solution: WFSchedSolution, context: Context[T, N], environment: Environment[N]): List[(T, NodeId)] = {
     val wf = context.workload.apps.head
-    val tasksSeq = new util.TreeSet[Pair[(T, NodeId)]](solution.genSeq().zipWithIndex
+    val tasksSeq = new util.TreeSet[Pair[(T, NodeId)]](solution.genSeq.zipWithIndex
       .map( { case (x, i) =>
         new Pair(i,
-          (wf.taskById(x.taskId), x.nodeId)
+          (wf.taskById(x.taskId), environment.nodes(x.nodeIdx).id)
         )}
       ))
 
