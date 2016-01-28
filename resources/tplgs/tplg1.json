@@ -1,0 +1,6 @@
+[{"children" :["task1", "task1"], "cpu.pcore.percent": 2.0, "max.heap.size.mb":128.0, "id" : "task0"},
+  {"children" :["task2"], "cpu.pcore.percent": 4.0, "max.heap.size.mb":256.0, "id" : "task1"},
+  {"children" :["task2"], "cpu.pcore.percent": 4.0, "max.heap.size.mb":256.0, "id" : "task1"},
+  {"children" :["task3"], "cpu.pcore.percent": 2.0, "max.heap.size.mb":512.0, "id" : "task2"},
+  {"children" :[], "cpu.pcore.percent": 2.0, "max.heap.size.mb":256.0, "id" : "task3"}
+]

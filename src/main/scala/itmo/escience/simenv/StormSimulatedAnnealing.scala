@@ -4,14 +4,16 @@ import java.util
 import java.util.Random
 
 import itmo.escience.simenv.environment.entities._
-import itmo.escience.simenv.utilities.StormScheduleVisualizer
+import itmo.escience.simenv.utilities.{JSONParser, StormScheduleVisualizer}
 import itmo.escience.simenv.utilities.Utilities.parseDAX
+import itmo.escience.simenv.utilities.JSONParser._
 
 
 /**
   * Created by Mishanya on 23.12.2015.
   */
-class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int) {
+//class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int) {
+class StormSimulatedAnnealing(workloadPath: String, envPath: String, bandwidth: Int) {
 
   // Мапа для содержания нодов по id
   var nodes: util.HashMap[NodeId, CapacityBandwidthResource] = new util.HashMap[NodeId, CapacityBandwidthResource]
@@ -27,10 +29,22 @@ class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int
   var vis: StormScheduleVisualizer = null
 
   def initialization(): Unit = {
+
+    // Ноды из JSON
+    val nodesList =  JSONParser.parseEnv(envPath, bandwidth)
+    val tasksList = JSONParser.parseWorkload(workloadPath)
+
+    for (n <- nodesList) {
+      nodes.put(n.id, n)
+    }
+    for (t <- tasksList) {
+      tasks.put(t.id, t)
+    }
+
     // Копируем наш начальный пайплайн или вф
-    val sweeps = generateSweeps()
+//    val sweeps = generateSweeps()
     // Начальное решение (тупое)
-    schedule = initialSchedule(sweeps)
+    schedule = initialSchedule(tasksList, nodesList)
 
     vis = new StormScheduleVisualizer(tasks)
 
@@ -103,52 +117,56 @@ class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int
 
   // Создает начальное расписание на основе поочередного расположения тасок для одного пайплайна,
   // а затем копируя полученный результат для одного пайплайна для всех остальных
-  def initialSchedule(sweeps: List[Workflow]): util.HashMap[NodeId, List[TaskId]] = {
+  def initialSchedule(tasksList: List[DaxTask], nodeList: List[CapacityBandwidthResource]): util.HashMap[NodeId, List[TaskId]] = {
     val initSchedule: util.HashMap[NodeId, List[TaskId]] = new util.HashMap[NodeId, List[TaskId]]
-    var nodeIdx = 0
-    for (s <- sweeps) {
-      // Для каждого свипа, берем поочередно его таски и размещаем на ноде.
-      // Когда текущий нод заполняется, создаем новый и продолжаем заполнять его.
-
-      // "CapacityBandwidthResource" - нод, который описан количеством ядер и максимальной
-      // пропускной способностью.
-
-      var node = new CapacityBandwidthResource(id="N" + nodeIdx, name="res_"+nodeIdx, nominalCapacity=cores,
-        bandwidth=bandwidth)
-      nodes.put(node.id, node)
-      for (t <- s.tasks) {
-        while (!node.canPlaceTask(t.asInstanceOf[DaxTask])) {
-          nodeIdx += 1
-          node = new CapacityBandwidthResource(id = "N" + nodeIdx, name = "res_" + nodeIdx, nominalCapacity = cores,
-            bandwidth=bandwidth)
-          if (!node.canPlaceTask(t.asInstanceOf[DaxTask])) {
-            throw new IllegalArgumentException("Task can't be assigned on a free resource")
-          }
-          nodes.put(node.id, node)
-        }
-        node.addTask(t.asInstanceOf[DaxTask])
-        if (initSchedule.containsKey(node.id)) {
-          initSchedule.put(node.id, initSchedule.get(node.id) :+ t.id)
-        } else {
-          initSchedule.put(node.id, List(t.id))
-        }
+    for (n <- nodeList) {
+      initSchedule.put(n.id, List[String]())
+    }
+    for (t <- tasksList) {
+      val availableNodes = nodeList.filter(x => x.canPlaceTask(t))
+      if (availableNodes.isEmpty) {
+        throw new IllegalArgumentException("PIZDEC")
       }
-      nodeIdx += 1
+      val node = availableNodes(rnd.nextInt(availableNodes.size))
+      initSchedule.put(node.id, initSchedule.get(node.id) :+ t.id)
+      node.addTask(t)
     }
     initSchedule
   }
-
-  // Функция считывает указанный файл с описанием вф или пайплайна и создает из него
-  // несколько одинаковых свипов.
-  def generateSweeps(): List[Workflow] = {
-    var sweeps: List[Workflow] = List[Workflow]()
-    for (i <- 0 to n) {
-      val wf = parseDAX(wfPath, "_" + i)
-      wf.tasks.foreach(t => tasks.put(t.id, t.asInstanceOf[DaxTask]))
-      sweeps :+= wf
-    }
-    sweeps
-  }
+//  def initialScheduleOld(sweeps: List[Workflow]): util.HashMap[NodeId, List[TaskId]] = {
+//    val initSchedule: util.HashMap[NodeId, List[TaskId]] = new util.HashMap[NodeId, List[TaskId]]
+//    var nodeIdx = 0
+//    for (s <- sweeps) {
+//      // Для каждого свипа, берем поочередно его таски и размещаем на ноде.
+//      // Когда текущий нод заполняется, создаем новый и продолжаем заполнять его.
+//
+//      // "CapacityBandwidthResource" - нод, который описан количеством ядер и максимальной
+//      // пропускной способностью.
+//
+//      var node = new CapacityBandwidthResource(id="N" + nodeIdx, name="res_"+nodeIdx, nominalCapacity=666,
+//        bandwidth=bandwidth)
+//      nodes.put(node.id, node)
+//      for (t <- s.tasks) {
+//        while (!node.canPlaceTask(t.asInstanceOf[DaxTask])) {
+//          nodeIdx += 1
+//          node = new CapacityBandwidthResource(id = "N" + nodeIdx, name = "res_" + nodeIdx, nominalCapacity = 666,
+//            bandwidth=bandwidth)
+//          if (!node.canPlaceTask(t.asInstanceOf[DaxTask])) {
+//            throw new IllegalArgumentException("Task can't be assigned on a free resource")
+//          }
+//          nodes.put(node.id, node)
+//        }
+//        node.addTask(t.asInstanceOf[DaxTask])
+//        if (initSchedule.containsKey(node.id)) {
+//          initSchedule.put(node.id, initSchedule.get(node.id) :+ t.id)
+//        } else {
+//          initSchedule.put(node.id, List(t.id))
+//        }
+//      }
+//      nodeIdx += 1
+//    }
+//    initSchedule
+//  }
 
   // Вычисление энергии для имитации отжига
   def energy(q: Int, next: Double, cur: Double): Double = {
@@ -284,7 +302,7 @@ class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int
       for (t <- nodeTasks) {
         val task = tasks.get(t)
         // Если таска-родитель НЕ на этом же ноде, прибавляем размер input.
-        if (task.parents.head.isInstanceOf[HeadDaxTask] ||
+        if (task.parents.isEmpty ||
           !nodeTasks.contains(task.parents.head.id)) {
           transfer += task.inputVolume()
         }

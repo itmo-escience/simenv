@@ -1,0 +1,5 @@
+[
+  {"totalCpuResources" :8.0, "totalMemoryResources" :3072.0, "id":"node0"},
+  {"totalCpuResources" :8.0, "totalMemoryResources" :3072.0, "id":"node1"},
+  {"totalCpuResources" :8.0, "totalMemoryResources" :3072.0, "id":"node2"}
+]
