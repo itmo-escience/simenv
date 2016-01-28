@@ -15,7 +15,14 @@ object JSONParser {
 
 def parseEnv(envPath: String, band: Double): List[CapRamBandResource] = {
   var res = List[CapRamBandResource]()
-  val myString = Source.fromFile(envPath).mkString
+  var myString : String = null
+  if (envPath.contains(".json")) {
+
+
+    myString = Source.fromFile(envPath).mkString
+  }else {
+    myString = envPath
+  }
 
   val myJSON = parse(myString)
 
@@ -37,7 +44,14 @@ def parseEnv(envPath: String, band: Double): List[CapRamBandResource] = {
     var res = List[DaxTask]()
     val map = mutable.Map[DaxTask, List[String]]()
     val idMap = mutable.Map[String, DaxTask]()
-    val myString = Source.fromFile(workloadPath).mkString
+    var myString: String = null
+    if (workloadPath.contains(".json")) {
+
+
+      myString = Source.fromFile(workloadPath).mkString
+    } else {
+      myString = workloadPath
+    }
     val myJSON = parse(myString)
 
     // Converting from JOjbect to plain object
@@ -47,7 +61,7 @@ def parseEnv(envPath: String, band: Double): List[CapRamBandResource] = {
 
     var ids: List[String] = List[String]()
 
-    val symb = "6"
+    val symb = "$"
 
     for (i <- 0 until size) {
       val curJ = myJSON(i).values.asInstanceOf[Map[String, Any]]
