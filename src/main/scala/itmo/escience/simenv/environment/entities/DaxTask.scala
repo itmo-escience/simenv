@@ -3,7 +3,7 @@ package itmo.escience.simenv.environment.entities
 /**
  * Created by Nikolay on 11/29/2015.
  */
-class DaxTask(val id: TaskId, val name: String, val execTime: Double,
+class DaxTask(val id: TaskId, val name: String, val execTime: Double, val ramReq: Double,
                    var inputData: List[DataFile] = List(),
                    var outputData: List[DataFile] = List(),
                    var parents: List[DaxTask] = List(),
@@ -51,4 +51,4 @@ class DaxTask(val id: TaskId, val name: String, val execTime: Double,
 }
 
 class HeadDaxTask(override val id: TaskId, override val name: String, children: List[DaxTask] )
-  extends DaxTask(id=id, name=name, execTime=0.0, children=children)
+  extends DaxTask(id=id, name=name, execTime=0.0, ramReq = 0.0, children=children)

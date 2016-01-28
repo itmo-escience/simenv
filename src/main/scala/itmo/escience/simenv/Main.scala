@@ -26,5 +26,7 @@ object Main {
     val storm = new StormSimulatedAnnealing(wfPath, envPath, bandwidth)
     storm.initialization()
     storm.runAlg()
+    val cpu = storm.getCpuUtilization(storm.schedule)
+    println(s"Usage: ${cpu}")
   }
 }

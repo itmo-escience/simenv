@@ -7,6 +7,7 @@ import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.utilities.{JSONParser, StormScheduleVisualizer}
 import itmo.escience.simenv.utilities.Utilities.parseDAX
 import itmo.escience.simenv.utilities.JSONParser._
+import scala.collection.JavaConversions._
 
 
 /**
@@ -16,7 +17,7 @@ import itmo.escience.simenv.utilities.JSONParser._
 class StormSimulatedAnnealing(workloadPath: String, envPath: String, bandwidth: Int) {
 
   // Мапа для содержания нодов по id
-  var nodes: util.HashMap[NodeId, CapacityBandwidthResource] = new util.HashMap[NodeId, CapacityBandwidthResource]
+  var nodes: util.HashMap[NodeId, CapRamBandResource] = new util.HashMap[NodeId, CapRamBandResource]
   // Мапа для хранения тасок по id
   var tasks: util.HashMap[TaskId, DaxTask] = new util.HashMap[TaskId, DaxTask]
   // Расписание (На ноде располагаются таски)
@@ -62,12 +63,12 @@ class StormSimulatedAnnealing(workloadPath: String, envPath: String, bandwidth: 
     // Хранение лучшего решения.
     var bestSchedule = schedule.clone().asInstanceOf[util.HashMap[NodeId, List[TaskId]]]
     var bestFitness: Double = evaluateFitness(bestSchedule)
-    var bestNodes: util.HashMap[NodeId, CapacityBandwidthResource] = nodes.clone().asInstanceOf[util.HashMap[NodeId, CapacityBandwidthResource]]
+    var bestNodes: util.HashMap[NodeId, CapRamBandResource] = nodes.clone().asInstanceOf[util.HashMap[NodeId, CapRamBandResource]]
 
     // Текущее решение, с большей вероятностью только улучшается.
     var curSchedule = bestSchedule.clone().asInstanceOf[util.HashMap[NodeId, List[TaskId]]]
     var curFitness: Double = bestFitness
-    var curNodes: util.HashMap[NodeId, CapacityBandwidthResource] = nodes.clone().asInstanceOf[util.HashMap[NodeId, CapacityBandwidthResource]]
+    var curNodes: util.HashMap[NodeId, CapRamBandResource] = nodes.clone().asInstanceOf[util.HashMap[NodeId, CapRamBandResource]]
 
     println(s"Init: $bestFitness")
 
@@ -117,7 +118,7 @@ class StormSimulatedAnnealing(workloadPath: String, envPath: String, bandwidth: 
 
   // Создает начальное расписание на основе поочередного расположения тасок для одного пайплайна,
   // а затем копируя полученный результат для одного пайплайна для всех остальных
-  def initialSchedule(tasksList: List[DaxTask], nodeList: List[CapacityBandwidthResource]): util.HashMap[NodeId, List[TaskId]] = {
+  def initialSchedule(tasksList: List[DaxTask], nodeList: List[CapRamBandResource]): util.HashMap[NodeId, List[TaskId]] = {
     val initSchedule: util.HashMap[NodeId, List[TaskId]] = new util.HashMap[NodeId, List[TaskId]]
     for (n <- nodeList) {
       initSchedule.put(n.id, List[String]())
@@ -197,18 +198,18 @@ class StormSimulatedAnnealing(workloadPath: String, envPath: String, bandwidth: 
 
   // Проведение мутации, возвращает новый объект, не меняет входной.
   def mutation(solution: util.HashMap[NodeId, List[TaskId]],
-               curNodes: util.HashMap[NodeId, CapacityBandwidthResource]):
-  (util.HashMap[NodeId, List[TaskId]], util.HashMap[NodeId, CapacityBandwidthResource]) = {
+               curNodes: util.HashMap[NodeId, CapRamBandResource]):
+  (util.HashMap[NodeId, List[TaskId]], util.HashMap[NodeId, CapRamBandResource]) = {
 
     // Копируем решение
     val mutant = solution.clone().asInstanceOf[util.HashMap[NodeId, List[TaskId]]]
-    val newNodes = new util.HashMap[NodeId, CapacityBandwidthResource]
+    val newNodes = new util.HashMap[NodeId, CapRamBandResource]
     val cloneIter = curNodes.keySet().iterator()
     while (cloneIter.hasNext) {
       val key = cloneIter.next()
       val curNode = curNodes.get(key)
-      val newNode = new CapacityBandwidthResource(id=curNode.id,
-        name=curNode.name, nominalCapacity=curNode.nominalCapacity,
+      val newNode = new CapRamBandResource(id=curNode.id,
+        name=curNode.name, nominalCapacity=curNode.nominalCapacity, ram=curNode.ram,
         bandwidth=curNode.bandwidth)
 
       val tIter = curNode.taskList.keySet().iterator()
@@ -321,6 +322,13 @@ class StormSimulatedAnnealing(workloadPath: String, envPath: String, bandwidth: 
     }
     // Результат
     overTransfer
+  }
+
+  def getCpuUtilization(solution:util.HashMap[NodeId, List[TaskId]]): Double = {
+    val total = nodes.toList.filter(x => x._2.taskList.keySet().nonEmpty).foldLeft(0.0)((s, x) => s + x._2.nominalCapacity)
+    val used = nodes.toList.filter(x => x._2.taskList.keySet().nonEmpty).foldLeft(0.0)((s, x) => s + x._2.currentCapacity)
+
+    1 - used / total
   }
 
 }

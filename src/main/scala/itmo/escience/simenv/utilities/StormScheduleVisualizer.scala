@@ -85,7 +85,7 @@ class StormScheduleVisualizer(tasks: util.HashMap[TaskId, DaxTask]) {
   var result: StreamResult = new StreamResult(new File(cmapFilename))
   transformer.transform(source, result)
 
-  def drawSched (resources: util.HashMap[NodeId, CapacityBandwidthResource]): Unit = {
+  def drawSched (resources: util.HashMap[NodeId, CapRamBandResource]): Unit = {
     val jed: Document = schedToXML(resources)
     source = new DOMSource(jed)
     result = new StreamResult(new File("./temp/lastRunSchedules/jedule.jed"))
@@ -110,9 +110,9 @@ class StormScheduleVisualizer(tasks: util.HashMap[TaskId, DaxTask]) {
 //    Files.delete(Paths.get(jedArgs(3)))
   }
 
-  def schedToXML(resources: util.HashMap[NodeId, CapacityBandwidthResource]) : Document = {
+  def schedToXML(resources: util.HashMap[NodeId, CapRamBandResource]) : Document = {
     val doc: Document = db.newDocument
-    var nodes: List[CapacityBandwidthResource] = List[CapacityBandwidthResource]()
+    var nodes: List[CapRamBandResource] = List[CapRamBandResource]()
     val nodeIter = resources.keySet().iterator()
     while (nodeIter.hasNext) {
       val nId = nodeIter.next()
@@ -145,6 +145,7 @@ class StormScheduleVisualizer(tasks: util.HashMap[TaskId, DaxTask]) {
     for (n <- nodes) {
       var hostIdx = 0
       val taskIter = n.taskList.keySet().iterator()
+      var time: Double = 0.0
       while (taskIter.hasNext) {
         val tId = taskIter.next()
         val task = tasks.get(tId)
@@ -162,13 +163,16 @@ class StormScheduleVisualizer(tasks: util.HashMap[TaskId, DaxTask]) {
 
         val node_startTime: Element = doc.createElement("node_property")
         node_startTime.setAttribute("name", "start_time")
-        node_startTime.setAttribute("value", "0")
+        node_startTime.setAttribute("value", "" + time)
+
 
         val node_endTime: Element = doc.createElement("node_property")
         node_endTime.setAttribute("name", "end_time")
 //        node_endTime.setAttribute("value", "" + (task.inputVolume() + task.outputVolume()))
         val endTime = evaluateChannel(task, n)
-        node_endTime.setAttribute("value", "" + endTime)
+//        node_endTime.setAttribute("value", "" + endTime)
+        node_endTime.setAttribute("value", "" + (time + task.ramReq))
+        time += task.ramReq
 
         node_statistics.appendChild(node_id)
         node_statistics.appendChild(node_type)
@@ -224,7 +228,7 @@ class StormScheduleVisualizer(tasks: util.HashMap[TaskId, DaxTask]) {
     }
     colors
   }
-  def evaluateChannel(task: DaxTask, node: CapacityBandwidthResource): Double = {
+  def evaluateChannel(task: DaxTask, node: CapRamBandResource): Double = {
     var transfer = 1.0
     if (task.parents.isEmpty ||
       !node.taskList.keySet().contains(task.parents.head.id)) {
@@ -236,4 +240,6 @@ class StormScheduleVisualizer(tasks: util.HashMap[TaskId, DaxTask]) {
     }
     transfer
   }
+
+
 }

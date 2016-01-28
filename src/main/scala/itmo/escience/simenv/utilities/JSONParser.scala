@@ -1,6 +1,6 @@
 package itmo.escience.simenv.utilities
 
-import itmo.escience.simenv.environment.entities.{DataFile, DaxTask, CapacityBandwidthResource}
+import itmo.escience.simenv.environment.entities.{DataFile, DaxTask, CapRamBandResource}
 
 import scala.collection.mutable
 import scala.io.Source
@@ -13,8 +13,8 @@ import org.json4s.JsonDSL._
   */
 object JSONParser {
 
-def parseEnv(envPath: String, band: Double): List[CapacityBandwidthResource] = {
-  var res = List[CapacityBandwidthResource]()
+def parseEnv(envPath: String, band: Double): List[CapRamBandResource] = {
+  var res = List[CapRamBandResource]()
   val myString = Source.fromFile(envPath).mkString
 
   val myJSON = parse(myString)
@@ -26,7 +26,8 @@ def parseEnv(envPath: String, band: Double): List[CapacityBandwidthResource] = {
     val curJ = myJSON(i).values.asInstanceOf[Map[String, Any]]
     val id: String = curJ.get("id").get.asInstanceOf[String]
     val cpu: Double = curJ.get("totalCpuResources").get.asInstanceOf[Double]
-    val node = new CapacityBandwidthResource(id=id, nominalCapacity=cpu, name=id, bandwidth=band)
+    val ram: Double = curJ.get("totalMemoryResources").get.asInstanceOf[Double]
+    val node = new CapRamBandResource(id=id, nominalCapacity=cpu, ram=ram, name=id, bandwidth=band)
     res :+= node
   }
   res
@@ -56,7 +57,8 @@ def parseEnv(envPath: String, band: Double): List[CapacityBandwidthResource] = {
       }
       ids :+= id
       val cpu: Double = curJ.get("cpu.pcore.percent").get.asInstanceOf[Double]
-      val data: Double = curJ.get("max.heap.size.mb").get.asInstanceOf[Double]
+      val data: Double = 128
+      val ram: Double = curJ.get("max.heap.size.mb").get.asInstanceOf[Double]
       var chs: List[String] = List[String]()
       val childIds: List[String] = curJ.get("children").get.asInstanceOf[List[String]]
       var children: List[String] = List[String]()
@@ -68,7 +70,7 @@ def parseEnv(envPath: String, band: Double): List[CapacityBandwidthResource] = {
         }
       }
 
-      val task = new DaxTask(id=id, execTime=cpu, name=id, children=List[DaxTask](), parents=List[DaxTask](),
+      val task = new DaxTask(id=id, execTime=cpu, ramReq=ram, name=id, children=List[DaxTask](), parents=List[DaxTask](),
         inputData=List[DataFile](),
         outputData=List[DataFile](new DataFile(id + "_data", id + "_data", data)))
       res :+= task

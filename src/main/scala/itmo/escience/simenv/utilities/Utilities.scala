@@ -40,7 +40,7 @@ object Utilities {
       val outputData = (x \ "uses").
         filter(y => y.attribute("link").get.head.text == "output").
         map(y => toDataFile(y)).toList
-      val task = new DaxTask(id=idf(x), name=name(x), execTime=runtime(x),
+      val task = new DaxTask(id=idf(x), name=name(x), execTime=runtime(x), ramReq=0,
         inputData=inputData,
         outputData=outputData,
         parents=List(),
