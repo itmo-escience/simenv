@@ -331,6 +331,39 @@ class StormSimulatedAnnealing(workloadPath: String, envPath: String, bandwidth: 
     1 - used / total
   }
 
+  def getTransfer(solution: util.HashMap[NodeId, List[TaskId]]): Double = {
+    var overTransfer: Double = 0
+    //    var overTransferNodes: Int = 0
+    val iterator = solution.keySet().iterator()
+    // Идем по нодам
+    while (iterator.hasNext) {
+      val n = iterator.next()
+      var transfer = 0.0
+      val nodeTasks = solution.get(n)
+      // Идем по таскам на этом ноде
+      for (t <- nodeTasks) {
+        val task = tasks.get(t)
+        // Если таска-родитель НЕ на этом же ноде, прибавляем размер input.
+        if (task.parents.isEmpty ||
+          !nodeTasks.contains(task.parents.head.id)) {
+          transfer += task.inputVolume()
+        }
+        // Если дочерняя таска НЕ на этом ноде, прибавляем output
+        if (task.children.isEmpty ||
+          !nodeTasks.contains(task.children.head.id)) {
+          transfer += task.outputVolume()
+        }
+      }
+      // Если полученное количество передачи данных превышает размер канала,
+      // прибавляем штрафной объем данных к результату
+        overTransfer += transfer
+
+      //      overTransferNodes += 1
+    }
+    // Результат
+    overTransfer
+  }
+
 }
 
 

@@ -28,5 +28,7 @@ object Main {
     storm.runAlg()
     val cpu = storm.getCpuUtilization(storm.schedule)
     println(s"Usage: ${cpu}")
+    val transfer = storm.getTransfer(storm.schedule)
+    println(s"Transfer: ${transfer}")
   }
 }

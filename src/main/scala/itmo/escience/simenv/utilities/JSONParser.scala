@@ -57,7 +57,7 @@ def parseEnv(envPath: String, band: Double): List[CapRamBandResource] = {
       }
       ids :+= id
       val cpu: Double = curJ.get("cpu.pcore.percent").get.asInstanceOf[Double]
-      val data: Double = 128
+      var data: Double = 128
       val ram: Double = curJ.get("max.heap.size.mb").get.asInstanceOf[Double]
       var chs: List[String] = List[String]()
       val childIds: List[String] = curJ.get("children").get.asInstanceOf[List[String]]
@@ -68,6 +68,9 @@ def parseEnv(envPath: String, band: Double): List[CapRamBandResource] = {
         } else {
           children :+= c
         }
+      }
+      if (children.isEmpty) {
+        data = 0
       }
 
       val task = new DaxTask(id=id, execTime=cpu, ramReq=ram, name=id, children=List[DaxTask](), parents=List[DaxTask](),
