@@ -29,13 +29,15 @@ def parseEnv(envPath: String, band: Double): List[CapRamBandResource] = {
   // Converting from JOjbect to plain object
   implicit val formats = DefaultFormats
   val size = myJSON.values.asInstanceOf[List[Any]].size
+  var j = 0
   for (i <- 0 until size) {
     val curJ = myJSON(i).values.asInstanceOf[Map[String, Any]]
     val id: String = curJ.get("id").get.asInstanceOf[String]
     val cpu: Double = curJ.get("totalCpuResources").get.asInstanceOf[Double]
     val ram: Double = curJ.get("totalMemoryResources").get.asInstanceOf[Double]
-    val node = new CapRamBandResource(id=id, nominalCapacity=cpu, ram=ram, name=id, bandwidth=band)
+    val node = new CapRamBandResource(id=id, nominalCapacity=cpu, ram=ram, name="node" + j, bandwidth=band)
     res :+= node
+    j += 1
   }
   res
 }

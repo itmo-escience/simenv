@@ -132,7 +132,7 @@ class StormScheduleVisualizer(tasks: util.HashMap[TaskId, DaxTask]) {
     for (n <- nodes) {
       val cluster: Element = doc.createElement("cluster")
 //      cluster.setAttribute("id", n.id.tail)
-      cluster.setAttribute("id", n.id.drop(4))
+      cluster.setAttribute("id", n.name.drop(4))
       cluster.setAttribute("hosts", n.nominalCapacity.toInt + "")
       cluster.setAttribute("first_host", "0")
       clusters.appendChild(cluster)
@@ -185,7 +185,7 @@ class StormScheduleVisualizer(tasks: util.HashMap[TaskId, DaxTask]) {
         val conf_cluster: Element = doc.createElement("conf_property")
         conf_cluster.setAttribute("name", "cluster_id")
 //        conf_cluster.setAttribute("value", n.id.tail)
-        conf_cluster.setAttribute("value", n.id.drop(4))
+        conf_cluster.setAttribute("value", n.name.drop(4))
 
         val conf_hosts: Element = doc.createElement("conf_property")
         conf_hosts.setAttribute("name", "host_nb")
