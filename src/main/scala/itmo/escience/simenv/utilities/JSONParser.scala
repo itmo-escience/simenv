@@ -70,6 +70,7 @@ def parseEnv(envPath: String, band: Double): List[CapRamBandResource] = {
       var id: String = curJ.get("id").get.asInstanceOf[String]
       if (ids.contains(id)) {
         id = id + symb
+        ids :+= id
       }
       ids :+= id
       val cpu: Double = curJ.get("cpu.pcore.percent").get.asInstanceOf[Double]
