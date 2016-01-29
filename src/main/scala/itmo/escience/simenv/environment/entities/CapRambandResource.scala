@@ -6,8 +6,8 @@ import java.util
 /**
   * Created by Mishanya on 23.12.2015.
   */
-class CapRamBandResource(val id: NodeId,
-                         val name: String,
+class CapRamBandResource(var id: NodeId,
+                         var name: String,
                          val nominalCapacity: Double,
                          val ram: Double,
                          val bandwidth: Double,

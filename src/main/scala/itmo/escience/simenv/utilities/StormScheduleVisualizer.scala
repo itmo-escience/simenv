@@ -41,7 +41,7 @@ class StormScheduleVisualizer(tasks: util.HashMap[TaskId, DaxTask]) {
   cmapString += "</cmap>"
 
 
-  val tempDir: File = new File("./temp/lastRunSchedules")
+  val tempDir: File = new File("./temp/lastRunSchedules/" + System.currentTimeMillis())
   if (tempDir.exists) {
     var f: File = null
     for (f <- tempDir.listFiles()) {
