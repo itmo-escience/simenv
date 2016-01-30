@@ -1,5 +1,6 @@
 [
-  {"totalCpuResources" :8.0, "totalMemoryResources" :1024.0, "id":"node0"},
-  {"totalCpuResources" :8.0, "totalMemoryResources" :1024.0, "id":"node1"},
-  {"totalCpuResources" :8.0, "totalMemoryResources" :1024.0, "id":"node2"}
+  {"totalCpuResources" :70.0, "totalMemoryResources" :2048.0, "id":"node0"},
+  {"totalCpuResources" :70.0, "totalMemoryResources" :2048.0, "id":"node1"},
+  {"totalCpuResources" :70.0, "totalMemoryResources" :2048.0, "id":"node2"},
+  {"totalCpuResources" :70.0, "totalMemoryResources" :2048.0, "id":"node3"}
 ]

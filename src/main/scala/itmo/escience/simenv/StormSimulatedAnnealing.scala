@@ -243,7 +243,7 @@ class StormSimulatedAnnealing(workloadPath: String, envPath: String, bandwidth: 
 
         // Фильтруем узлы, на которых есть свободное количество ядер,
         // чтобы разместить эту таску
-        val availableNodes = keyset.filter(x => x != nodeId && newNodes.get(x).currentCapacity >= task.execTime)
+        val availableNodes = keyset.filter(x => x != nodeId && newNodes.get(x).currentCapacity >= task.execTime && newNodes.get(x).currentRam >= task.ramReq)
         if (availableNodes.length > 0) {
           // Выбираем любой из этих нодов, чтобы перетащить на него таску
           val transNodeId = availableNodes(rnd.nextInt(availableNodes.length))

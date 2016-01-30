@@ -3,7 +3,7 @@ package itmo.escience.simenv.utilities
 import java.io._
 import java.nio.file.{Paths, Files}
 import java.util
-import java.util.Random
+import java.util.{Calendar, Random}
 import javax.xml.parsers.{ParserConfigurationException, DocumentBuilderFactory, DocumentBuilder}
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
@@ -23,8 +23,9 @@ class StormScheduleVisualizer(tasks: util.HashMap[TaskId, DaxTask]) {
   val wfColors = workflowColors()
 
   var counter: Int = 0
-
-  val cmapFilename = "./temp/lastRunSchedules/cmap.xml"
+//  val tempDir: File = new File("./temp/lastRunSchedules/" + System.currentTimeMillis())
+  val tempDir: File = new File("./temp/lastRunSchedules/" + java.time.LocalDate.now + "_" + java.time.LocalTime.now.toString.replace(":", ""))
+  val cmapFilename = tempDir + "/cmap.xml"
 
   var cmapString: String =
     "<cmap name=\"default\">" +
@@ -41,7 +42,6 @@ class StormScheduleVisualizer(tasks: util.HashMap[TaskId, DaxTask]) {
   cmapString += "</cmap>"
 
 
-  val tempDir: File = new File("./temp/lastRunSchedules/" + System.currentTimeMillis())
   if (tempDir.exists) {
     var f: File = null
     for (f <- tempDir.listFiles()) {
@@ -88,22 +88,22 @@ class StormScheduleVisualizer(tasks: util.HashMap[TaskId, DaxTask]) {
   def drawSched (resources: util.HashMap[NodeId, CapRamBandResource]): Unit = {
     val jed: Document = schedToXML(resources)
     source = new DOMSource(jed)
-    result = new StreamResult(new File("./temp/lastRunSchedules/jedule.jed"))
+    result = new StreamResult(new File(tempDir + "/jedule.jed"))
     transformer.transform(source, result)
 
     val jedArgs: Array[String] = new Array[String](12)
     jedArgs(0) = "-p"
     jedArgs(1) = "simgrid"
     jedArgs(2) = "-f"
-    jedArgs(3) = "./temp/lastRunSchedules/jedule.jed"
+    jedArgs(3) = tempDir + "/jedule.jed"
     jedArgs(4) = "-d"
     jedArgs(5) = "10000x512"
     jedArgs(6) = "-o"
-    jedArgs(7) = "./temp/lastRunSchedules/schedule" + counter + ".png"
+    jedArgs(7) = tempDir + "/schedule" + counter + ".png"
     jedArgs(8) = "-gt"
     jedArgs(9) = "png"
     jedArgs(10) = "-cm"
-    jedArgs(11) = "./temp/lastRunSchedules/cmap.xml"
+    jedArgs(11) = tempDir + "/cmap.xml"
 
     JeduleStarter.main(jedArgs)
     counter += 1
