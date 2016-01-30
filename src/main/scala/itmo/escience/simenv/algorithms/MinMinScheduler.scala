@@ -7,9 +7,9 @@ import itmo.escience.simenv.environment.modelling.Environment
 /**
  * Created by user on 27.11.2015.
  */
-object MinMinScheduler extends Scheduler[DaxTask, Node]{
+object MinMinScheduler extends Scheduler{
 
-  override def schedule(context: Context[DaxTask, Node], environment: Environment[Node]): Schedule = {
+  override def schedule[T <: Task, N <: Node](context: Context[T, N], environment: Environment[N]): Schedule[T, N] = {
     val currentSchedule = context.schedule
 
     // get unscheduled tasks.
@@ -32,8 +32,8 @@ object MinMinScheduler extends Scheduler[DaxTask, Node]{
 //    var tasksToSchedule = currentSchedule.restTasks(wf).asInstanceOf[List[DaxTask]]
 
     //Only for static case
-    val newSchedule = Schedule.emptySchedule()
-    var tasksToSchedule = wf.headTask.asInstanceOf[DaxTask].children
+    val newSchedule = Schedule.emptySchedule[T, N]()
+    var tasksToSchedule = wf.headTask.asInstanceOf[T].children
     val nodes = context.environment.nodes.filter(x => x.status == NodeStatus.UP)
 
 
@@ -42,10 +42,10 @@ object MinMinScheduler extends Scheduler[DaxTask, Node]{
 
     while (tasksToSchedule.nonEmpty) {
 
-      val mintasks = tasksToSchedule.sortBy(x => x.execTime)
+      val mintasks = tasksToSchedule.sortBy(x => x.asInstanceOf[DaxTask].execTime)
 
       val scheduleItems = mintasks.map( task => {
-        val item = nodes.map(node => newSchedule.findTimeSlot(task, node, context)).minBy(x => x.endTime)
+        val item = nodes.map(node => newSchedule.findTimeSlot(task.asInstanceOf[T], node, context)).minBy(x => x.endTime)
         newSchedule.placeTask(item)
         item
       })
@@ -55,7 +55,7 @@ object MinMinScheduler extends Scheduler[DaxTask, Node]{
 
       // children have to be verified on 'ready-to-run'
       tasksToSchedule = scheduleItems.sortBy(x => x.endTime).
-        foldLeft(List[DaxTask]())((acc, x) => acc ++ x.task.children.filter(x => isReadyToRun(x))).distinct
+        foldLeft(List[T]())((acc, x) => acc ++ x.task.children.filter(x => isReadyToRun(x)).asInstanceOf[List[T]]).distinct
     }
 
     newSchedule

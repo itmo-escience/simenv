@@ -10,8 +10,8 @@ import scala.collection.JavaConversions._
 /**
  * Created by Nikolay on 12/1/2015.
  */
-object HEFTScheduler extends Scheduler[DaxTask, Node]{
-  override def schedule(context: Context[DaxTask, Node], environment: Environment[Node]): Schedule = {
+object HEFTScheduler extends Scheduler{
+  override def schedule[T <: Task, N <: Node](context: Context[T, N], environment: Environment[N]): Schedule[T, N] = {
 
     if (!context.workload.isInstanceOf[SingleAppWorkload]) {
       throw new UnsupportedOperationException(s"Invalid workload type ${context.workload.getClass}. " +
@@ -23,13 +23,13 @@ object HEFTScheduler extends Scheduler[DaxTask, Node]{
 //    val nodes = context.environment.nodes.filter(x => x.status == Node.UP)
     val nodes = context.environment.nodes.filter(x => x.status == NodeStatus.UP)     
 
-    val tasks = prioritize(wf, nodes, context)
+    val tasks = prioritize[T, N](wf, nodes, context)
 
     // TODO make fixed_tasks as a function of schedule!!!
     var fixed_tasks = List[String]()
     for (n <- newSchedule.nodeIds()) {
-      fixed_tasks = fixed_tasks ++ newSchedule.getMap().get(n).toList.filter(x => x.status != ScheduleItemStatus.FAILED
-      ).map(x => x.asInstanceOf[TaskScheduleItem].task.id)
+      fixed_tasks = fixed_tasks ++ newSchedule.getMap.get(n).toList.filter(x => x.status != ScheduleItemStatus.FAILED
+      ).map(x => x.asInstanceOf[TaskScheduleItem[T, N]].task.id)
     }
 
     for (task <- tasks.filter(x => !fixed_tasks.contains(x.id))) {
@@ -47,19 +47,19 @@ object HEFTScheduler extends Scheduler[DaxTask, Node]{
    * @param context
    * @return
    */
-  private def prioritize(wf:Workflow, nodes:Seq[Node], context:Context[DaxTask, Node]):Seq[DaxTask] = {
+  private def prioritize[T <: Task, N <: Node](wf:Workflow, nodes:Seq[N], context:Context[T, N]): Seq[T] = {
 
     // prioritization
     // start with the end tasks
-    val endTasks = wf.tasks.filter(task => task.children.isEmpty).map(x => x.asInstanceOf[DaxTask])
+    val endTasks = wf.tasks.filter(task => task.children.isEmpty).map(x => x.asInstanceOf[T])
     // construct all nodes couples
-    val nodeCouples: List[(Node, Node)] =
-      nodes.foldLeft(List[(Node, Node)]()) ((acc, node) =>
+    val nodeCouples: List[(N, N)] =
+      nodes.foldLeft(List[(N, N)]()) ((acc, node) =>
         acc ++ nodes.dropWhile(x => x != node).drop(1).map(x => (node,x)))
 
     val rankMap = new util.HashMap[TaskId, Double]()
 
-    val isReady = (task:DaxTask) => !task.isInstanceOf[HeadDaxTask] && task.children.forall(c => rankMap.containsKey(c.id))
+    val isReady = (task:T) => !task.isInstanceOf[HeadDaxTask] && task.children.forall(c => rankMap.containsKey(c.id))
 
     var tasksToCalcluateRank = endTasks
     while (tasksToCalcluateRank.nonEmpty) {
@@ -69,7 +69,7 @@ object HEFTScheduler extends Scheduler[DaxTask, Node]{
         // TODO: add exceptional situation handling
         val communicationsCosts = task.children.map(p => {
           rankMap.get(p.id) + nodeCouples.map({ case (from, to) =>
-            context.estimator.calcTransferTime((task,from), (p,to))}).sum / nodeCouples.length
+            context.estimator.calcTransferTime((task,from), (p.asInstanceOf[T],to))}).sum / nodeCouples.length
         })
         val commCost = if (communicationsCosts.isEmpty) 0.0 else communicationsCosts.max
 
@@ -78,10 +78,10 @@ object HEFTScheduler extends Scheduler[DaxTask, Node]{
 
       // children have to be verified on 'ready-to-run'
       tasksToCalcluateRank = tasksToCalcluateRank.
-        foldLeft(List[DaxTask]())((acc, x) => acc ++ x.parents.filter(x => isReady(x))).distinct
+        foldLeft(List[T]())((acc, x) => acc ++ x.parents.filter(x => isReady(x.asInstanceOf[T])).asInstanceOf[List[T]]).distinct
     }
 
     rankMap.toList.sortBy({case (taskId, rank) => -rank}).map({case (taskId, rank) =>
-      wf.taskById(taskId).asInstanceOf[DaxTask]}).toSeq
+      wf.taskById(taskId)}).toSeq.asInstanceOf[Seq[T]]
   }
 }

@@ -27,9 +27,9 @@ object SimLogger {
   val env: Marker = MarkerManager.getMarker("environment")
   val node: Marker = MarkerManager.getMarker("node")
 
-  var _ctx: Context[DaxTask, CpuTimeNode] = null
+  var _ctx: Context[DaxTask, CapacityBasedNode] = null
 
-  def setCtx(ctx: Context[DaxTask, CpuTimeNode]) = {
+  def setCtx(ctx: Context[DaxTask, CapacityBasedNode]) = {
     _ctx = ctx
   }
 
@@ -37,7 +37,7 @@ object SimLogger {
     logger.trace(event, s"time: ${_ctx.currentTime}; Event - ${log.getClass.getSimpleName} ${log.name} ${log.eventTime}")
   }
 
-  def logSched(log: Schedule) = {
+  def logSched(log: Schedule[DaxTask, CapacityBasedNode]) = {
     logger.trace(schedule, s"time: ${_ctx.currentTime}; Schedule - \n${log.prettyPrint()}")
   }
 
@@ -45,8 +45,8 @@ object SimLogger {
     logger.trace(task, s"time: ${_ctx.currentTime}; Task - ${log.id}")
   }
 
-  def logEnv(log: Environment[CpuTimeNode]) = {
-    logger.trace(env, s"time: ${_ctx.currentTime}; Environment - \n${log.asInstanceOf[CarrierNodeEnvironment[CpuTimeNode]].envPrint()}")
+  def logEnv(log: Environment[CapacityBasedNode]) = {
+    logger.trace(env, s"time: ${_ctx.currentTime}; Environment - \n${log.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint()}")
   }
 
   def logNode(log: Node) = {

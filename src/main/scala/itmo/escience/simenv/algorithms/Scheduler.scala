@@ -7,8 +7,8 @@ import itmo.escience.simenv.environment.modelling.Environment
 /**
  * Created by user on 27.11.2015.
  */
-trait Scheduler[T <: Task, N <: Node] {
+trait Scheduler {
 
-  def schedule(context: Context[T,N], environment: Environment[N]): Schedule
+  def schedule[T <: Task, N <: Node](context: Context[T,N], environment: Environment[N]): Schedule[T, N]
 
 }

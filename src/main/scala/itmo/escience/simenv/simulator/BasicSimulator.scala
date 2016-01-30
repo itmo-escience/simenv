@@ -17,11 +17,11 @@ import scala.util.Random
   * @param scheduler algorithm for scheduling, must implement Scheduler interface
   * @param ctx contains description of computational environments and may perform actions on it
   */
-class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler[T, N], var ctx: Context[T, N]) extends Simulator[T, N] {
+class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Context[T, N]) extends Simulator[T, N] {
 
   val queue = new EventQueue()
   val rnd = new Random()
-  SimLogger.setCtx(ctx.asInstanceOf[Context[DaxTask, CpuTimeNode]])
+  SimLogger.setCtx(ctx.asInstanceOf[Context[DaxTask, CapacityBasedNode]])
 
   /**
     * generates and adds the very first event [[InitEvent]] to the event queue
@@ -45,7 +45,7 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler[T, N], var c
       SimLogger.log("Event has been handled")
     }
     SimLogger.log("Finished")
-    SimLogger.logSched(ctx.schedule)
+    SimLogger.logSched(ctx.schedule.asInstanceOf[Schedule[DaxTask, CapacityBasedNode]])
   }
 
   /**
@@ -66,7 +66,7 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler[T, N], var c
     SimLogger.log("Init schedule is generated")
     // This function applies new schedule and generates events
     ctx.applySchedule(schedule, queue)
-    SimLogger.logSched(schedule)
+    SimLogger.logSched(ctx.schedule.asInstanceOf[Schedule[DaxTask, CapacityBasedNode]])
 
     SimLogger.log("Init schedule has been applied")
     // Generate initial events
@@ -75,14 +75,14 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler[T, N], var c
   }
 
   def init_helper() = {
-    val schedMap = ctx.schedule.getMap()
+    val schedMap = ctx.schedule.getMap
     for (n <- ctx.environment.nodes) {
       //TODO try to remove "asInstanceOf"
       if (!schedMap.containsKey(n.id)) {
         ctx.schedule.addNode(n.id)
       }
       if (schedMap.get(n.id).nonEmpty) {
-        val firstItem = schedMap.get(n.id).head.asInstanceOf[TaskScheduleItem]
+        val firstItem = schedMap.get(n.id).head.asInstanceOf[TaskScheduleItem[T, N]]
         queue.submitEvent(new TaskStarted(id = firstItem.id, name = firstItem.name,
           postTime = ctx.currentTime, eventTime = firstItem.startTime,
           task = firstItem.task, node = firstItem.node))
@@ -94,12 +94,12 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler[T, N], var c
     //TODO: add logging here
     ctx.setTime(event.eventTime)
     val nid = event.node.id
-    val schedMap = ctx.schedule.getMap()
+    val schedMap = ctx.schedule.getMap
     val nodeSched = schedMap.get(nid)
     val (iterator, curItem, counter) = ctx.schedule.findItemInNodeSched(nid, event.id)
     schedMap.put(nid, nodeSched.take(counter))
-    schedMap.get(nid).add(curItem.asInstanceOf[TaskScheduleItem].changeStatus(ScheduleItemStatus.RUNNING))
-    taskFailer(curItem.asInstanceOf[TaskScheduleItem])
+    schedMap.get(nid).add(curItem.asInstanceOf[TaskScheduleItem[T, N]].changeStatus(ScheduleItemStatus.RUNNING))
+    taskFailer(curItem.asInstanceOf[TaskScheduleItem[T, N]])
     while (iterator.hasNext) {
       schedMap.get(nid).add(iterator.next())
     }
@@ -110,16 +110,16 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler[T, N], var c
     //TODO: add logging here
     // 1) set status on finished
     val nid = event.node.id
-    val schedMap = ctx.schedule.getMap()
+    val schedMap = ctx.schedule.getMap
     val nodeSched = schedMap.get(nid)
     val (iterator, curItem, counter) = ctx.schedule.findItemInNodeSched(nid, event.id)
 
     schedMap.put(nid, nodeSched.take(counter))
-    val finishedItem = curItem.asInstanceOf[TaskScheduleItem].changeStatus(ScheduleItemStatus.FINISHED)
+    val finishedItem = curItem.asInstanceOf[TaskScheduleItem[T, N]].changeStatus(ScheduleItemStatus.FINISHED)
     schedMap.get(nid).add(finishedItem)
 
     if (iterator.hasNext) {
-      val nextItem = iterator.next().asInstanceOf[TaskScheduleItem]
+      val nextItem = iterator.next().asInstanceOf[TaskScheduleItem[T, N]]
       queue.submitEvent(new TaskStarted(id = nextItem.id, name = nextItem.name,
         postTime = ctx.currentTime, eventTime = nextItem.startTime,
         task = nextItem.task, node = nextItem.node))
@@ -139,7 +139,7 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler[T, N], var c
     // Apply new schedule
     ctx.applySchedule(sc, queue)
     SimLogger.log("Rescheduling has been completed")
-    SimLogger.logSched(sc)
+    SimLogger.logSched(sc.asInstanceOf[Schedule[DaxTask, CapacityBasedNode]])
 
     // submit new events, if it is required after the failed task
     task_failed_after()
@@ -151,12 +151,12 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler[T, N], var c
 
     // Mark this item as failed
     val nid = event.node.id
-    val schedMap = ctx.schedule.getMap()
+    val schedMap = ctx.schedule.getMap
     val nodeSched = schedMap.get(nid)
     val (iterator, curItem, counter) = ctx.schedule.findItemInNodeSched(nid, event.id)
 
     schedMap.put(nid, nodeSched.take(counter))
-    val finishedItem = curItem.asInstanceOf[TaskScheduleItem].setToFailed(event.eventTime)
+    val finishedItem = curItem.asInstanceOf[TaskScheduleItem[T, N]].setToFailed(event.eventTime)
     schedMap.get(nid).add(finishedItem)
 
     while (iterator.hasNext) {
@@ -167,12 +167,12 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler[T, N], var c
   def task_failed_after() = {
     val newFixedSchedule = ctx.schedule.fixedSchedule()
     for (nid <- newFixedSchedule.nodeIds()) {
-      val fixNodeSched = newFixedSchedule.getMap().get(nid)
+      val fixNodeSched = newFixedSchedule.getMap.get(nid)
       if (fixNodeSched.nonEmpty && fixNodeSched.last.status != ScheduleItemStatus.RUNNING) {
         val lastItem = fixNodeSched.last
         val (newIterator, newCurItem, newCounter) = ctx.schedule.findItemInNodeSched(nid, lastItem.id)
         if (newIterator.hasNext) {
-          val nextItem = newIterator.next().asInstanceOf[TaskScheduleItem]
+          val nextItem = newIterator.next().asInstanceOf[TaskScheduleItem[T, N]]
           if (!queue.eq.map(x => x.id).toList.contains(nextItem.id)) {
             queue.submitEvent(new TaskStarted(id = nextItem.id, name = nextItem.name,
               postTime = ctx.currentTime, eventTime = nextItem.startTime,
@@ -180,9 +180,9 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler[T, N], var c
           }
         }
       } else {
-        val newNodeSched = ctx.schedule.getMap().get(nid)
+        val newNodeSched = ctx.schedule.getMap.get(nid)
         if (newNodeSched.nonEmpty) {
-          val firstItem = newNodeSched.head.asInstanceOf[TaskScheduleItem]
+          val firstItem = newNodeSched.head.asInstanceOf[TaskScheduleItem[T, N]]
           if (firstItem.status == ScheduleItemStatus.UNSTARTED && !queue.eq.map(x => x.id).toList.contains(firstItem.id)) {
             queue.submitEvent(new TaskStarted(id = firstItem.id, name = firstItem.name,
               postTime = ctx.currentTime, eventTime = firstItem.startTime,
@@ -193,12 +193,12 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler[T, N], var c
     }
   }
 
-  private def taskFailer(taskScheduleItem: TaskScheduleItem) = {
+  private def taskFailer(taskScheduleItem: TaskScheduleItem[T, N]) = {
     //TODO: add logging here
     //    taskScheduleItem.status = TaskScheduleItemStatus.RUNNING
     val dice = rnd.nextDouble()
     // TODO reliablity not via CpuTimeNode
-    if (dice < taskScheduleItem.node.asInstanceOf[CpuTimeNode].reliability) {
+    if (dice < taskScheduleItem.node.asInstanceOf[CapacityBasedNode].reliability) {
       // Task will be finished
       val taskFinishedEvent = new TaskFinished(id = taskScheduleItem.id, name = taskScheduleItem.name, postTime = ctx.currentTime,
         eventTime = taskScheduleItem.endTime, taskScheduleItem.task, taskScheduleItem.node)

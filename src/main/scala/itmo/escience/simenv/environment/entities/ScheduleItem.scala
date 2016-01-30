@@ -17,52 +17,29 @@ object ScheduleItemStatus {
 }
 
 
-case class TaskScheduleItem(id: ScheduleItemId,
-                            name: String,
-                            startTime: ModellingTimestamp,
-                            endTime: ModellingTimestamp,
-                            status: ScheduleItemStatus,
-                            node: Node,
-                            task: DaxTask) extends ScheduleItem {
+case class TaskScheduleItem[T <: Task, N <: Node](id: ScheduleItemId,
+                                                  name: String,
+                                                  startTime: ModellingTimestamp,
+                                                  endTime: ModellingTimestamp,
+                                                  status: ScheduleItemStatus,
+                                                  node: N,
+                                                  task: T) extends ScheduleItem {
   override def entity: NameAndId[String] = task
 
-  def changeStatus(newStatus: String) : TaskScheduleItem = {
+  def changeStatus(newStatus: String) : TaskScheduleItem[T, N] = {
     if (newStatus != ScheduleItemStatus.RUNNING && newStatus != ScheduleItemStatus.FINISHED &&
       newStatus != ScheduleItemStatus.UNSTARTED && newStatus != ScheduleItemStatus.FAILED) {
       throw new IllegalArgumentException("Status is not correct")
     }
-    return new TaskScheduleItem(id=id, name=name, startTime=startTime, endTime=endTime, status=newStatus,
+    new TaskScheduleItem(id=id, name=name, startTime=startTime, endTime=endTime, status=newStatus,
       node=node, task=task)
   }
 
-  def setToFailed(failTime: ModellingTimestamp) : TaskScheduleItem = {
+  def setToFailed(failTime: ModellingTimestamp) : TaskScheduleItem[T, N] = {
     if (failTime > endTime || failTime < startTime) {
       throw new IllegalArgumentException("Fail time is not correct")
     }
-    return new TaskScheduleItem(id=id, name=name, startTime=startTime, endTime=failTime,
+    new TaskScheduleItem(id=id, name=name, startTime=startTime, endTime=failTime,
       status=ScheduleItemStatus.FAILED, node=node, task=task)
   }
 }
-
-//case class StageInScheduleItem(id:ScheduleItemId,
-//                               name:String,
-//                               startTime:ModellingTimesatmp,
-//                               endTime:ModellingTimesatmp,
-//                               status:ScheduleItemStatus,
-//                               from: (DaxTask, NodeId),
-//                              // this field is redundant
-//                                to: (DaxTask, NodeId)) extends ScheduleItem
-//
-//case class ContainerUpScheduleItem(id:ScheduleItemId,
-//                                   name:String,
-//                                   startTime:ModellingTimesatmp,
-//                                   endTime:ModellingTimesatmp,
-//                                   status:ScheduleItemStatus,
-//                                   container: Node) extends ScheduleItem
-//
-//case class ContainerDownScheduleItem(id:ScheduleItemId,
-//                                   name:String,
-//                                   startTime:ModellingTimesatmp,
-//                                   endTime:ModellingTimesatmp,
-//                                   status:ScheduleItemStatus,
-//                                   container: NodeId) extends ScheduleItem

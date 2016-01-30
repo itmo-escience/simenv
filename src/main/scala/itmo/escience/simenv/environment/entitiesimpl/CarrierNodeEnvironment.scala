@@ -63,7 +63,7 @@ class CarrierNodeEnvironment[N <: Node](nodesSeq: Seq[Node], networksSeq: Seq[Ne
   override def changeNodeParams(newNodeDescription: N): Unit = ???
 
   override def networksByNode(node: N): Seq[Network] = {
-    networks.filter(x => x.nodes.map(x => x.id).contains(node.parent))
+    networks.filter(x => x.nodes.map(y => y.id).contains(node.parent)) ++ networks.filter(x => x.nodes.map(y => y.id).contains(node.id))
   }
 
   override def removeNodes(nodesIds: Seq[NodeId]): Unit = {
@@ -80,7 +80,7 @@ class CarrierNodeEnvironment[N <: Node](nodesSeq: Seq[Node], networksSeq: Seq[Ne
   def envPrint(): String = {
     var res: String = ""
     for (n <- nodes) {
-      res += s"(${n.asInstanceOf[CpuTimeNode].printNode()})\n"
+      res += s"(${n.asInstanceOf[CapacityBasedNode].printNode()})\n"
     }
     res
   }

@@ -1,16 +1,11 @@
 package itmo.escience.simenv.algorithms.ga
 
 import java.util
-import java.util.Map.Entry
 
-import itmo.escience.simenv.algorithms.RandomScheduler
 import itmo.escience.simenv.environment.entities._
-import itmo.escience.simenv.environment.entitiesimpl.SingleAppWorkload
+import itmo.escience.simenv.environment.entitiesimpl.BasicEnvironment
 import itmo.escience.simenv.environment.modelling.Environment
-import org.uma.jmetal.problem.Problem
-import scala.collection.JavaConversions._
 
-import scala.util.Random
 import scala.collection.JavaConversions._
 
 /**
@@ -19,64 +14,61 @@ import scala.collection.JavaConversions._
 
 object WorkflowSchedulingProblem {
 
-  // TODO: ATTENTION! Now it does NOT work for dynamic case. It needs to be implemented. Context will be needed for it
-  def scheduleToSolution[N <: Node](schedule:Schedule, context: Context[DaxTask, N]):WorkflowSchedulingSolution = {
+  def scheduleToSolution[T <: Task, N <: Node](schedule:Schedule[T, N], context: Context[T, N], environment: Environment[N]):WFSchedSolution = {
     val taskItems = schedule.scheduleItemsSeq().filter({
-      case x: TaskScheduleItem => true
+      case x: TaskScheduleItem[T, N] => true
       case _ => false
-    }).map(x => x.asInstanceOf[TaskScheduleItem])
+    }).map(x => x.asInstanceOf[TaskScheduleItem[T, N]])
     val fixed = context.schedule.fixedSchedule()
     var fixed_tasks = List[String]()
     for (n <- fixed.nodeIds()) {
-      fixed_tasks = fixed_tasks ++ fixed.getMap().get(n).toList.filter(x => x.status != ScheduleItemStatus.FAILED
-      ).map(x => x.asInstanceOf[TaskScheduleItem].task.id)
+      fixed_tasks = fixed_tasks ++ fixed.getMap.get(n).toList.filter(x => x.status != ScheduleItemStatus.FAILED
+      ).map(x => x.asInstanceOf[TaskScheduleItem[T, N]].task.id)
     }
     val restTasks = taskItems.filter(x => !fixed_tasks.contains(x.task.id))
     val genes = restTasks.map(x => MappedTask(x.task.id, x.node.id)).toList
-    // TODO check ids of events and tasks!!! scheduleItemId should be equal to its eventId
-    new WorkflowSchedulingSolution(genes)
+    new WFSchedSolution(genes)
   }
 
-  def solutionToSchedule[N <: Node](solution: WorkflowSchedulingSolution, context: Context[DaxTask, N], environment: Environment[N]): Schedule = {
-    //TODO: implement dealing with dynamics (implemented with fails of tasks)
+  def solutionToSchedule[T <: Task, N <: Node](solution: WFSchedSolution, context: Context[T, N], environment: Environment[N]): Schedule[T, N] = {
     val newSchedule = context.schedule.fixedSchedule()
 
     // repair sequence in relation with parent-child dependencies
     // construct new schedule by placing it in task-by-task manner
-    val repairedOrdering = repairOrdering(solution, context)
+    val repairedOrdering = repairOrdering(solution, context, environment)
 
     for (x <- repairedOrdering) {
       val (task, nodeId) = x
       newSchedule.placeTask(task,
-        environment.nodeById(nodeId),
-        context.asInstanceOf[Context[DaxTask, Node]])
+        environment.nodeById(nodeId).asInstanceOf[N],
+        context)
     }
-    newSchedule
+    newSchedule.asInstanceOf[Schedule[T, N]]
   }
 
-  def repairOrdering[N <: Node](solution: WorkflowSchedulingSolution, context: Context[DaxTask, N]):List[(DaxTask, NodeId)] = {
-    val wf = context.workload.asInstanceOf[SingleAppWorkload].app
-    val tasksSeq = new util.TreeSet[Pair[(DaxTask, NodeId)]](solution.tasksSeq().zipWithIndex
+  def repairOrdering[T <: Task, N <: Node](solution: WFSchedSolution, context: Context[T, N], environment: Environment[N]): List[(T, NodeId)] = {
+    val wf = context.workload.apps.head
+    val tasksSeq = new util.TreeSet[Pair[(T, NodeId)]](solution.genSeq.zipWithIndex
       .map( { case (x, i) =>
         new Pair(i,
-          (wf.taskById(x.taskId).asInstanceOf[DaxTask], x.nodeId)
+          (wf.taskById(x.taskId).asInstanceOf[T], x.nodeId)
         )}
       ))
 
-    val mappedTasks = new util.HashMap[TaskId, (DaxTask, NodeId)]()
+    val mappedTasks = new util.HashMap[TaskId, (T, NodeId)]()
     // add all task from fixed schedule
     val fixedSched = context.schedule.fixedSchedule()
     for (nid <- fixedSched.nodeIds()) {
-      for (item <- fixedSched.getMap().get(nid)) {
-        val taskScItem = item.asInstanceOf[TaskScheduleItem]
+      for (item <- fixedSched.getMap.get(nid)) {
+        val taskScItem = item.asInstanceOf[TaskScheduleItem[T, N]]
         if (taskScItem.status != ScheduleItemStatus.FAILED) {
           mappedTasks.put(taskScItem.task.id, (taskScItem.task, taskScItem.node.id))
         }
       }
     }
 
-    val repairedOrdering: java.util.ArrayList[(DaxTask, NodeId)] = new util.ArrayList[(DaxTask, NodeId)](tasksSeq.size())
-    val isReadyToRun = (task: DaxTask) => task.parents.forall(x => mappedTasks.containsKey(x.id) || x.isInstanceOf[HeadDaxTask])
+    val repairedOrdering: java.util.ArrayList[(T, NodeId)] = new util.ArrayList[(T, NodeId)](tasksSeq.size())
+    val isReadyToRun = (task: T) => task.parents.forall(x => mappedTasks.containsKey(x.id) || x.isInstanceOf[HeadDaxTask])
 
     while (tasksSeq.nonEmpty) {
 
@@ -98,31 +90,3 @@ object WorkflowSchedulingProblem {
     override def compareTo(o: Pair[T]): Int = num.compareTo(o.num)
   }
 }
-
-class WorkflowSchedulingProblem[N <: Node](wf:Workflow, newSchedule:Schedule, context:Context[DaxTask, N], environment: Environment[N]) extends Problem[WorkflowSchedulingSolution]{
-
-  override def getNumberOfObjectives: Int = 1
-
-  override def getNumberOfConstraints: Int = 0
-
-  override def getName: String = "WorkflowSchedulingProblem"
-
-  override def evaluate(s: WorkflowSchedulingSolution): Unit = {
-    val schedule = WorkflowSchedulingProblem.solutionToSchedule(s, context, environment)
-    val makespan = schedule.makespan()
-    s.setObjective(0, makespan)
-  }
-
-  override def getNumberOfVariables: Int = wf.tasks.length
-
-  override def createSolution(): WorkflowSchedulingSolution = {
-    // schedule = RandomScheduler.schedule()
-    // convert to chromosome
-    // return it
-    val schedule = RandomScheduler.schedule(context.asInstanceOf[Context[DaxTask, Node]], environment.asInstanceOf[Environment[Node]])
-
-    val solution = WorkflowSchedulingProblem.scheduleToSolution(schedule, context)
-    solution
-  }
-}
-

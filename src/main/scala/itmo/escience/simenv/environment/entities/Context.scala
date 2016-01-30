@@ -10,13 +10,13 @@ trait Context[T <: Task, N <: Node] {
 
   def estimator: Estimator[T,N]
 
-  def schedule: Schedule
+  def schedule: Schedule[T, N]
 
   def workload: Workload
 
   def currentTime: ModellingTimestamp
 
-  def applySchedule(newSched: Schedule, queue: EventQueue)
+  def applySchedule(newSched: Schedule[T, N], queue: EventQueue)
 
   def setTime(newTime: ModellingTimestamp)
 
