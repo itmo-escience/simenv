@@ -68,9 +68,8 @@ def parseEnv(envPath: String, band: Double): List[CapRamBandResource] = {
     for (i <- 0 until size) {
       val curJ = myJSON(i).values.asInstanceOf[Map[String, Any]]
       var id: String = curJ.get("id").get.asInstanceOf[String]
-      if (ids.contains(id)) {
+      while (ids.contains(id)) {
         id = id + symb
-        ids :+= id
       }
       ids :+= id
       val cpu: Double = curJ.get("cpu.pcore.percent").get.asInstanceOf[Double]

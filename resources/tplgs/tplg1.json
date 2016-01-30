@@ -1,6 +1,17 @@
-[{"children" :["task1", "task1"], "cpu.pcore.percent": 2.0, "max.heap.size.mb":128.0, "id" : "task0"},
-  {"children" :["task2"], "cpu.pcore.percent": 4.0, "max.heap.size.mb":256.0, "id" : "task1"},
-  {"children" :["task2"], "cpu.pcore.percent": 4.0, "max.heap.size.mb":256.0, "id" : "task1"},
-  {"children" :["task3"], "cpu.pcore.percent": 2.0, "max.heap.size.mb":512.0, "id" : "task2"},
-  {"children" :[], "cpu.pcore.percent": 2.0, "max.heap.size.mb":256.0, "id" : "task3"}
-]
+[{"id":"checkpointspout","children":["partialsum"],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0},
+  {"id":"partialsum","children":["printer","printer"],"cpu.pcore.percent":20.0,"max.heap.size.mb":512.0},
+  {"id":"printer","children":["total","total"],"cpu.pcore.percent":10.0,"max.heap.size.mb":256.0},
+  {"id":"printer","children":["total","total"],"cpu.pcore.percent":10.0,"max.heap.size.mb":256.0},
+  {"id":"spout","children":["partialsum"],"cpu.pcore.percent":20.0,"max.heap.size.mb":512.0},
+  {"id":"total","children":["total2","total2"],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0},
+  {"id":"total","children":["total2","total2"],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0},
+  {"id":"total","children":["total2","total2"],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0},
+  {"id":"total","children":["total2","total2"],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0},
+  {"id":"total2","children":[],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0},
+  {"id":"total2","children":[],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0},
+  {"id":"total2","children":[],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0},
+  {"id":"total2","children":[],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0},
+  {"id":"total2","children":[],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0},
+  {"id":"total2","children":[],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0},
+  {"id":"total2","children":[],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0},
+  {"id":"total2","children":[],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0}]
