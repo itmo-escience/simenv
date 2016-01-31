@@ -10,22 +10,20 @@ object Main {
   def main(args: Array[String]) {
 
     // Указываем путь к файлу с вф или пайплайном
-    val wfPath = ".\\resources\\tplgs\\tplg1.json"
+    val wfPath = ".\\resources\\tplgs\\tplg2.json"
 //    val wfPath = "[{\"id\":\"spout\",\"children\":[\"partialsum\"],\"cpu.pcore.percent\":10.0,\"max.heap.size.mb\":128.0},{\"id\":\"partialsum\",\"children\":[\"printer\"],\"cpu.pcore.percent\":10.0,\"max.heap.size.mb\":128.0},{\"id\":\"printer\",\"children\":[\"total\"],\"cpu.pcore.percent\":10.0,\"max.heap.size.mb\":128.0},{\"id\":\"total\",\"children\":[\"total2\"],\"cpu.pcore.percent\":10.0,\"max.heap.size.mb\":128.0},{\"id\":\"total2\",\"children\":[],\"cpu.pcore.percent\":10.0,\"max.heap.size.mb\":128.0}]"
 //    val envPath = "[{\"availableCpuResources\":400.0,\"totalCpuResources\":400.0,\"totalMemoryResources\":3072.0,\"id\":\"8bf77b36-1d85-44b4-9527-b7b64bf4bf93\",\"availableMemoryResources\":3072.0},{\"availableCpuResources\":400.0,\"totalCpuResources\":400.0,\"totalMemoryResources\":3072.0,\"id\":\"5f363c95-673b-4612-baea-454f2842d728\",\"availableMemoryResources\":3072.0}]"
-    val envPath = ".\\resources\\envs\\env1.json"
+    val envPath = ".\\resources\\envs\\env2.json"
 
     // В utilities есть функция parseDAX, которая считывает файлы такого формата
 
-    // сколько будет копий одного и того же вф
-//    val sweeps = 2
-
-    // ресурсы описываются числом ядер и максимальным размером канала передачи данных
-//    val cores = 8
+    // Максимальный канал на расурсе
     val bandwidth = 1025
+    // Передача данных между любыми тасками
+    val dataBetweenTasks = 16
 
     // запуск
-    val storm = new StormSimulatedAnnealing(wfPath, envPath, bandwidth)
+    val storm = new StormSimulatedAnnealing(wfPath, envPath, bandwidth, dataBetweenTasks)
     storm.initialization()
     storm.runAlg()
     val cpu = storm.getCpuUtilization(storm.schedule)

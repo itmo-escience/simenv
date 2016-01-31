@@ -14,7 +14,7 @@ import scala.collection.JavaConversions._
   * Created by Mishanya on 23.12.2015.
   */
 //class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int) {
-class StormSimulatedAnnealing(workloadPath: String, envPath: String, bandwidth: Int) {
+class StormSimulatedAnnealing(workloadPath: String, envPath: String, bandwidth: Int, dataBetweenTasks: Int) {
 
   // Мапа для содержания нодов по id
   var nodes: util.HashMap[NodeId, CapRamBandResource] = new util.HashMap[NodeId, CapRamBandResource]
@@ -33,7 +33,7 @@ class StormSimulatedAnnealing(workloadPath: String, envPath: String, bandwidth: 
 
     // Ноды из JSON
     var nodesList =  JSONParser.parseEnv(envPath, bandwidth)
-    val tasksList = JSONParser.parseWorkload(workloadPath)
+    val tasksList = JSONParser.parseWorkload(workloadPath, dataBetweenTasks)
 
     for (n <- nodesList) {
       nodes.put(n.id, n)

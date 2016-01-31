@@ -42,7 +42,7 @@ def parseEnv(envPath: String, band: Double): List[CapRamBandResource] = {
   res
 }
 
-  def parseWorkload(workloadPath: String): List[DaxTask] = {
+  def parseWorkload(workloadPath: String, dataBetweenTasks: Int): List[DaxTask] = {
     var res = List[DaxTask]()
     val map = mutable.Map[DaxTask, List[String]]()
     val idMap = mutable.Map[String, DaxTask]()
@@ -73,17 +73,17 @@ def parseEnv(envPath: String, band: Double): List[CapRamBandResource] = {
       }
       ids :+= id
       val cpu: Double = curJ.get("cpu.pcore.percent").get.asInstanceOf[Double]
-      var data: Double = 128
+      var data: Double = dataBetweenTasks
       val ram: Double = curJ.get("max.heap.size.mb").get.asInstanceOf[Double]
       var chs: List[String] = List[String]()
       val childIds: List[String] = curJ.get("children").get.asInstanceOf[List[String]]
       var children: List[String] = List[String]()
       for (c <- childIds) {
-        if (children.contains(c)) {
-          children :+= c + symb
-        } else {
-          children :+= c
+        var curId: String = c
+        while (children.contains(curId)) {
+          curId = curId + symb
         }
+        children :+= curId
       }
       if (children.isEmpty) {
         data = 0
