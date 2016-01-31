@@ -42,7 +42,7 @@ def parseEnv(envPath: String, band: Double): List[CapRamBandResource] = {
   res
 }
 
-  def parseWorkload(workloadPath: String, dataBetweenTasks: Int): List[DaxTask] = {
+  def parseWorkload(workloadPath: String, bandwidth: Int): List[DaxTask] = {
     var res = List[DaxTask]()
     val map = mutable.Map[DaxTask, List[String]]()
     val idMap = mutable.Map[String, DaxTask]()
@@ -59,6 +59,8 @@ def parseEnv(envPath: String, band: Double): List[CapRamBandResource] = {
     // Converting from JOjbect to plain object
     implicit val formats = DefaultFormats
     val size = myJSON.values.asInstanceOf[List[Any]].size
+
+    val dataBetweenTasks = bandwidth / size
 
 
     var ids: List[String] = List[String]()

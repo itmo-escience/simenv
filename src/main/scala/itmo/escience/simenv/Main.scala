@@ -19,11 +19,9 @@ object Main {
 
     // Максимальный канал на расурсе
     val bandwidth = 1025
-    // Передача данных между любыми тасками
-    val dataBetweenTasks = 16
 
     // запуск
-    val storm = new StormSimulatedAnnealing(wfPath, envPath, bandwidth, dataBetweenTasks)
+    val storm = new StormSimulatedAnnealing(wfPath, envPath, bandwidth)
     storm.initialization()
     storm.runAlg()
     val cpu = storm.getCpuUtilization(storm.schedule)
