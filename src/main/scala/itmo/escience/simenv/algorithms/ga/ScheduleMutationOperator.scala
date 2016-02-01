@@ -52,7 +52,7 @@ class ScheduleMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env: En
 
   private def doMutation(mutant:WFSchedSolution, perfEnv: EnvConfSolution, rnd: Random) = {
 
-    val liveNodes = ctx.environment.nodes.filter(x => x.status == NodeStatus.UP).toList
+    val liveNodes = env.nodes.filter(x => x.status == NodeStatus.UP).toList
     var node = liveNodes(rnd.nextInt(liveNodes.length))
     if (rnd.nextBoolean()) {
       val notZeroNodes = liveNodes.filter(x => perfEnv.getVmElement(x.id).cap > 0)
@@ -67,7 +67,7 @@ class ScheduleMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env: En
 
   private def doMutation(mutant:WFSchedSolution, rnd: Random) = {
 
-    val liveNodes = ctx.environment.nodes.filter(x => x.status == NodeStatus.UP).toList
+    val liveNodes = env.nodes.filter(x => x.status == NodeStatus.UP).toList
     val node = liveNodes(rnd.nextInt(liveNodes.length))
 
     val i = rnd.nextInt(mutant.getNumberOfVariables)

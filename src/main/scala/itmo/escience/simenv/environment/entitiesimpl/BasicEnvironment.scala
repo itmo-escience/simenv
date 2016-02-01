@@ -50,4 +50,6 @@ class BasicEnvironment(nodesSeq:Seq[CapacityBasedNode], networksSeq: Seq[Network
   override def nodeById(nodeId: NodeId): CapacityBasedNode = _nodes.get(nodeId)
 
   override def carriers: scala.Seq[Carrier[CapacityBasedNode]] = throw new Exception("Invalid Operation")
+
+  override def setNodeStatus(nodeId: NodeId, status: NodeStatus): Unit = _nodes.get(nodeId).status = status
 }

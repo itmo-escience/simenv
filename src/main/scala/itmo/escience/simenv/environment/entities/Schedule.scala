@@ -57,7 +57,9 @@ class Schedule[T <: Task, N <: Node] {
       }
     }
 
-
+    if (node.status == NodeStatus.DOWN && foundStartTime < 1 + this.fixedSchedule().getMap.get(node.id).last.endTime) {
+      println("PIZDEC")
+    }
     val newItem = new TaskScheduleItem(id = Utilities.generateId(),
       name = task.name,
       startTime = foundStartTime,
@@ -154,7 +156,7 @@ class Schedule[T <: Task, N <: Node] {
       val items = map.get(nid)
       for (item <- items) {
         if (item.status == ScheduleItemStatus.UNSTARTED) {
-          rest = rest
+          rest :+= item.asInstanceOf[TaskScheduleItem[T, N]].task
         }
       }
     }

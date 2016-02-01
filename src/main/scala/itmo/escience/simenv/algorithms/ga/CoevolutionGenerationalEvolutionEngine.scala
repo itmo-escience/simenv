@@ -4,7 +4,7 @@ import java.util
 import java.util.concurrent._
 import java.util.{Collections, Random}
 
-import itmo.escience.simenv.algorithms.ga.env.{EnvCandidateFactory, EnvConfSolution}
+import itmo.escience.simenv.algorithms.ga.env.{MappedEnv, EnvCandidateFactory, EnvConfSolution}
 import itmo.escience.simenv.environment.entities.{Node, Task}
 import org.uncommons.util.concurrent.ConfigurableThreadFactory
 import org.uncommons.util.id.{IDSource, IntSequenceIDSource, StringPrefixIDSource}
@@ -66,20 +66,32 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
 //    val (schedBuddies, envBuddies) = parseFriendship(friendship)
 //    averageFitnessS(schedBuddies)
 //    averageFitnessE(envBuddies)
+
     for (s <- schedPop) {
       val fit  = fitnessEvaluator.getFitness(s, best._2)
       s.fitness = fit
       if (best._3 > fit) {
         best = (s.copy, best._2, fit)
       }
-    }
-    for (e <- envPop) {
-      val fit = fitnessEvaluator.getFitness(best._1, e)
-      e.fitness = fit
-        if (best._3 > fit) {
-        best = (best._1, e.copy, fit)
+      val sAdapt = adaptation(s, best._2)
+      val fitAdapt = fitnessEvaluator.getFitness(sAdapt, best._2)
+      sAdapt.fitness = fitAdapt
+      if (best._3 > fit) {
+        best = (sAdapt.copy, best._2, fitAdapt)
+      }
+      if (fitAdapt < fit) {
+        s.setGenes(sAdapt)
       }
     }
+    for (e <- envPop) {
+      val eAdabt = adaptation(best._1, e)
+      val fit = fitnessEvaluator.getFitness(eAdabt, e)
+      e.fitness = fit
+        if (best._3 > fit) {
+          best = (eAdabt, e, fit)
+        }
+    }
+
     val evalSchedPop = getEvaluatedPopulationS(schedPop)
     val evalEnvPop = getEvaluatedPopulationE(envPop)
     (evalSchedPop, evalEnvPop)
@@ -185,7 +197,7 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
       val fit = fitnessEvaluator.getFitness(pair._1, pair._2)
       friendship.put(pair, fit)
       if (best == null || fit < best._3) {
-        best = (pair._1, pair._2, fit)
+        best = (pair._1.copy, pair._2.copy, fit)
       }
     }
     friendship
@@ -212,14 +224,14 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
 
   def averageFitnessS(solutions: util.Map[WFSchedSolution, util.List[Double]]) = {
     for ((k, v) <- solutions) {
-//      k.fitness = v.sum / v.size
-      k.fitness = v.max
+      k.fitness = v.sum / v.size
+//      k.fitness = v.max
     }
   }
   def averageFitnessE(solutions: util.Map[EnvConfSolution, util.List[Double]]) = {
     for ((k, v) <- solutions) {
-//      k.fitness = v.sum / v.size
-      k.fitness = v.max
+      k.fitness = v.sum / v.size
+//      k.fitness = v.max
     }
   }
 
@@ -255,6 +267,39 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
       observer.populationUpdate(data)
     }
   }
+
+  def adaptation(sched: WFSchedSolution, env: EnvConfSolution): WFSchedSolution = {
+    var genes: List[MappedTask] = List[MappedTask]()
+    val emptyNodes = env.genSeq.filter(x => x.cap == 0).map(x => x.vmId)
+    val availableNodes = env.genSeq.filter(x => x.cap > 0).map(x => x.vmId)
+    for (x <- sched.genSeq) {
+      if (availableNodes.contains(x.nodeId)) {
+        genes :+= x
+      } else {
+        genes :+= new MappedTask(x.taskId, availableNodes(rng.nextInt(availableNodes.size)))
+      }
+    }
+    new WFSchedSolution(genes)
+  }
+
+//  def adaptation2(sched: WFSchedSolution, env: EnvConfSolution): EnvConfSolution = {
+//    var genes: List[MappedEnv] = List[MappedEnv]()
+//    val emptyNodes = env.genSeq.filter(x => x.cap == 0).map(x => x.vmId)
+//    val availableNodes = env.genSeq.filter(x => x.cap > 1).map(x => x.vmId)
+//    for (e <- emptyNodes) {
+//      if (sched.genSeq.map(x => x.nodeId).contains(e)) {
+//
+//      }
+//    }
+//    for (x <- sched.genSeq) {
+//      if (availableNodes.contains(x.nodeId)) {
+//        genes :+= x
+//      } else {
+//        genes :+= new MappedTask(x.taskId, availableNodes(rng.nextInt(availableNodes.size)))
+//      }
+//    }
+//    new EnvConfSolution(genes)
+//  }
 
 }
 

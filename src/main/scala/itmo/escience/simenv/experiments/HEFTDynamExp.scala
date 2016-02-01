@@ -14,7 +14,8 @@ import itmo.escience.simenv.utilities.Utilities._
 /**
   * Created by mikhail on 29.01.2016.
   */
-class HEFTDynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double, locNet: Double, reliability: Double) extends Experiment{
+class HEFTDynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double, locNet: Double, reliability: Double,
+                  nodeResizeTime: Double, nodeDownTime: Double, resDownTime: Double) extends Experiment{
   val wf = parseDAX(wfPath + ".xml")
 
   var networks = List[Network]()
@@ -25,8 +26,9 @@ class HEFTDynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double
       capacity=l.sum, reliability = reliability)
 
     for ((l2, j) <- l.zipWithIndex) {
-      val node: CapacityBasedNode = new CapacityBasedNode(id = s"res_${i}_node_$j", name = s"res_${i}_node_$j",
-        capacity = l2, parent = res.id, reliability = reliability)
+      var node: CapacityBasedNode = null
+      node = new CapacityBasedNode(id = s"res_${i}_node_$j", name = s"res_${i}_node_$j",
+          capacity = l2, parent = res.id, reliability = reliability)
       res.addChild(node)
     }
     val localNet = new Network(id=generateId(), name="local net", bandwidth=locNet, res.children)
@@ -39,7 +41,7 @@ class HEFTDynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double
   networks :+= globalNet
 
   val environment: Environment[CapacityBasedNode] = new CarrierNodeEnvironment[CapacityBasedNode](nodes, networks)
-  val estimator = new BasicEstimator[CapacityBasedNode](10, environment)
+  val estimator = new BasicEstimator[CapacityBasedNode](20, environment)
 
 
 
@@ -67,13 +69,13 @@ class HEFTDynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double
 //    println(s"MinMin makespan: ${minmin_schedule.makespan()}")
 //    println("_________")
 //    println("HEFT SCHEDULE:")
-////    println(heft_schedule.prettyPrint())
+//    println(heft_schedule.prettyPrint())
 //    println(s"HEFT makespan: ${heft_schedule.makespan()}")
 
-    val simulator = new BasicSimulator(scheduler, ctx)
+    val simulator = new BasicSimulator(scheduler, ctx, nodeDownTime, resDownTime)
     simulator.init()
     simulator.runSimulation()
-    print("Makespan:")
+    print("HEFT Makespan:")
     println(ctx.schedule.makespan())
 
 
@@ -84,7 +86,7 @@ class HEFTDynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double
 //    println("COEVOLUTION ENVIRONMENT")
 //    println(coev_env.envPrint())
 //    println(s"coev makespan: ${coev_schedule.makespan()}")
-    println(ctx.schedule.prettyPrint())
-    println("Finished")
+//    println(ctx.schedule.prettyPrint())
+//    println("Finished")
   }
 }

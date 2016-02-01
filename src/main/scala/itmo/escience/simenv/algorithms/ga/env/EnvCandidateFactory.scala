@@ -15,9 +15,10 @@ class EnvCandidateFactory[T <: Task, N <: Node](env: Environment[N]) extends Abs
     var result: List[MappedEnv] = List[MappedEnv]()
     val carriers = env.carriers
     for (carrier <- carriers) {
-      val totalCap: Double = carrier.asInstanceOf[CapacityBasedCarrier].capacity
+
+      val interceptors = scala.util.Random.shuffle(carrier.children.asInstanceOf[List[CapacityBasedNode]].filter(x => x.status == NodeStatus.UP))
+      val totalCap: Double = interceptors.foldLeft(0.0)((s, x) => s + x.capacity)
       var curCap: Double = totalCap
-      val interceptors = scala.util.Random.shuffle(carrier.children.asInstanceOf[List[CapacityBasedNode]])
       val it: Iterator[CapacityBasedNode] = interceptors.iterator
       while (it.hasNext) {
         val node = it.next()

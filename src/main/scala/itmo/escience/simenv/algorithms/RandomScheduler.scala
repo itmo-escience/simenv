@@ -21,7 +21,7 @@ object RandomScheduler extends Scheduler{
     val newSchedule = Schedule.emptySchedule[T, N]()
     var tasksToSchedule = wf.headTask.children
 //    val nodes = context.environment.nodes.filter(x => x.status == Node.UP)
-    val nodes = context.environment.nodes.filter(x => x.status == NodeStatus.UP)
+    val nodes = environment.nodes.filter(x => x.status == NodeStatus.UP)
 
     var scheduledTasks = tasksToSchedule.map(task => task.id).toSet
     val isReadyToRun = (x:T) => x.parents.forall(p => scheduledTasks.contains(p.id))

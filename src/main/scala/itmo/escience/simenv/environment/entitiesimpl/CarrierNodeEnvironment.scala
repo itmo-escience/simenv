@@ -84,4 +84,16 @@ class CarrierNodeEnvironment[N <: Node](nodesSeq: Seq[Node], networksSeq: Seq[Ne
     }
     res
   }
+
+  override def setNodeStatus(nodeId: NodeId, status: NodeStatus) = {
+    val node = nodeById(nodeId)
+    if (carriers.map(x => x.id).contains(node.id)) {
+      node.status = status
+      for (c <- node.asInstanceOf[Carrier[N]].children) {
+        c.status = status
+      }
+    } else {
+      node.status = status
+    }
+  }
 }

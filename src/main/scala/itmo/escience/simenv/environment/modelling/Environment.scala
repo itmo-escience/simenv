@@ -36,4 +36,6 @@ trait Environment[N <: Node] {
   def changeNodeParams(newNodeDescription: N)
 
   def networksByNode(node:N): Seq[Network]
+
+  def setNodeStatus(nodeId: NodeId, status: NodeStatus)
 }

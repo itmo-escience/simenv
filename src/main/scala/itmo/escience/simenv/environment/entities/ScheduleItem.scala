@@ -43,3 +43,13 @@ case class TaskScheduleItem[T <: Task, N <: Node](id: ScheduleItemId,
       status=ScheduleItemStatus.FAILED, node=node, task=task)
   }
 }
+
+case class NodeDownItem[N <: Node](id: ScheduleItemId,
+                                   name: String,
+                                   startTime: ModellingTimestamp,
+                                   endTime: ModellingTimestamp,
+                                   status: ScheduleItemStatus,
+                                   node: N) extends ScheduleItem {
+
+  override def entity: NameAndId[String] = node
+}

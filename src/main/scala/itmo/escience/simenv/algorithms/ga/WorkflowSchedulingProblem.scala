@@ -26,7 +26,11 @@ object WorkflowSchedulingProblem {
       ).map(x => x.asInstanceOf[TaskScheduleItem[T, N]].task.id)
     }
     val restTasks = taskItems.filter(x => !fixed_tasks.contains(x.task.id))
-    val genes = restTasks.map(x => MappedTask(x.task.id, x.node.id)).toList
+    val brokenNodes = environment.nodes.filter(x => x.status == NodeStatus.DOWN).map(x => x.id)
+    val genes = restTasks.map(x => MappedTask(x.task.id, x.node.id)).toList.filter(x => !brokenNodes.contains(x.nodeId))
+    if (genes.exists(x => brokenNodes.contains(x.nodeId))) {
+      println("PIZDA")
+    }
     new WFSchedSolution(genes)
   }
 

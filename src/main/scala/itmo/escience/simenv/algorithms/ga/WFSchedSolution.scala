@@ -11,7 +11,12 @@ class WFSchedSolution(mappedTasks: List[MappedTask]) extends EvSolution[MappedTa
 
   def this(that:WFSchedSolution) = this(that._genes.toList)
 
-  private val _genes = new util.ArrayList(mappedTasks)
+  private var _genes = new util.ArrayList(mappedTasks)
+
+  def setGenes(sol: WFSchedSolution) = {
+    _genes = new util.ArrayList[MappedTask](sol.genSeq)
+    fitness = sol.fitness
+  }
 
   def setVariableValue(i: Int, t: MappedTask): Unit = {
     _genes.set(i, t)

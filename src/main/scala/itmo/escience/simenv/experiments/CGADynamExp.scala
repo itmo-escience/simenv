@@ -1,21 +1,20 @@
 package itmo.escience.simenv.experiments
 
-import itmo.escience.simenv.algorithms.ga.GAScheduler
-import itmo.escience.simenv.algorithms.{HEFTScheduler, MinMinScheduler}
-import itmo.escience.simenv.simulator.BasicSimulator
+import itmo.escience.simenv.algorithms.HEFTScheduler
+import itmo.escience.simenv.algorithms.ga.CGAScheduler
+import itmo.escience.simenv.simulator.{SchedConfSimulator, BasicSimulator}
 
 //import itmo.escience.simenv.algorithms.gaOld.cga.CoevGAScheduler
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl._
 import itmo.escience.simenv.environment.modelling.Environment
-import itmo.escience.simenv.utilities.Units._
 import itmo.escience.simenv.utilities.Utilities._
 
 /**
   * Created by mikhail on 29.01.2016.
   */
-class GADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double, locNet: Double, reliability: Double,
-                 nodeResizeTime: Double, nodeDownTime: Double, resDownTime: Double) extends Experiment{
+class CGADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double, locNet: Double, reliability: Double,
+                  nodeResizeTime: Double, nodeDownTime: Double, resDownTime: Double) extends Experiment{
   val wf = parseDAX(wfPath + ".xml")
 
   var networks = List[Network]()
@@ -42,15 +41,17 @@ class GADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double, 
   val environment: Environment[CapacityBasedNode] = new CarrierNodeEnvironment[CapacityBasedNode](nodes, networks)
   val estimator = new BasicEstimator[CapacityBasedNode](20, environment)
 
+
+
   override def run() = {
 //    println("Init environment:")
 //    println(environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
 
-    val scheduler = new GAScheduler(crossoverProb = 0.5,
-      mutationProb = 0.5,
+    val scheduler = new CGAScheduler(crossoverProb = 0.4,
+      mutationProb = 0.3,
       swapMutationProb = 0.3,
       popSize = 50,
-      iterationCount = 300)
+      iterationCount = 100)
     //
     val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule[DaxTask, CapacityBasedNode](),
       estimator, 0.0, new SingleAppWorkload(wf))
@@ -73,11 +74,10 @@ class GADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double, 
 ////    println(heft_schedule.prettyPrint())
 //    println(s"HEFT makespan: ${heft_schedule.makespan()}")
 
-    val simulator = new BasicSimulator(scheduler, ctx, nodeDownTime, resDownTime)
+    val simulator = new SchedConfSimulator(scheduler, ctx, nodeDownTime, resDownTime, nodeResizeTime)
     simulator.init()
     simulator.runSimulation()
-
-    print("GA Makespan:")
+    print("Makespan:")
     println(ctx.schedule.makespan())
 
 
@@ -89,7 +89,6 @@ class GADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double, 
 //    println(coev_env.envPrint())
 //    println(s"coev makespan: ${coev_schedule.makespan()}")
 //    println(ctx.schedule.prettyPrint())
-    println("Finished")
-
+//    println("Finished")
   }
 }

@@ -15,7 +15,8 @@ object NodeStatus {
 
 trait Node extends NameAndId[NodeId]{
     def parent: NodeId
-    def status: NodeStatus
+    var status: NodeStatus
+
 }
 
 trait Carrier[N <: Node] extends Node {
@@ -41,7 +42,7 @@ trait Carrier[N <: Node] extends Node {
 object NullNode extends Node{
   override def parent: NodeId = null
 
-  override def status: NodeStatus = NodeStatus.UP
+  override var status: NodeStatus = NodeStatus.UP
 
   override def name: String = "NULL_NODE"
 

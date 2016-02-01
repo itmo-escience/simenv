@@ -48,8 +48,8 @@ class GAStaticExp(wfPath: String, envArray: List[List[Double]], globNet: Double,
     val scheduler = new GAScheduler(crossoverProb = 0.4,
       mutationProb = 0.3,
       swapMutationProb = 0.2,
-      popSize = 100,
-      iterationCount = 100)
+      popSize = 50,
+      iterationCount = 300)
     //
     val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule[DaxTask, CapacityBasedNode](),
       estimator, 0.0, new SingleAppWorkload(wf))

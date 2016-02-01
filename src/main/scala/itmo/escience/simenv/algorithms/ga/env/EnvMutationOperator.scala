@@ -3,7 +3,7 @@ package itmo.escience.simenv.algorithms.ga.env
 import java.util
 import java.util.Random
 
-import itmo.escience.simenv.environment.entities.{CapacityBasedCarrier, Node}
+import itmo.escience.simenv.environment.entities.{NodeStatus, CapacityBasedCarrier, Node}
 import itmo.escience.simenv.environment.modelling.Environment
 import org.uncommons.watchmaker.framework.EvolutionaryOperator
 
@@ -42,21 +42,28 @@ class EnvMutationOperator[N <: Node](env: Environment[N],
 //    }
 //    mutant
 
-    val nodes = env.carriers.filter(x => x.children.size > 1)
+    val nodes = env.carriers.filter(x => x.children.count(y => y.status == NodeStatus.UP) > 1)
     if (nodes.nonEmpty) {
       val node = nodes(rnd.nextInt(nodes.length)).asInstanceOf[CapacityBasedCarrier]
-      val vmNumber = node.children.size
-      val nodeChildren = mutant.genSeq.filter(x => node.children.map(y => y.id).contains(x.vmId))
+      val availableNodes = node.children.filter(x => x.status == NodeStatus.UP)
+      val vmNumber = availableNodes.size
+      val nodeChildren = mutant.genSeq.filter(x => availableNodes.map(y => y.id).contains(x.vmId))
       val workChildren = nodeChildren.filter(x => x.cap > 0)
       val vmFrom = workChildren(rnd.nextInt(workChildren.size))
       val restChildren = nodeChildren.filter(x => x.vmId != vmFrom.vmId)
       val vmTo = restChildren(rnd.nextInt(restChildren.size))
       var cpuTrans: Double = 0
-      if (rnd.nextBoolean()) {
-        cpuTrans = rnd.nextInt(vmFrom.cap.toInt).toDouble
-      } else {
-        cpuTrans = vmFrom.cap
+      val option = rnd.nextInt(3)
+      option match {
+        case 0 => cpuTrans = rnd.nextInt(vmFrom.cap.toInt).toDouble + 1
+        case 1 => cpuTrans = vmFrom.cap
+        case 2 => cpuTrans = (vmFrom.cap / 2).toInt.toDouble
       }
+//      if (rnd.nextBoolean()) {
+//        cpuTrans = rnd.nextInt(vmFrom.cap.toInt).toDouble + 1
+//      } else {
+//        cpuTrans = vmFrom.cap
+//      }
       mutant.addValue(vmFrom.vmId, -cpuTrans)
       mutant.addValue(vmTo.vmId, cpuTrans)
     }
