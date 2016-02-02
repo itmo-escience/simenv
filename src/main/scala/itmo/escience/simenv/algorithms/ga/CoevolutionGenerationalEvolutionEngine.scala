@@ -51,7 +51,7 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
 
     var schedPop1: util.List[WFSchedSolution] = schedPop
     var envPop1: util.List[EnvConfSolution] = envPop
-    if (gen % 50 < 25) {
+    if (gen % 30 < 15) {
       schedPop1 = schedCrossOperator.apply(schedPop, rng)
       schedPop1 = schedMutOperator.apply(schedPop, best._2, rng)
     }

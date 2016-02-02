@@ -82,5 +82,6 @@ class GAStaticExp(wfPath: String, envArray: List[List[Double]], globNet: Double,
 //    println(s"coev makespan: ${coev_schedule.makespan()}")
 
     println("Finished")
+    ga_schedule.makespan()
   }
 }

@@ -63,6 +63,7 @@ class CGAStaticExp(wfPath: String, envArray: List[List[Double]], globNet: Double
     println("CGA SCHEDULE:")
 //    println(ga_schedule.prettyPrint())
     println(s"CGA makespan: ${ga_schedule.makespan()}")
+    ga_schedule.makespan()
 
 //    println("_________")
 //    println("MINMIN SCHEDULE:")
@@ -82,6 +83,5 @@ class CGAStaticExp(wfPath: String, envArray: List[List[Double]], globNet: Double
 //    println(coev_env.envPrint())
 //    println(s"coev makespan: ${coev_schedule.makespan()}")
 
-    println("Finished")
   }
 }

@@ -275,7 +275,7 @@ class Schedule[T <: Task, N <: Node] {
       addNode(node.id)
     }
 
-    val newItem = coevFindTimeSlot(task, node, context, env)
+    val newItem = coev2FindTimeSlot(task, node, context, env)
 
     map.get(node.id).add(newItem)
     newItem

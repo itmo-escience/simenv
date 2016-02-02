@@ -266,7 +266,8 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
       // Task will be failed (random time between start and end of the current schedule item)
       val itemStart = taskScheduleItem.startTime
       val itemEnd = taskScheduleItem.endTime
-      val failTime = rnd.nextDouble() * (itemEnd - itemStart) + itemStart
+//      val failTime = rnd.nextDouble() * (itemEnd - itemStart) + itemStart
+      val failTime = itemStart
 //      val taskFailedEvent = new NodeFailed(id = s"Node ${taskScheduleItem.node.id} failed", name = s"Node ${taskScheduleItem.node.id} failed", postTime = ctx.currentTime,
 //        eventTime = failTime, taskScheduleItem.node)
 //      queue.submitEvent(taskFailedEvent)

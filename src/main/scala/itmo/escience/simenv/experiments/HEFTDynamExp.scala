@@ -45,7 +45,7 @@ class HEFTDynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double
 
 
 
-  override def run() = {
+  override def run(): Double = {
 //    println("Init environment:")
 //    println(environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
 
@@ -77,6 +77,7 @@ class HEFTDynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double
     simulator.runSimulation()
     print("HEFT Makespan:")
     println(ctx.schedule.makespan())
+    ctx.schedule.makespan()
 
 
 //    println("________")

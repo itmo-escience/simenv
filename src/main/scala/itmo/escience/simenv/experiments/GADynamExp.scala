@@ -42,13 +42,13 @@ class GADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double, 
   val environment: Environment[CapacityBasedNode] = new CarrierNodeEnvironment[CapacityBasedNode](nodes, networks)
   val estimator = new BasicEstimator[CapacityBasedNode](20, environment)
 
-  override def run() = {
+  override def run(): Double = {
 //    println("Init environment:")
 //    println(environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
 
     val scheduler = new GAScheduler(crossoverProb = 0.5,
-      mutationProb = 0.3,
-      swapMutationProb = 0.3,
+      mutationProb = 0.2,
+      swapMutationProb = 0.1,
       popSize = 50,
       iterationCount = 300)
     //
@@ -79,6 +79,7 @@ class GADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double, 
 
     print("GA Makespan:")
     println(ctx.schedule.makespan())
+    ctx.schedule.makespan()
 
 
 //    println("________")
@@ -89,7 +90,6 @@ class GADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double, 
 //    println(coev_env.envPrint())
 //    println(s"coev makespan: ${coev_schedule.makespan()}")
 //    println(ctx.schedule.prettyPrint())
-    println("Finished")
 
   }
 }
