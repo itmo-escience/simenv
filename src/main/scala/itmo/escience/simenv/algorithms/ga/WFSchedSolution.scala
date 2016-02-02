@@ -48,5 +48,5 @@ class WFSchedSolution(mappedTasks: List[MappedTask]) extends EvSolution[MappedTa
 //    max
 //  }
 
-  override var fitness: Double = _
+  override var fitness: Double = 66613666
 }

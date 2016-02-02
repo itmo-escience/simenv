@@ -25,6 +25,7 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
   private var concurrentWorker: BuddiesEvaluationWorker = null
   private val observers: util.Set[EvolutionObserver[_ >: WFSchedSolution]] = new util.HashSet[EvolutionObserver[_ >: WFSchedSolution]]
 
+  var _popSize: Int = _
   var best: (WFSchedSolution, EnvConfSolution, Double) = null
   var gen: Int = 0
 
@@ -46,18 +47,14 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
       envElite.add(envIterator.next().getCandidate)
     }
 
-    schedPop.addAll(selectionStrategy.select(evalSchedPop, fitnessEvaluator.isNatural, evalSchedPop.size() - eliteCount, rng))
-    envPop.addAll(selectionStrategy.select(evalEnvPop, fitnessEvaluator.isNatural, evalEnvPop.size() - eliteCount, rng))
+    schedPop.addAll(selectionStrategy.select(evalSchedPop, fitnessEvaluator.isNatural, _popSize - eliteCount, rng))
+    envPop.addAll(selectionStrategy.select(evalEnvPop, fitnessEvaluator.isNatural, _popSize - eliteCount, rng))
 
     var schedPop1: util.List[WFSchedSolution] = schedPop
     var envPop1: util.List[EnvConfSolution] = envPop
-    if (gen % 30 < 15) {
-      schedPop1 = schedCrossOperator.apply(schedPop, rng)
-      schedPop1 = schedMutOperator.apply(schedPop, best._2, rng)
-    }
-    else {
-       envPop1 = envOperators.apply(envPop, rng)
-    }
+    schedPop1 = schedCrossOperator.apply(schedPop, rng)
+    schedPop1 = schedMutOperator.apply(schedPop1, rng)
+    envPop1 = envOperators.apply(envPop, rng)
 
     schedPop1.addAll(schedElite)
     envPop1.addAll(envElite)
@@ -73,34 +70,43 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
     val (schedBuddies, envBuddies) = parseFriendship(friendship)
     averageFitnessS(schedBuddies)
     averageFitnessE(envBuddies)
-    // Other
+
+    val newSchedPop: util.ArrayList[WFSchedSolution] = new util.ArrayList[WFSchedSolution](schedPop)
+    for (buddy <- schedBuddies) {
+      if (!newSchedPop.contains(buddy._1)) {
+        newSchedPop.add(buddy._1)
+      }
+    }
+    val newEnvPop: util.ArrayList[EnvConfSolution] = new util.ArrayList[EnvConfSolution](envPop)
+    for (buddy <- envBuddies) {
+      if (!newEnvPop.contains(buddy._1)) {
+        newEnvPop.add(buddy._1)
+      }
+    }
+
+
+//     Other
 //    for (s <- schedPop) {
 //      val fit  = fitnessEvaluator.getFitness(s, best._2)
 //      s.fitness = fit
 //      if (best._3 > fit) {
 //        best = (s.copy, best._2, fit)
 //      }
-//      val sAdapt = adaptation(s, best._2)
-//      val fitAdapt = fitnessEvaluator.getFitness(sAdapt, best._2)
-//      sAdapt.fitness = fitAdapt
-//      if (best._3 > fit) {
-//        best = (sAdapt.copy, best._2, fitAdapt)
-//      }
-//      if (fitAdapt < fit) {
-//        s.setGenes(sAdapt)
-//      }
 //    }
 //    for (e <- envPop) {
-//      val eAdabt = adaptation(best._1, e)
-//      val fit = fitnessEvaluator.getFitness(eAdabt, e)
+//      val fit = fitnessEvaluator.getFitness(best._1, e)
 //      e.fitness = fit
 //        if (best._3 > fit) {
-//          best = (eAdabt, e, fit)
+//          best = (best._1, e, fit)
 //        }
 //    }
 
-    val evalSchedPop = getEvaluatedPopulationS(schedPop)
-    val evalEnvPop = getEvaluatedPopulationE(envPop)
+    val evalSchedPop = getEvaluatedPopulationS(newSchedPop)
+    val evalEnvPop = getEvaluatedPopulationE(newEnvPop)
+
+//    val evalSchedPop = getEvaluatedPopulationS(schedPop)
+//    val evalEnvPop = getEvaluatedPopulationE(envPop)
+
     (evalSchedPop, evalEnvPop)
   }
 
@@ -109,6 +115,7 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
   }
 
   def evolvePopulation(populationSize: Int, eliteCount: Int, seedCandidates: util.Collection[EvSolution[_]], conditions: TerminationCondition): (WFSchedSolution, EnvConfSolution, Double) = {
+    _popSize = populationSize
     if (eliteCount >= 0 && eliteCount < populationSize) {
       if(conditions == null) {
         throw new IllegalArgumentException("At least one TerminationCondition must be specified.")
@@ -171,6 +178,11 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
 //      val curBuddies = scala.util.Random.shuffle(availableNodes.toList).take(math.min(20, availableNodes.size)).
       val curBuddies = scala.util.Random.shuffle(availableNodes.toList).take(math.min(4, availableNodes.size)).
         map(x => (s, x))
+        val azaza = scala.util.Random.shuffle(envPop.toList).take(1) :+ best._2.copy
+        for (sz <- azaza) {
+          val sAdapt = adaptation(s.copy, sz)
+          buddies.add((sAdapt, sz))
+        }
       buddies.addAll(curBuddies)
 //      buddies.add((s, best._2))
     }
@@ -179,12 +191,10 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
       //      val curBuddies = scala.util.Random.shuffle(availableNodes.toList).take(math.min(20, availableNodes.size)).
       val curBuddies = scala.util.Random.shuffle(availableScheds.toList).take(math.min(4, availableScheds.size)).
         map(x => (x, e))
-      if (curBuddies.isEmpty) {
-        val azaza = scala.util.Random.shuffle(schedPop.toList).take(3)
+        val azaza = scala.util.Random.shuffle(schedPop.toList).take(1) :+ best._1.copy
         for (sz <- azaza) {
           val sAdapt = adaptation(sz.copy, e)
           buddies.add((sAdapt, e))
-        }
       }
       buddies.addAll(curBuddies)
 
@@ -202,39 +212,44 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
     val friendship: util.Map[(WFSchedSolution, EnvConfSolution), Double] = new util.HashMap[(WFSchedSolution, EnvConfSolution), Double]()
 
 
-//    try {
-    //      val ex1: util.List[(WFSchedSolution, EnvConfSolution)] = Collections.unmodifiableList(buddies)
-    //      val results1: util.ArrayList[Future[(WFSchedSolution, EnvConfSolution, Double)]] = new util.ArrayList[Future[(WFSchedSolution, EnvConfSolution, Double)]](buddies.size())
-    //      val i: util.Iterator[(WFSchedSolution, EnvConfSolution)] = buddies.iterator()
-    //
-    //      while(i.hasNext) {
-    //        val result: (WFSchedSolution, EnvConfSolution) = i.next
-    //        results1.add(getSharedWorker.submit(new BuddiesEvaluationTask(fitnessEvaluator, result)))
-    //      }
-    //
-    //      val i2 = results1.iterator()
-    //
-    //      while(i2.hasNext) {
-    //        val result1: Future[(WFSchedSolution, EnvConfSolution, Double)] = i2.next
-    //        val res: (WFSchedSolution, EnvConfSolution, Double) = result1.get
-    //        friendship.put((res._1, res._2), res._3)
-    //      }
-    //    } catch {
-    //      case e : Exception => throw new IllegalStateException("PIZDA")
-    //    }
+    try {
+          val ex1: util.List[(WFSchedSolution, EnvConfSolution)] = Collections.unmodifiableList(buddies)
+          val results1: util.ArrayList[Future[(WFSchedSolution, EnvConfSolution, Double)]] = new util.ArrayList[Future[(WFSchedSolution, EnvConfSolution, Double)]](buddies.size())
+          val i: util.Iterator[(WFSchedSolution, EnvConfSolution)] = buddies.iterator()
+
+          while(i.hasNext) {
+            val result: (WFSchedSolution, EnvConfSolution) = i.next
+            results1.add(getSharedWorker.submit(new BuddiesEvaluationTask(fitnessEvaluator, result)))
+          }
+
+          val i2 = results1.iterator()
+
+          while(i2.hasNext) {
+            val result1: Future[(WFSchedSolution, EnvConfSolution, Double)] = i2.next
+            val res: (WFSchedSolution, EnvConfSolution, Double) = result1.get
+            friendship.put((res._1, res._2), res._3)
+          }
+        } catch {
+          case e : Exception => throw new IllegalStateException("PIZDA")
+        }
 
 
 
-    for (pair <- buddies) {
-//      val sAdapt = adaptation(pair._1.copy, pair._2.copy)
-      val fit = fitnessEvaluator.getFitness(pair._1, pair._2)
-      friendship.put(pair, fit)
-      if (best == null || fit < best._3) {
-        best = (pair._1.copy, pair._2.copy, fit)
-//        pair._1.setGenes(sAdapt)
+//    for (pair <- buddies) {
+////      val sAdapt = adaptation(pair._1.copy, pair._2.copy)
+//      val fit = fitnessEvaluator.getFitness(pair._1, pair._2)
+//      friendship.put(pair, fit)
+//      if (best == null || fit < best._3) {
+//        best = (pair._1.copy, pair._2.copy, fit)
+////        pair._1.setGenes(sAdapt)
+//      }
+//    }
+//    println("Average fit = " + (friendship.map(x => x._2).sum / friendship.size))
+    for (buddies <- friendship) {
+      if (buddies._2 < best._3) {
+        best = (buddies._1._1.copy, buddies._1._2.copy, buddies._2)
       }
     }
-//    println("Average fit = " + (friendship.map(x => x._2).sum / friendship.size))
     friendship
   }
 

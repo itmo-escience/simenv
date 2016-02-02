@@ -21,6 +21,7 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
   val queue = new EventQueue()
   val rnd = new Random()
   SimLogger.setCtx(ctx.asInstanceOf[Context[DaxTask, CapacityBasedNode]])
+  var failedCount = 0
 
   /**
     * generates and adds the very first event [[InitEvent]] to the event queue
@@ -257,12 +258,13 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
     //    taskScheduleItem.status = TaskScheduleItemStatus.RUNNING
     val dice = rnd.nextDouble()
     // TODO reliablity not via CpuTimeNode
-    if (dice < taskScheduleItem.node.asInstanceOf[CapacityBasedNode].reliability) {
+    if (dice < taskScheduleItem.node.asInstanceOf[CapacityBasedNode].reliability || failedCount == 4) {
       // Task will be finished
       val taskFinishedEvent = new TaskFinished(id = taskScheduleItem.id, name = taskScheduleItem.name, postTime = ctx.currentTime,
         eventTime = taskScheduleItem.endTime, taskScheduleItem.task, taskScheduleItem.node)
       queue.submitEvent(taskFinishedEvent)
     } else {
+      failedCount += 1
       // Task will be failed (random time between start and end of the current schedule item)
       val itemStart = taskScheduleItem.startTime
       val itemEnd = taskScheduleItem.endTime

@@ -15,27 +15,15 @@ class ScheduleMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env: En
                                                      probability: Double, swapProbability: Double)
                                                       extends EvolutionaryOperator[WFSchedSolution]{
 
-  def apply(mutants: util.List[WFSchedSolution], perfEnv: EnvConfSolution, random: Random): util.List[WFSchedSolution] = {
+  override def apply(mutants: util.List[WFSchedSolution], random: Random): util.List[WFSchedSolution] = {
     val mutatedPopulation: util.ArrayList[WFSchedSolution] = new util.ArrayList[WFSchedSolution](mutants.size())
     val it: util.Iterator[WFSchedSolution] = mutants.iterator()
 
     while(it.hasNext) {
       val s: WFSchedSolution = it.next()
-      mutatedPopulation.add(mutateSolution(s, perfEnv, random))
+      mutatedPopulation.add(mutateSolution(s, random))
     }
     mutatedPopulation
-  }
-
-  def mutateSolution(mutant: WFSchedSolution, perfEnv: EnvConfSolution, rnd: Random): WFSchedSolution = {
-    if (rnd.nextDouble() <= probability) {
-      doMutation(mutant, rnd)
-    }
-
-    if (rnd.nextDouble() <= swapProbability) {
-      doSwapMutation(mutant, rnd)
-    }
-
-    mutant
   }
 
   def mutateSolution(mutant: WFSchedSolution, rnd: Random): WFSchedSolution = {
@@ -46,24 +34,8 @@ class ScheduleMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env: En
     if (rnd.nextDouble() <= swapProbability) {
       doSwapMutation(mutant, rnd)
     }
-
     mutant
   }
-
-//  private def doMutation(mutant:WFSchedSolution, perfEnv: EnvConfSolution, rnd: Random) = {
-//
-//    val liveNodes = env.nodes.filter(x => x.status == NodeStatus.UP).toList
-//    var node = liveNodes(rnd.nextInt(liveNodes.length))
-//    if (rnd.nextBoolean()) {
-//      val notZeroNodes = liveNodes.filter(x => perfEnv.getVmElement(x.id).cap > 0)
-//      node = notZeroNodes(rnd.nextInt(notZeroNodes.size))
-//    }
-//
-//    val i = rnd.nextInt(mutant.getNumberOfVariables)
-//    val gene = mutant.getVariableValue(i)
-//
-//    mutant.setVariableValue(i, MappedTask(gene.taskId, node.id))
-//  }
 
   private def doMutation(mutant:WFSchedSolution, rnd: Random) = {
 
@@ -88,14 +60,4 @@ class ScheduleMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env: En
     mutant.setVariableValue(b, MappedTask(gene_2.taskId, gene_1.nodeId))
   }
 
-  override def apply(mutants: util.List[WFSchedSolution], random: Random): util.List[WFSchedSolution] = {
-    val mutatedPopulation: util.ArrayList[WFSchedSolution] = new util.ArrayList[WFSchedSolution](mutants.size())
-    val it: util.Iterator[WFSchedSolution] = mutants.iterator()
-
-    while(it.hasNext) {
-      val s: WFSchedSolution = it.next()
-      mutatedPopulation.add(mutateSolution(s, random))
-    }
-    mutatedPopulation
-  }
 }

@@ -61,5 +61,5 @@ class EnvConfSolution(mappedVms: List[MappedEnv]) extends EvSolution {
 
   def size = _genes.size
 
-  override var fitness: Double = _
+  override var fitness: Double = 66613666
 }

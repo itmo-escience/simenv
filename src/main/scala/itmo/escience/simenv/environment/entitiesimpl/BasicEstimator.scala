@@ -13,7 +13,7 @@ class BasicEstimator[N <: CapacityBasedNode](idealCapacity:Double, env: Environm
       return task.execTime * 666
     }
 //    (idealCapacity / node.capacity) * task.execTime
-  task.execTime / math.log10(node.capacity + 10)
+  task.execTime / math.log(node.capacity + 1)
   }
 
   override def calcTransferTime(from: (DaxTask, N), to: (DaxTask, N)): Double = {
@@ -23,6 +23,13 @@ class BasicEstimator[N <: CapacityBasedNode](idealCapacity:Double, env: Environm
     if (from_node.id == to_node.id) {
       return 0.0
     }
+    if (from_node.parent == to_node.parent) {
+      return 10.0
+    } else
+    {
+    return 100.0
+    }
+
 
     val from_networks = env.networksByNode(from_node)
     val to_networks = env.networksByNode(to_node)

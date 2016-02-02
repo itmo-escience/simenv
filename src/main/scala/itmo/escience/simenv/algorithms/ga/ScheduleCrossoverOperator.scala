@@ -8,23 +8,25 @@ import org.uncommons.watchmaker.framework.operators.AbstractCrossover
 /**
   * Created by mikhail on 22.01.2016.
   */
-class ScheduleCrossoverOperator(crossoverPoints: Int = 1)
+class ScheduleCrossoverOperator(crossoverProb: Double, crossoverPoints: Int = 1)
   extends AbstractCrossover[WFSchedSolution](crossoverPoints){
 
   override def apply(parents: util.List[WFSchedSolution], random: Random): util.List[WFSchedSolution] = {
     val selectionClone: util.ArrayList[WFSchedSolution] = new util.ArrayList[WFSchedSolution](parents)
     Collections.shuffle(selectionClone, random)
-    val result: util.ArrayList[WFSchedSolution] = new util.ArrayList[WFSchedSolution](parents.size())
+    val result: util.ArrayList[WFSchedSolution] = new util.ArrayList[WFSchedSolution](parents.size)
     val iterator: util.Iterator[WFSchedSolution] = selectionClone.iterator()
-
     while(iterator.hasNext) {
-      val parent1: WFSchedSolution = iterator.next().copy()
-      if(iterator.hasNext) {
-        val parent2: WFSchedSolution = iterator.next().copy()
-        result.addAll(mate(parent1, parent2, crossoverPoints, random))
+
+      val parent1: WFSchedSolution = iterator.next().copy
+      if (iterator.hasNext) {
+        val parent2: WFSchedSolution = iterator.next().copy
+        if (random.nextDouble() < crossoverProb) {
+          result.addAll(mate(parent1, parent2, crossoverPoints, random))
+        }
       }
     }
-
+    result.addAll(parents)
     result
   }
 

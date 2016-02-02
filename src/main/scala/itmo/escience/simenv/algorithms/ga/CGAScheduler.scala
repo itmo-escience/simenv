@@ -24,10 +24,10 @@ class CGAScheduler (crossoverProb:Double, mutationProb: Double, swapMutationProb
     val envFactory: EnvCandidateFactory[T, N] = new EnvCandidateFactory[T, N](environment)
 
     val schedMut = new ScheduleMutationOperator[T, N](context, environment, mutationProb, swapMutationProb)
-    val schedCross = new ScheduleCrossoverOperator()
+    val schedCross = new ScheduleCrossoverOperator(crossoverProb)
 
     val envOperators: util.List[EvolutionaryOperator[EnvConfSolution]] = new util.LinkedList[EvolutionaryOperator[EnvConfSolution]]()
-    envOperators.add(new EnvCrossoverOperator(environment))
+    envOperators.add(new EnvCrossoverOperator(environment, crossoverProb))
     envOperators.add(new EnvMutationOperator[N](environment, mutationProb))
 
 
@@ -76,10 +76,10 @@ class CGAScheduler (crossoverProb:Double, mutationProb: Double, swapMutationProb
     val envFactory: EnvCandidateFactory[T, N] = new EnvCandidateFactory[T, N](environment)
 
     val schedMut = new ScheduleMutationOperator[T, N](context, environment, mutationProb, swapMutationProb)
-    val schedCross = new ScheduleCrossoverOperator()
+    val schedCross = new ScheduleCrossoverOperator(crossoverProb)
 
     val envOperators: util.List[EvolutionaryOperator[EnvConfSolution]] = new util.LinkedList[EvolutionaryOperator[EnvConfSolution]]()
-    envOperators.add(new EnvCrossoverOperator(environment))
+    envOperators.add(new EnvCrossoverOperator(environment, crossoverProb))
     envOperators.add(new EnvMutationOperator[N](environment, mutationProb))
 
 
@@ -117,8 +117,8 @@ class CGAScheduler (crossoverProb:Double, mutationProb: Double, swapMutationProb
 
     val result: (WFSchedSolution, EnvConfSolution, Double) = engine.evolve(popSize, 1, seeds, new GenerationCount(iterationCount))
     val newEnv = EnvConfigurationProblem.solutionToEnvironment[T, N](result._2, context)
-    println("CGA environment: ")
-    println(newEnv.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
+//    println("CGA environment: ")
+//    println(newEnv.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
     (WorkflowSchedulingProblem.coevSolutionToSchedule(result._1, context, newEnv), newEnv)
   }
 }

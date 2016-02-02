@@ -59,10 +59,10 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
   //  }
 
   override def schedule[T <: Task, N <: Node](context: Context[T, N], environment: Environment[N]): Schedule[T, N] = {
-    val factory: CandidateFactory[WFSchedSolution] = new ScheduleCandidateFactory[T, N](context, environment)
+    val factory: ScheduleCandidateFactory[T, N] = new ScheduleCandidateFactory[T, N](context, environment)
 
     val operators: util.List[EvolutionaryOperator[WFSchedSolution]] = new util.LinkedList[EvolutionaryOperator[WFSchedSolution]]()
-    operators.add(new ScheduleCrossoverOperator())
+    operators.add(new ScheduleCrossoverOperator(crossoverProb))
     operators.add(new ScheduleMutationOperator[T, N](context, environment, mutationProb, swapMutationProb))
 
     val pipeline: EvolutionaryOperator[WFSchedSolution] = new EvolutionPipeline[WFSchedSolution](operators)
@@ -73,11 +73,11 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
 
     val rng: Random = new MersenneTwisterRNG()
 
-    val  engine: EvolutionEngine[WFSchedSolution] = new GenerationalEvolutionEngine[WFSchedSolution](factory,
+    val  engine: EvolutionEngine[WFSchedSolution] = new ExtGenerationalEAlgorithm[T, N](factory,
       pipeline,
       fitnessEvaluator,
       selector,
-      rng)
+      rng, popSize)
 
 //    engine.addEvolutionObserver(new EvolutionObserver[WFSchedSolution]()
 //    {
@@ -97,7 +97,7 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
     seeds.add(WorkflowSchedulingProblem.scheduleToSolution[T, N](min_schedule, context, environment))
 //    seeds.add(new WFSchedSolution(heft_sol.genSeq.map(x => new MappedTask(x.taskId, "res_0_node_3"))))
 
-    val result = engine.evolve(popSize, 1, seeds, new GenerationCount(iterationCount))
+    val result = engine.evolve(popSize, 2, seeds, new GenerationCount(iterationCount))
     WorkflowSchedulingProblem.solutionToSchedule(result, context, environment)
   }
 

@@ -50,7 +50,7 @@ class CGADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double,
     val scheduler = new CGAScheduler(crossoverProb = 0.4,
       mutationProb = 0.3,
       swapMutationProb = 0.3,
-      popSize = 25,
+      popSize = 50,
       iterationCount = 100)
     //
     val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule[DaxTask, CapacityBasedNode](),
@@ -79,7 +79,9 @@ class CGADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double,
     simulator.runSimulation()
     print("Makespan:")
     println(ctx.schedule.makespan())
-    ctx.schedule.makespan()
+
+//    println("CGA env: ")
+//    println(ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
 
 
 //    println("________")
@@ -91,5 +93,6 @@ class CGADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double,
 //    println(s"coev makespan: ${coev_schedule.makespan()}")
 //    println(ctx.schedule.prettyPrint())
 //    println("Finished")
+    ctx.schedule.makespan()
   }
 }
