@@ -12,7 +12,8 @@ class BasicEstimator[N <: CapacityBasedNode](idealCapacity:Double, env: Environm
     if (node.capacity == 0) {
       return task.execTime * 666
     }
-    (idealCapacity / node.capacity) * task.execTime
+//    (idealCapacity / node.capacity) * task.execTime
+  task.execTime / math.log10(node.capacity + 10)
   }
 
   override def calcTransferTime(from: (DaxTask, N), to: (DaxTask, N)): Double = {

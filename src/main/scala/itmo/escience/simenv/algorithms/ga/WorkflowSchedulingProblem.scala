@@ -9,12 +9,12 @@ import itmo.escience.simenv.environment.modelling.Environment
 import scala.collection.JavaConversions._
 
 /**
- * Created by user on 02.12.2015.
- */
+  * Created by user on 02.12.2015.
+  */
 
 object WorkflowSchedulingProblem {
 
-  def scheduleToSolution[T <: Task, N <: Node](schedule:Schedule[T, N], context: Context[T, N], environment: Environment[N]):WFSchedSolution = {
+  def scheduleToSolution[T <: Task, N <: Node](schedule: Schedule[T, N], context: Context[T, N], environment: Environment[N]): WFSchedSolution = {
     val taskItems = schedule.scheduleItemsSeq().filter({
       case x: TaskScheduleItem[T, N] => true
       case _ => false
@@ -28,13 +28,14 @@ object WorkflowSchedulingProblem {
     val restTasks = taskItems.filter(x => !fixed_tasks.contains(x.task.id))
     val brokenNodes = environment.nodes.filter(x => x.status == NodeStatus.DOWN).map(x => x.id)
     val genes = restTasks.map(x => MappedTask(x.task.id, x.node.id)).toList.filter(x => !brokenNodes.contains(x.nodeId))
-    if (genes.exists(x => brokenNodes.contains(x.nodeId))) {
-      println("PIZDA")
-    }
     new WFSchedSolution(genes)
   }
 
-  def solutionToSchedule[T <: Task, N <: Node](solution: WFSchedSolution, context: Context[T, N], environment: Environment[N]): Schedule[T, N] = {
+  def solutionToSchedule[T <: Task, N <: Node]
+                        (solution: WFSchedSolution,
+                         context: Context[T, N],
+                         environment: Environment[N]): Schedule[T, N] = {
+
     val newSchedule = context.schedule.fixedSchedule()
 
     // repair sequence in relation with parent-child dependencies
@@ -50,13 +51,35 @@ object WorkflowSchedulingProblem {
     newSchedule.asInstanceOf[Schedule[T, N]]
   }
 
+  def coevSolutionToSchedule[T <: Task, N <: Node]
+  (solution: WFSchedSolution,
+   context: Context[T, N],
+   environment: Environment[N]): Schedule[T, N] = {
+
+    val newSchedule = context.schedule.fixedSchedule()
+
+    // repair sequence in relation with parent-child dependencies
+    // construct new schedule by placing it in task-by-task manner
+    val repairedOrdering = repairOrdering(solution, context, environment)
+
+    for (x <- repairedOrdering) {
+      val (task, nodeId) = x
+      newSchedule.placeTask(task,
+        environment.nodeById(nodeId).asInstanceOf[N],
+        context, environment)
+    }
+    newSchedule.asInstanceOf[Schedule[T, N]]
+  }
+
+
   def repairOrdering[T <: Task, N <: Node](solution: WFSchedSolution, context: Context[T, N], environment: Environment[N]): List[(T, NodeId)] = {
     val wf = context.workload.apps.head
     val tasksSeq = new util.TreeSet[Pair[(T, NodeId)]](solution.genSeq.zipWithIndex
-      .map( { case (x, i) =>
+      .map({ case (x, i) =>
         new Pair(i,
           (wf.taskById(x.taskId).asInstanceOf[T], x.nodeId)
-        )}
+        )
+      }
       ))
 
     val mappedTasks = new util.HashMap[TaskId, (T, NodeId)]()
@@ -76,7 +99,7 @@ object WorkflowSchedulingProblem {
 
     while (tasksSeq.nonEmpty) {
 
-      val el = tasksSeq.find( pair => {
+      val el = tasksSeq.find(pair => {
         val (tsk, _) = pair.value
         isReadyToRun(tsk)
       }).get
@@ -90,7 +113,8 @@ object WorkflowSchedulingProblem {
     repairedOrdering.toList
   }
 
-  private class Pair[T](val num: Int, val value: T) extends Comparable[Pair[T]]{
+  private class Pair[T](val num: Int, val value: T) extends Comparable[Pair[T]] {
     override def compareTo(o: Pair[T]): Int = num.compareTo(o.num)
   }
+
 }

@@ -21,8 +21,23 @@ class ScheduleFitnessEvaluator[T <: Task, N <: Node](ctx: Context[T, N], env: En
   }
 
   def getFitness(s: WFSchedSolution, e: EnvConfSolution): Double = {
+//    val sAdapt = adaptation(s.copy, e.copy)
     val environment = EnvConfigurationProblem.solutionToEnvironment[T, N](e, ctx)
-    val schedule = WorkflowSchedulingProblem.solutionToSchedule[T, N](s, ctx, environment)
+    val schedule = WorkflowSchedulingProblem.coevSolutionToSchedule[T, N](s, ctx, environment)
     schedule.makespan()
   }
+
+//  def adaptation(sched: WFSchedSolution, env: EnvConfSolution): WFSchedSolution = {
+//    var genes: List[MappedTask] = List[MappedTask]()
+//    val emptyNodes = env.genSeq.filter(x => x.cap == 0).map(x => x.vmId)
+//    val availableNodes = env.genSeq.filter(x => x.cap > 0).map(x => x.vmId)
+//    for (x <- sched.genSeq) {
+//      if (availableNodes.contains(x.nodeId)) {
+//        genes :+= x
+//      } else {
+//        genes :+= new MappedTask(x.taskId, availableNodes(scala.util.Random.nextInt(availableNodes.size)))
+//      }
+//    }
+//    new WFSchedSolution(genes)
+//  }
 }

@@ -2,12 +2,14 @@ package itmo.escience.simenv.environment.entities
 
 import java.util
 
+import itmo.escience.simenv.environment.modelling.Environment
 import itmo.escience.simenv.utilities.Utilities
 
 import scala.collection.JavaConversions._
+import scala.collection.mutable
 
 
-class InvalidScheduleException(msg:String) extends RuntimeException(msg)
+class InvalidScheduleException(msg: String) extends RuntimeException(msg)
 
 /**
   * Created by Mishanya on 14.10.2015.
@@ -57,9 +59,191 @@ class Schedule[T <: Task, N <: Node] {
       }
     }
 
-    if (node.status == NodeStatus.DOWN && foundStartTime < 1 + this.fixedSchedule().getMap.get(node.id).last.endTime) {
-      println("PIZDEC")
+    val newItem = new TaskScheduleItem(id = Utilities.generateId(),
+      name = task.name,
+      startTime = foundStartTime,
+      endTime = foundStartTime + runningTime,
+      status = ScheduleItemStatus.UNSTARTED,
+      node,
+      task)
+    newItem
+  }
+
+  // for coevo
+  def coevFindTimeSlot(task: T, node: N, context: Context[T, N], env: Environment[N]): TaskScheduleItem[T, N] = {
+
+    var minScheduleTime: Double = 0.0
+
+    val fixedItems = fixedSchedule().getMap.values().foldLeft(List[ScheduleItem]())((s, x) => s ++ x).
+      filter(x => x.asInstanceOf[TaskScheduleItem[T, N]].node.parent == node.parent).
+      sortBy(x => -x.endTime)
+    if (fixedItems.nonEmpty) {
+
+      val time = fixedItems.head.endTime
+      minScheduleTime = time
+
+      val nodeCap: Double = node.asInstanceOf[CapacityBasedNode].capacity
+      val thisSched = map.get(node.id)
+      var thisLast: ScheduleItem = null
+      var thisEndTime: Double = 0.0
+      var thisStatus: ScheduleItemStatus = ScheduleItemStatus.FINISHED
+      if (thisSched.nonEmpty) {
+        thisLast = map.get(node.id).last
+        thisEndTime = thisLast.endTime
+        thisStatus = thisLast.status
+      }
+
+      if (thisEndTime < time &&
+        env.nodeById(node.id).asInstanceOf[CapacityBasedNode].capacity >
+          context.environment.nodeById(node.id).asInstanceOf[CapacityBasedNode].capacity &&
+        thisStatus != ScheduleItemStatus.UNSTARTED) {
+
+        // try to put task down
+
+        val resNodes = context.environment.nodes.filter(x => x.parent == node.parent).map(x => x.id)
+        //      val lastItems: scala.collection.mutable.Map[NodeId, TaskScheduleItem[T, N]] =
+        //        new mutable.HashMap[NodeId, TaskScheduleItem[T, N]]()
+        //      for (n <- resNodes.filter(x => x != node.id)) {
+        //        val lastItem = map.get(n).last
+        //        if (lastItem != null && lastItem.endTime >= thisLast.endTime) {
+        //          lastItems.put(n, lastItem.asInstanceOf[TaskScheduleItem[T, N]])
+        //        } else {
+        //          lastItems.put(n, null)
+        //        }
+        //      }
+        val items = map.values().foldLeft(List[ScheduleItem]())((s, x) => s ++ x).filter(x =>
+          x.startTime < time && x.endTime >= thisEndTime).sortBy(x => -x.endTime)
+        val iterator = items.iterator
+        var exit = false
+        while (iterator.hasNext && !exit) {
+          val item = iterator.next
+          val capacityUsed = getCapacitySumByTime(item.endTime, items.asInstanceOf[List[TaskScheduleItem[T, N]]])
+          val capacityFree =
+            context.environment.nodes.filter(x => x.parent == node.parent).
+              map(x => x.asInstanceOf[CapacityBasedNode].capacity).sum - capacityUsed
+          if (capacityFree >= nodeCap) {
+            minScheduleTime = item.endTime
+          } else {
+            exit = true
+          }
+        }
+
+      }
     }
+
+    // calculate time when all transfer from each node will be ended
+    val stageInEndTime = task.parents.map({
+      case _: HeadDaxTask => 0.0
+      case x =>
+        val parentItem = this.lastTaskItem(x.id)
+        val transferTime = context.estimator.calcTransferTime(from = (parentItem.task, parentItem.node), to = (task, node))
+        parentItem.endTime + transferTime
+    }).max
+
+    val runningTime = context.estimator.calcTime(task, node)
+
+    val earliestStartTime = List(stageInEndTime, context.currentTime, minScheduleTime).max
+    var foundStartTime = earliestStartTime
+
+    // searching for a slot
+    if (map.containsKey(node.id)) {
+      val endOfLastTask = if (map.get(node.id).isEmpty) 0.0 else map.get(node.id).last.endTime
+      if (map.get(node.id).nonEmpty && endOfLastTask > earliestStartTime) {
+
+        foundStartTime = endOfLastTask
+        var st = endOfLastTask
+        var end = endOfLastTask
+
+        import scala.util.control.Breaks._
+        breakable {
+          for (x <- map.get(node.id).toList.reverseIterator) {
+
+            if (end > earliestStartTime) {
+              break
+            }
+
+            st = x.endTime
+            if (end - st <= runningTime) {
+              foundStartTime = st
+            }
+            end = x.startTime
+
+          }
+        }
+      }
+    }
+
+    val newItem = new TaskScheduleItem(id = Utilities.generateId(),
+      name = task.name,
+      startTime = foundStartTime,
+      endTime = foundStartTime + runningTime,
+      status = ScheduleItemStatus.UNSTARTED,
+      node,
+      task)
+    newItem
+  }
+
+  def getCapacitySumByTime(time: Double, items: List[TaskScheduleItem[T, N]]): Double = {
+    val curItems = items.filter(x => x.endTime >= time && x.startTime < time)
+    curItems.map(x => x.node.asInstanceOf[CapacityBasedNode].capacity).sum
+  }
+
+  // for coevo
+  def coev2FindTimeSlot(task: T, node: N, context: Context[T, N], env: Environment[N]): TaskScheduleItem[T, N] = {
+
+    var minScheduleTime: Double = 0.0
+
+    val fixedItems = fixedSchedule().getMap.values().foldLeft(List[ScheduleItem]())((s, x) => s ++ x).
+      filter(x => x.asInstanceOf[TaskScheduleItem[T, N]].node.parent == node.parent).
+      sortBy(x => -x.endTime)
+    if (fixedItems.nonEmpty) {
+
+      val time = fixedItems.head.endTime
+      minScheduleTime = time
+    }
+
+    // calculate time when all transfer from each node will be ended
+    val stageInEndTime = task.parents.map({
+      case _: HeadDaxTask => 0.0
+      case x =>
+        val parentItem = this.lastTaskItem(x.id)
+        val transferTime = context.estimator.calcTransferTime(from = (parentItem.task, parentItem.node), to = (task, node))
+        parentItem.endTime + transferTime
+    }).max
+
+    val runningTime = context.estimator.calcTime(task, node)
+
+    val earliestStartTime = List(stageInEndTime, context.currentTime, minScheduleTime).max
+    var foundStartTime = earliestStartTime
+
+    // searching for a slot
+    if (map.containsKey(node.id)) {
+      val endOfLastTask = if (map.get(node.id).isEmpty) 0.0 else map.get(node.id).last.endTime
+      if (map.get(node.id).nonEmpty && endOfLastTask > earliestStartTime) {
+
+        foundStartTime = endOfLastTask
+        var st = endOfLastTask
+        var end = endOfLastTask
+
+        import scala.util.control.Breaks._
+        breakable {
+          for (x <- map.get(node.id).toList.reverseIterator) {
+
+            if (end > earliestStartTime) {
+              break
+            }
+
+            st = x.endTime
+            if (end - st <= runningTime) {
+              foundStartTime = st
+            }
+            end = x.startTime
+
+          }
+        }
+      }
+    }
+
     val newItem = new TaskScheduleItem(id = Utilities.generateId(),
       name = task.name,
       startTime = foundStartTime,
@@ -79,6 +263,19 @@ class Schedule[T <: Task, N <: Node] {
     }
 
     val newItem = findTimeSlot(task, node, context)
+
+    map.get(node.id).add(newItem)
+    newItem
+  }
+
+  //coev
+  def placeTask(task: T, node: N, context: Context[T, N], env: Environment[N]): TaskScheduleItem[T, N] = {
+
+    if (!map.containsKey(node.id)) {
+      addNode(node.id)
+    }
+
+    val newItem = coevFindTimeSlot(task, node, context, env)
 
     map.get(node.id).add(newItem)
     newItem
@@ -260,8 +457,8 @@ class Schedule[T <: Task, N <: Node] {
 
 }
 
-object Schedule{
-  def emptySchedule[T <: Task, N <: Node]():Schedule[T, N] = {
+object Schedule {
+  def emptySchedule[T <: Task, N <: Node](): Schedule[T, N] = {
     new Schedule[T, N]()
   }
 }

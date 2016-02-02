@@ -47,7 +47,7 @@ class GADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double, 
 //    println(environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
 
     val scheduler = new GAScheduler(crossoverProb = 0.5,
-      mutationProb = 0.5,
+      mutationProb = 0.3,
       swapMutationProb = 0.3,
       popSize = 50,
       iterationCount = 300)

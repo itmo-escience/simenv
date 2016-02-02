@@ -28,7 +28,7 @@ class ScheduleMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env: En
 
   def mutateSolution(mutant: WFSchedSolution, perfEnv: EnvConfSolution, rnd: Random): WFSchedSolution = {
     if (rnd.nextDouble() <= probability) {
-      doMutation(mutant, perfEnv, rnd)
+      doMutation(mutant, rnd)
     }
 
     if (rnd.nextDouble() <= swapProbability) {
@@ -50,20 +50,20 @@ class ScheduleMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env: En
     mutant
   }
 
-  private def doMutation(mutant:WFSchedSolution, perfEnv: EnvConfSolution, rnd: Random) = {
-
-    val liveNodes = env.nodes.filter(x => x.status == NodeStatus.UP).toList
-    var node = liveNodes(rnd.nextInt(liveNodes.length))
-    if (rnd.nextBoolean()) {
-      val notZeroNodes = liveNodes.filter(x => perfEnv.getVmElement(x.id).cap > 0)
-      node = notZeroNodes(rnd.nextInt(notZeroNodes.size))
-    }
-
-    val i = rnd.nextInt(mutant.getNumberOfVariables)
-    val gene = mutant.getVariableValue(i)
-
-    mutant.setVariableValue(i, MappedTask(gene.taskId, node.id))
-  }
+//  private def doMutation(mutant:WFSchedSolution, perfEnv: EnvConfSolution, rnd: Random) = {
+//
+//    val liveNodes = env.nodes.filter(x => x.status == NodeStatus.UP).toList
+//    var node = liveNodes(rnd.nextInt(liveNodes.length))
+//    if (rnd.nextBoolean()) {
+//      val notZeroNodes = liveNodes.filter(x => perfEnv.getVmElement(x.id).cap > 0)
+//      node = notZeroNodes(rnd.nextInt(notZeroNodes.size))
+//    }
+//
+//    val i = rnd.nextInt(mutant.getNumberOfVariables)
+//    val gene = mutant.getVariableValue(i)
+//
+//    mutant.setVariableValue(i, MappedTask(gene.taskId, node.id))
+//  }
 
   private def doMutation(mutant:WFSchedSolution, rnd: Random) = {
 

@@ -119,6 +119,6 @@ class CGAScheduler (crossoverProb:Double, mutationProb: Double, swapMutationProb
     val newEnv = EnvConfigurationProblem.solutionToEnvironment[T, N](result._2, context)
     println("CGA environment: ")
     println(newEnv.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
-    (WorkflowSchedulingProblem.solutionToSchedule(result._1, context, newEnv), newEnv)
+    (WorkflowSchedulingProblem.coevSolutionToSchedule(result._1, context, newEnv), newEnv)
   }
 }

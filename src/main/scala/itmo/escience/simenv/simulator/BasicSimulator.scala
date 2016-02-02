@@ -56,8 +56,8 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
     case ev: TaskStarted => onTaskStarted(ev)
     case ev: TaskFinished => onTaskFinished(ev)
     case ev: TaskFailed => onTaskFailed(ev)
-    case ev: NodeFailed => onNodeFailed(ev)
-    case ev: NodeUpped => onNodeUpped(ev)
+//    case ev: NodeFailed => onNodeFailed(ev)
+//    case ev: NodeUpped => onNodeUpped(ev)
     case ev: Rescheduling => onRescheduling(ev)
     case _ => throw new Exception(s"Unknown type of the event: ${event.getClass}")
   }
@@ -170,7 +170,9 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
     val (iterator, curItem, counter) = ctx.schedule.findItemInNodeSched(nid, event.id)
 
     schedMap.put(nid, nodeSched.take(counter))
-    val finishedItem = curItem.asInstanceOf[TaskScheduleItem[T, N]].setToFailed(event.eventTime)
+    val finishedItem = curItem.asInstanceOf[TaskScheduleItem[T, N]].
+      setToFailed(event.eventTime + nodeDownTime)
+
     schedMap.get(nid).add(finishedItem)
 
     while (iterator.hasNext) {
@@ -208,72 +210,47 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
     }
   }
 
-  def onNodeFailed(ev: NodeFailed) = {
-    ctx.setTime(ev.eventTime)
-    val nid = ev.node.id
-    val schedMap = ctx.schedule.getMap
-    val nodeSched = schedMap.get(nid)
-    ctx.schedule.addNode(nid)
-    val iterator = nodeSched.iterator
-    var exit = false
-    var item: ScheduleItem = null
-    while (iterator.hasNext && !exit) {
-      item = iterator.next()
-      if (item.status == ScheduleItemStatus.RUNNING) {
-        exit = true
-      } else {
-        ctx.schedule.getMap.get(nid).add(item)
-      }
-    }
-
-    ctx.schedule.getMap.get(nid).add(
-      new TaskScheduleItem[T, N](id=item.id, name=item.name,
-        startTime = item.startTime,
-        endTime = ctx.currentTime,
-        status=ScheduleItemStatus.FAILED,
-        node=item.asInstanceOf[TaskScheduleItem[T, N]].node, task=item.asInstanceOf[TaskScheduleItem[T, N]].task))
-//    ctx.schedule.getMap.get(nid).add(
-//      new NodeDownItem[N](id="nodeDown",
-//        name= nid + "_down",
-//        node = ev.node.asInstanceOf[N],
-//        startTime = ctx.currentTime,
-//        endTime = ctx.currentTime + nodeDownTime, status=ScheduleItemStatus.RUNNING))
-    while (iterator.hasNext) {
-      ctx.schedule.getMap.get(nid).add(iterator.next())
-    }
-    ctx.environment.setNodeStatus(nid, NodeStatus.DOWN)
-    queue.submitEvent(new Rescheduling(id="reshedule", name="rescheduling",
-      postTime = ctx.currentTime, eventTime=ctx.currentTime))
-    queue.submitEvent(new NodeUpped(id="node upped", name="node upped",
-      postTime = ctx.currentTime, eventTime = ctx.currentTime + nodeDownTime, node=ev.node))
-  }
-
-  def onNodeUpped(ev: NodeUpped) = {
-    ctx.setTime(ev.eventTime)
-    val nid = ev.node.id
+//  def onNodeFailed(ev: NodeFailed) = {
+//    ctx.setTime(ev.eventTime)
+//    val nid = ev.node.id
 //    val schedMap = ctx.schedule.getMap
 //    val nodeSched = schedMap.get(nid)
 //    ctx.schedule.addNode(nid)
 //    val iterator = nodeSched.iterator
 //    var exit = false
+//    var item: ScheduleItem = null
 //    while (iterator.hasNext && !exit) {
-//      val item = iterator.next()
+//      item = iterator.next()
 //      if (item.status == ScheduleItemStatus.RUNNING) {
 //        exit = true
 //      } else {
 //        ctx.schedule.getMap.get(nid).add(item)
 //      }
 //    }
+//
 //    ctx.schedule.getMap.get(nid).add(
-//      new NodeDownItem[N](id="nodeDown",
-//        name= nid + "_down",
-//        node = ev.node.asInstanceOf[N],
-//        startTime = ctx.currentTime,
-//        endTime = ctx.currentTime + nodeDownTime, status=ScheduleItemStatus.FINISHED))
-    ctx.environment.setNodeStatus(nid, NodeStatus.UP)
-    queue.submitEvent(new Rescheduling(id="reshedule", name="rescheduling",
-      postTime = ctx.currentTime, eventTime=ctx.currentTime))
-  }
+//      new TaskScheduleItem[T, N](id=item.id, name=item.name,
+//        startTime = item.startTime,
+//        endTime = ctx.currentTime,
+//        status=ScheduleItemStatus.FAILED,
+//        node=item.asInstanceOf[TaskScheduleItem[T, N]].node, task=item.asInstanceOf[TaskScheduleItem[T, N]].task))
+//    while (iterator.hasNext) {
+//      ctx.schedule.getMap.get(nid).add(iterator.next())
+//    }
+//    ctx.environment.setNodeStatus(nid, NodeStatus.DOWN)
+//    queue.submitEvent(new Rescheduling(id="reshedule", name="rescheduling",
+//      postTime = ctx.currentTime, eventTime=ctx.currentTime))
+//    queue.submitEvent(new NodeUpped(id="node upped", name="node upped",
+//      postTime = ctx.currentTime, eventTime = ctx.currentTime + nodeDownTime, node=ev.node))
+//  }
+
+//  def onNodeUpped(ev: NodeUpped) = {
+//    ctx.setTime(ev.eventTime)
+//    val nid = ev.node.id
+//    ctx.environment.setNodeStatus(nid, NodeStatus.UP)
+//    queue.submitEvent(new Rescheduling(id="reshedule", name="rescheduling",
+//      postTime = ctx.currentTime, eventTime=ctx.currentTime))
+//  }
 
   private def taskFailer(taskScheduleItem: TaskScheduleItem[T, N]) = {
     //TODO: add logging here
@@ -290,12 +267,12 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
       val itemStart = taskScheduleItem.startTime
       val itemEnd = taskScheduleItem.endTime
       val failTime = rnd.nextDouble() * (itemEnd - itemStart) + itemStart
-      val taskFailedEvent = new NodeFailed(id = s"Node ${taskScheduleItem.node.id} failed", name = s"Node ${taskScheduleItem.node.id} failed", postTime = ctx.currentTime,
-        eventTime = failTime, taskScheduleItem.node)
-      queue.submitEvent(taskFailedEvent)
-//      val taskFailedEvent = new TaskFailed(id = taskScheduleItem.id, name = taskScheduleItem.name, postTime = ctx.currentTime,
-//        eventTime = failTime, taskScheduleItem.task, taskScheduleItem.node)
+//      val taskFailedEvent = new NodeFailed(id = s"Node ${taskScheduleItem.node.id} failed", name = s"Node ${taskScheduleItem.node.id} failed", postTime = ctx.currentTime,
+//        eventTime = failTime, taskScheduleItem.node)
 //      queue.submitEvent(taskFailedEvent)
+      val taskFailedEvent = new TaskFailed(id = taskScheduleItem.id, name = taskScheduleItem.name, postTime = ctx.currentTime,
+        eventTime = failTime, taskScheduleItem.task, taskScheduleItem.node)
+      queue.submitEvent(taskFailedEvent)
     }
   }
 }

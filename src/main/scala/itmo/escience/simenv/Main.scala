@@ -15,14 +15,14 @@ object Main {
     val wfPath = ".\\resources\\wf-examples\\" + "Montage_25"
     //  val basepath = ".\\resources\\"
     //  val wf_name = "crawlerWf"
-//    val envArray = List(List(10.0, 15.0, 25.0, 30.0))
-    val envArray = List(List(10.0, 15.0, 25.0, 30.0))
+    val envArray = List(List(10.0, 15.0, 25.0),List(10.0, 15.0, 25.0), List(10.0, 15.0, 25.0))
+//    val envArray = List(List(30.0, 30.0))
 //    val envArray = List(List(0.0, 0.0, 0.0, 20.0))
 
-    val globNet = 100000 Kbit_Sec
+    val globNet = 10 Mbit_Sec
 //    val globNet = 1000 Kbit_Sec
 //    val locNet = 10000 Kbit_Sec
-    val locNet = 1000000000 Kbit_Sec
+    val locNet = 1000 Mbit_Sec
     val reliability = 0.95
 
     val nodeResizeTime = 1
@@ -44,10 +44,10 @@ object Main {
     for (i <- 0 until 1) {
       println("CGA exp:")
       new CGADynamExp(wfPath, envArray, globNet, locNet, reliability, nodeResizeTime, nodeDownTime, resDownTime).run()
-//      println("GA exp:")
-//      new GADynamExp(wfPath, envArray, globNet, locNet, reliability, nodeResizeTime, nodeDownTime, resDownTime).run()
-//      println("HEFT exp:")
-//      new HEFTDynamExp(wfPath, envArray, globNet, locNet, reliability, nodeResizeTime, nodeDownTime, resDownTime).run()
+      println("GA exp:")
+      new GADynamExp(wfPath, envArray, globNet, locNet, reliability, nodeResizeTime, nodeDownTime, resDownTime).run()
+      println("HEFT exp:")
+      new HEFTDynamExp(wfPath, envArray, globNet, locNet, reliability, nodeResizeTime, nodeDownTime, resDownTime).run()
     }
   }
 }

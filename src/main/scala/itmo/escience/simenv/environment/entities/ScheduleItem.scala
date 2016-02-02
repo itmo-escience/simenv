@@ -36,12 +36,13 @@ case class TaskScheduleItem[T <: Task, N <: Node](id: ScheduleItemId,
   }
 
   def setToFailed(failTime: ModellingTimestamp) : TaskScheduleItem[T, N] = {
-    if (failTime > endTime || failTime < startTime) {
+    if (failTime < startTime) {
       throw new IllegalArgumentException("Fail time is not correct")
     }
     new TaskScheduleItem(id=id, name=name, startTime=startTime, endTime=failTime,
       status=ScheduleItemStatus.FAILED, node=node, task=task)
   }
+
 }
 
 case class NodeDownItem[N <: Node](id: ScheduleItemId,
