@@ -36,7 +36,7 @@ object Main {
 //    val locNet = 1000 Kbit_Sec
     val locNet = 1000 Mbit_Sec
     val reliability = 0.95
-
+    println("2")
     for (i <- 0 until 10) {
       println("---------")
       println("CGA exp:")
