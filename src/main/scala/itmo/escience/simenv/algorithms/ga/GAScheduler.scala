@@ -19,44 +19,6 @@ import org.uncommons.watchmaker.framework.termination.GenerationCount
 class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: Double,
                    popSize:Int, iterationCount: Int) extends Scheduler{
 
-//  def coevSchedule(context: Context[DaxTask, N], environment: Environment[N], schedPop: List[WorkflowSchedulingSolution]): (Schedule, List[WorkflowSchedulingSolution]) = {
-  //
-  //    if (!context.workload.isInstanceOf[SingleAppWorkload[DaxTask]]) {
-  //      throw new UnsupportedOperationException(s"Invalid workload type ${context.workload.getClass}. " +
-  //        s"Currently only SingleAppWorkload is supported")
-  //    }
-  //
-  //    val wf = context.workload.asInstanceOf[SingleAppWorkload[DaxTask]].app
-  //    val newSchedule = Schedule.emptySchedule()
-  //    val nodes = context.environment.nodes.filter(x => x.status == NodeStatus.UP)
-  //
-  //
-  //    val problemName = "WorkflowScheduling"
-  //    val problem = new WorkflowSchedulingProblem(wf, newSchedule, context, environment)
-  //
-  //    val crossover = new WorkflowSchedulingCrossover(crossoverProb)
-  //    val mutation = new WorkflowSchedulingMutation(mutationProb, swapMutationProb, context)
-  //    val selection = new BinaryTournamentSelection[WorkflowSchedulingSolution]()
-  //
-  //    val algorithm: Algorithm[WorkflowSchedulingSolution] =
-  //      new ExtGeneticAlgorithmBuilder[WorkflowSchedulingSolution](problem, crossover, mutation, schedPop)
-  //      .setSelectionOperator(selection)
-  //      .setMaxEvaluations(iterationCount * popSize)
-  //      .setPopulationSize(popSize)
-  //      .build()
-  //
-  //    val algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute()
-  //
-  //    val best: WorkflowSchedulingSolution = algorithm.getResult
-  //
-  //    val pop: List[WorkflowSchedulingSolution] = algorithm.asInstanceOf[ExtGenerationalGeneticAlgorithm[WorkflowSchedulingSolution]].getPopulation.toList
-  //
-  //    val computingTime = algorithmRunner.getComputingTime
-  //    JMetalLogger.logger.info("Total execution time: " + computingTime + "ms")
-  //
-  //    //throw new NotImplementedError()
-  //    (WorkflowSchedulingProblem.solutionToSchedule(best, context, environment), pop)
-  //  }
 
   override def schedule[T <: Task, N <: Node](context: Context[T, N], environment: Environment[N]): Schedule[T, N] = {
     val factory: ScheduleCandidateFactory[T, N] = new ScheduleCandidateFactory[T, N](context, environment)
@@ -94,10 +56,11 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
     val seeds: util.ArrayList[WFSchedSolution] = new util.ArrayList[WFSchedSolution]()
     val heft_sol = WorkflowSchedulingProblem.scheduleToSolution[T, N](heft_schedule, context, environment)
     seeds.add(heft_sol)
+    seeds.add(heft_sol)
     seeds.add(WorkflowSchedulingProblem.scheduleToSolution[T, N](min_schedule, context, environment))
 //    seeds.add(new WFSchedSolution(heft_sol.genSeq.map(x => new MappedTask(x.taskId, "res_0_node_3"))))
 
-    val result = engine.evolve(popSize, 2, seeds, new GenerationCount(iterationCount))
+    val result = engine.evolve(popSize, 5, seeds, new GenerationCount(iterationCount))
     WorkflowSchedulingProblem.solutionToSchedule(result, context, environment)
   }
 

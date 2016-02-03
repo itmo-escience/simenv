@@ -14,7 +14,8 @@ import itmo.escience.simenv.utilities.Units._
 object Main {
   def main(args: Array[String]) {
     val wfName = "Montage_50"
-    val wfNames = List("Montage_25", "Montage_50", "CyberShake_30", "CyberShake_50", "Inspiral_30", "Inspiral_50")
+    val wfNames = List("Montage_50")
+//    val downTimes = List(0, 10, 25, 50)
     val downTimes = List(0, 5, 10, 15, 20)
     val wfPath = ".\\resources\\wf-examples\\"
     val expPath = ".\\temp\\exps\\"
@@ -28,27 +29,27 @@ object Main {
 
     for (downTime <- downTimes) {
       for (wf <- wfNames) {
+        println("WF: " + wf)
+//        val cgaFile: PrintWriter = new PrintWriter(expPath + "CGA_top_" + wf + "_down_" + downTime + ".txt", "UTF-8")
+        val gaFile: PrintWriter = new PrintWriter(expPath + "GA_" + wf + "_down_" + downTime + ".txt", "UTF-8")
+        val heftFile: PrintWriter = new PrintWriter(expPath + "HEFT_" + wf + "_down_" + downTime + ".txt", "UTF-8")
 
-        val cgaFile: PrintWriter = new PrintWriter(expPath + "CGA_" + wfName + "_down_" + downTime + ".txt", "UTF-8")
-        val gaFile: PrintWriter = new PrintWriter(expPath + "GA_" + wfName + "_down_" + downTime + ".txt", "UTF-8")
-        val heftFile: PrintWriter = new PrintWriter(expPath + "HEFT_" + wfName + "_down_" + downTime + ".txt", "UTF-8")
-
-        for (i <- 0 until 10) {
+        for (i <- 0 until 1) {
           println("---------")
-          println("CGA exp:")
-          val cgaRes = new CGADynamExp(wfPath + wfName, envArray, globNet, locNet, reliability, 0, downTime, 0).run()
+//          println("CGA exp:")
+//          val cgaRes = new CGADynamExp(wfPath + wf, envArray, globNet, locNet, reliability, 0, downTime, 0).run()
           println("GA exp:")
-          val gaRes = new GADynamExp(wfPath + wfName, envArray, globNet, locNet, reliability, 0, downTime, 0).run()
+          val gaRes = new GADynamExp(wfPath + wf, envArray, globNet, locNet, reliability, 0, downTime, 0).run()
           println("HEFT exp:")
-          val heftRes = new HEFTDynamExp(wfPath + wfName, envArray, globNet, locNet, reliability, 0, downTime, 0).run()
+          val heftRes = new HEFTDynamExp(wfPath + wf, envArray, globNet, locNet, reliability, 0, downTime, 0).run()
 
-          cgaFile.write((cgaRes + "\n").replace(".", ","))
-          gaFile.write((gaRes + "\n").replace(".", ","))
+//          cgaFile.write((cgaRes + "\n").replace(".", ","))
+//          gaFile.write((gaRes + "\n").replace(".", ","))
           heftFile.write((heftRes + "\n").replace(".", ","))
         }
 
-        cgaFile.close()
-        gaFile.close()
+//        cgaFile.close()
+//        gaFile.close()
         heftFile.close()
 
       }

@@ -17,6 +17,16 @@ class InvalidScheduleException(msg: String) extends RuntimeException(msg)
 class Schedule[T <: Task, N <: Node] {
 
   def findTimeSlot(task: T, node: N, context: Context[T, N]): TaskScheduleItem[T, N] = {
+
+    var minScheduleTime: Double = 0.0
+
+    if (fixedSchedule().getMap.containsKey(node.id)) {
+      val fixedItems = fixedSchedule().getMap.get(node.id)
+      if (fixedItems.nonEmpty) {
+        minScheduleTime = fixedItems.last.endTime
+      }
+    }
+
     // calculate time when all transfer from each node will be ended
     val stageInEndTime = task.parents.map({
       case _: HeadDaxTask => 0.0
@@ -28,7 +38,7 @@ class Schedule[T <: Task, N <: Node] {
 
     val runningTime = context.estimator.calcTime(task, node)
 
-    val earliestStartTime = List(stageInEndTime, context.currentTime).max
+    val earliestStartTime = List(stageInEndTime, context.currentTime, minScheduleTime).max
     var foundStartTime = earliestStartTime
 
     // searching for a slot

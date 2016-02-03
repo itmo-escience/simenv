@@ -36,7 +36,7 @@ object HEFTScheduler extends Scheduler{
 
     for (task <- tasks.filter(x => !fixed_tasks.contains(x.id))) {
       val item = nodes.map((node) => newSchedule.findTimeSlot(task, node, context)).minBy(x => x.endTime)
-      newSchedule.placeTask(item)
+      newSchedule.placeTask(task, item.node, context)
     }
     newSchedule
   }

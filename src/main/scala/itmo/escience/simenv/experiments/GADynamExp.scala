@@ -47,10 +47,10 @@ class GADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double, 
 //    println(environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
 
     val scheduler = new GAScheduler(crossoverProb = 0.5,
-      mutationProb = 0.2,
-      swapMutationProb = 0.1,
+      mutationProb = 0.3,
+      swapMutationProb = 0.3,
       popSize = 50,
-      iterationCount = 300)
+      iterationCount = 100)
     //
     val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule[DaxTask, CapacityBasedNode](),
       estimator, 0.0, new SingleAppWorkload(wf))

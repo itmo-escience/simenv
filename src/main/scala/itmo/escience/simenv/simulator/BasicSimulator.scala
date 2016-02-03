@@ -21,7 +21,6 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
   val queue = new EventQueue()
   val rnd = new Random()
   SimLogger.setCtx(ctx.asInstanceOf[Context[DaxTask, CapacityBasedNode]])
-  var failedCount = 0
 
   /**
     * generates and adds the very first event [[InitEvent]] to the event queue
@@ -141,7 +140,6 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
   def onRescheduling(event: Rescheduling) = {
     ctx.setTime(event.eventTime)
     // Reschedule
-    if (ctx.environment.nodes.count(x => x.status == NodeStatus.UP) != 0) {
 
       if (ctx.schedule.restTasks().nonEmpty) {
 
@@ -156,9 +154,6 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
         // submit new events, if it is required after the failed task
         task_failed_after()
       }
-    } else {
-      queue.submitEvent(new Rescheduling(id="reschedule", name="reschedule", postTime = ctx.currentTime, eventTime = ctx.currentTime + nodeDownTime) )
-    }
   }
 
   def task_failed_before(event: TaskFailed) = {
@@ -258,13 +253,12 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
     //    taskScheduleItem.status = TaskScheduleItemStatus.RUNNING
     val dice = rnd.nextDouble()
     // TODO reliablity not via CpuTimeNode
-    if (dice < taskScheduleItem.node.asInstanceOf[CapacityBasedNode].reliability || failedCount == 4) {
+    if (dice < taskScheduleItem.node.asInstanceOf[CapacityBasedNode].reliability) {
       // Task will be finished
       val taskFinishedEvent = new TaskFinished(id = taskScheduleItem.id, name = taskScheduleItem.name, postTime = ctx.currentTime,
         eventTime = taskScheduleItem.endTime, taskScheduleItem.task, taskScheduleItem.node)
       queue.submitEvent(taskFinishedEvent)
     } else {
-      failedCount += 1
       // Task will be failed (random time between start and end of the current schedule item)
       val itemStart = taskScheduleItem.startTime
       val itemEnd = taskScheduleItem.endTime
