@@ -110,6 +110,27 @@ class StormScheduleVisualizer(tasks: util.HashMap[TaskId, DaxTask]) {
 //    Files.delete(Paths.get(jedArgs(3)))
   }
 
+  def drawSched (nodeStr: String, bandwidth: Double, workStr: String, schedule: String) = {
+    // Мапа для содержания нодов по id
+    var nodes: util.HashMap[NodeId, CapRamBandResource] = new util.HashMap[NodeId, CapRamBandResource]
+    // Мапа для хранения тасок по id
+    var tasks: util.HashMap[TaskId, DaxTask] = new util.HashMap[TaskId, DaxTask]
+    // Расписание (На ноде располагаются таски)
+    var schedule: util.HashMap[NodeId, List[TaskId]] = new util.HashMap[NodeId, List[TaskId]]
+
+    var nodesList =  JSONParser.parseEnv(nodeStr, bandwidth)
+    val tasksList = JSONParser.parseWorkload(workStr)
+
+    for (n <- nodesList) {
+      nodes.put(n.id, n)
+    }
+    for (t <- tasksList) {
+      tasks.put(t.id, t)
+    }
+
+
+  }
+
   def schedToXML(resources: util.HashMap[NodeId, CapRamBandResource]) : Document = {
     val doc: Document = db.newDocument
     var nodes: List[CapRamBandResource] = List[CapRamBandResource]()

@@ -1,0 +1,7 @@
+[{"id":"checkpointspout","children":["partialsum"],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0,"parents":[]},
+  {"id":"spout","children":["partialsum"],"cpu.pcore.percent":120.0,"max.heap.size.mb":512.0,"parents":[]},
+  {"id":"partialsum","children":["printer","printer"],"cpu.pcore.percent":120.0,"max.heap.size.mb":512.0,"parents":["spout","$checkpointspout"]},
+  {"id":"partialsum","children":["printer","printer"],"cpu.pcore.percent":120.0,"max.heap.size.mb":512.0,"parents":["spout","$checkpointspout"]},
+  {"id":"printer","children":[],"cpu.pcore.percent":180.0,"max.heap.size.mb":296.0,"parents":["partialsum","partialsum"]},
+  {"id":"__eventlogger","children":[],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0},
+  {"id":"__acker","children":[],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0}]

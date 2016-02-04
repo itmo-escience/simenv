@@ -79,11 +79,11 @@ def parseEnv(envPath: String, band: Double): List[CapRamBandResource] = {
       val childIds: List[String] = curJ.get("children").get.asInstanceOf[List[String]]
       var children: List[String] = List[String]()
       for (c <- childIds) {
-        if (children.contains(c)) {
-          children :+= c + symb
-        } else {
-          children :+= c
+        var curC = c
+        while (children.contains(curC)) {
+          curC = c + symb
         }
+        children :+= curC
       }
       if (children.isEmpty) {
         data = 0
