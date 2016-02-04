@@ -33,7 +33,7 @@ class StormSimulatedAnnealing(workloadPath: String, envPath: String, bandwidth: 
 
     // Ноды из JSON
     var nodesList =  JSONParser.parseEnv(envPath, bandwidth)
-    val tasksList = JSONParser.parseWorkload(workloadPath)
+    val tasksList = JSONParser.parseWorkload(workloadPath, bandwidth)
 
     for (n <- nodesList) {
       nodes.put(n.id, n)
