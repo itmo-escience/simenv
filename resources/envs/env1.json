@@ -1,6 +1,9 @@
-[
-  {"totalCpuResources" :70.0, "totalMemoryResources" :2048.0, "id":"node0"},
-  {"totalCpuResources" :70.0, "totalMemoryResources" :2048.0, "id":"node1"},
-  {"totalCpuResources" :70.0, "totalMemoryResources" :2048.0, "id":"node2"},
-  {"totalCpuResources" :70.0, "totalMemoryResources" :2048.0, "id":"node3"}
-]
+[{"nodes":[{"availableCpuResources":400.0,"totalCpuResources":400.0,"id":"33da4eb9-75c7-49fb-aecf-f60baf70de510","totalMemoryResources":3072.0,"availableMemoryResources":3072.0},
+  {"availableCpuResources":400.0,"totalCpuResources":400.0,"id":"33da4eb9-75c7-49fb-aecf-f60baf70de5100","totalMemoryResources":3072.0,"availableMemoryResources":3072.0},
+  {"availableCpuResources":400.0,"totalCpuResources":400.0,"id":"33da4eb9-75c7-49fb-aecf-f60baf70de511","totalMemoryResources":3072.0,"availableMemoryResources":3072.0},
+  {"availableCpuResources":400.0,"totalCpuResources":400.0,"id":"33da4eb9-75c7-49fb-aecf-f60baf70de5101","totalMemoryResources":3072.0,"availableMemoryResources":3072.0},
+  {"availableCpuResources":400.0,"totalCpuResources":400.0,"id":"33da4eb9-75c7-49fb-aecf-f60baf70de5102","totalMemoryResources":3072.0,"availableMemoryResources":3072.0}],"id":"Cluster0"},
+  {"nodes":[{"availableCpuResources":400.0,"totalCpuResources":400.0,"id":"33da4eb9-75c7-49fb-aecf-f60baf70de5103","totalMemoryResources":3072.0,"availableMemoryResources":3072.0},
+    {"availableCpuResources":400.0,"totalCpuResources":400.0,"id":"33da4eb9-75c7-49fb-aecf-f60baf70de51","totalMemoryResources":3072.0,"availableMemoryResources":3072.0},
+    {"availableCpuResources":400.0,"totalCpuResources":400.0,"id":"33da4eb9-75c7-49fb-aecf-f60baf70de5104","totalMemoryResources":3072.0,"availableMemoryResources":3072.0},
+    {"availableCpuResources":400.0,"totalCpuResources":400.0,"id":"33da4eb9-75c7-49fb-aecf-f60baf70de512","totalMemoryResources":3072.0,"availableMemoryResources":3072.0}],"id":"Cluster1"}]

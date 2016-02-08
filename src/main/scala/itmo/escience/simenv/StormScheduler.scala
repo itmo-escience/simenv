@@ -4,8 +4,7 @@ import java.util
 import java.util.Random
 
 import itmo.escience.simenv.environment.entities._
-import itmo.escience.simenv.utilities.{JSONParser, StormScheduleVisualizer}
-import itmo.escience.simenv.utilities.Utilities.parseDAX
+import itmo.escience.simenv.utilities.{JSONParser}
 import itmo.escience.simenv.utilities.JSONParser._
 import scala.collection.JavaConversions._
 
@@ -13,43 +12,31 @@ import scala.collection.JavaConversions._
 /**
   * Created by Mishanya on 23.12.2015.
   */
-//class StormSimulatedAnnealing(wfPath: String, n: Int, cores: Int, bandwidth: Int) {
-class StormSimulatedAnnealing(workloadPath: String, envPath: String, bandwidth: Int) {
+class StormSimulatedAnnealing(workloadPath: String, envPath: String, globNet: Int, localNet: Int, initSol: String = null) {
 
-  // Мапа для содержания нодов по id
-  var nodes: util.HashMap[NodeId, CapRamBandResource] = new util.HashMap[NodeId, CapRamBandResource]
+  var env: CarrierNodeEnvironment[CpuRamNode] = null
   // Мапа для хранения тасок по id
-  var tasks: util.HashMap[TaskId, DaxTask] = new util.HashMap[TaskId, DaxTask]
-  // Расписание (На ноде располагаются таски)
-  var schedule: util.HashMap[NodeId, List[TaskId]] = new util.HashMap[NodeId, List[TaskId]]
+  var tasks: util.HashMap[TaskId, DaxTask] = null
+
+//  var seeds: util.ArrayList[Solution] = new util.ArrayList[Solution]()
 
   val rnd: Random = new Random()
 
-  // Объект визуализатора. Рисует начальное и конечное решение в
-  // ./temp/lastRunSchedules
-  var vis: StormScheduleVisualizer = null
+  // Объект визуализатора.
+//  var vis: StormScheduleVisualizer = null
 
   def initialization(): Unit = {
 
-    // Ноды из JSON
-    var nodesList =  JSONParser.parseEnv(envPath, bandwidth)
-    val tasksList = JSONParser.parseWorkload(workloadPath, bandwidth)
+    // Из JSON
+    env =  JSONParser.parseEnv(envPath, globNet, globNet)
+    tasks = JSONParser.parseWorkload(workloadPath)
 
-    for (n <- nodesList) {
-      nodes.put(n.id, n)
-    }
-    for (t <- tasksList) {
-      tasks.put(t.id, t)
-    }
-
-    // Копируем наш начальный пайплайн или вф
-//    val sweeps = generateSweeps()
     // Начальное решение (тупое)
-    schedule = initialSchedule(tasksList, nodesList)
+//    schedule = initialSchedule(tasksList, nodesList)
 
-    vis = new StormScheduleVisualizer(tasks)
+//    vis = new StormScheduleVisualizer(tasks)
 
-    println(schedule.toString)
+//    println(schedule.toString)
     println("Initialization complete")
   }
 

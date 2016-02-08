@@ -1,20 +1,22 @@
 package itmo.escience.simenv.utilities
 
-import itmo.escience.simenv.environment.entities.{DataFile, DaxTask, CapRamBandResource}
+import java.util
+
+import itmo.escience.simenv.environment.entities._
+import itmo.escience.simenv.utilities.Utilities._
 
 import scala.collection.mutable
 import scala.io.Source
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
-import org.json4s.JsonDSL._
 
 /**
   * Created by mikhail on 28.01.2016.
   */
 object JSONParser {
 
-def parseEnv(envPath: String, band: Double): List[CapRamBandResource] = {
-  var res = List[CapRamBandResource]()
+def parseEnv(envPath: String, globNet: Int, localNet: Int): CarrierNodeEnvironment[CpuRamNode] = {
+  var res = List[CpuRamNode]()
   var myString : String = null
   if (envPath.contains(".json")) {
 
@@ -28,28 +30,49 @@ def parseEnv(envPath: String, band: Double): List[CapRamBandResource] = {
 
   // Converting from JOjbect to plain object
   implicit val formats = DefaultFormats
-  val size = myJSON.values.asInstanceOf[List[Any]].size
-  var j = 0
-  for (i <- 0 until size) {
-    val curJ = myJSON(i).values.asInstanceOf[Map[String, Any]]
-    val id: String = curJ.get("id").get.asInstanceOf[String]
-    val cpu: Double = curJ.get("totalCpuResources").get.asInstanceOf[Double]
-    val ram: Double = curJ.get("totalMemoryResources").get.asInstanceOf[Double]
-    val node = new CapRamBandResource(id=id, nominalCapacity=cpu, ram=ram, name="node" + j, bandwidth=band)
-    res :+= node
-    j += 1
+
+  var carriers: List[CpuRamCarrier] = List[CpuRamCarrier]()
+  var networks = List[Network]()
+
+  val carrierSize = myJSON.values.asInstanceOf[List[Any]].size
+  for (c <- 0 until carrierSize) {
+    var nodes: List[CpuRamNode] = List[CpuRamNode]()
+
+    val curNodes = myJSON(c).values.asInstanceOf[Map[String, Any]].get("nodes").get.asInstanceOf[List[Map[String, Any]]]
+
+    val size = curNodes.size
+    for (i <- 0 until size) {
+      val curJ = curNodes(i)
+      val id: String = curJ.get("id").get.asInstanceOf[String]
+      val cpu: Double = curJ.get("totalCpuResources").get.asInstanceOf[Double]
+      val ram: Double = curJ.get("totalMemoryResources").get.asInstanceOf[Double]
+      val node = new CpuRamNode(id = id, cpu = cpu, ram = ram, name = s"res_${c}_node_$i", parent="res_" + c)
+      nodes :+= node
+    }
+    val locNet = new Network(id=generateId(), name="local net", bandwidth=localNet, nodes)
+    networks :+= locNet
+    val curCarrier: CpuRamCarrier = new CpuRamCarrier(id="res_" + c,
+                                                      name="res_"+c,
+                                                      cpu=nodes.map(x => x.cpu).sum,
+                                                      ram=nodes.map(x => x.ram).sum)
+    for (n <- nodes) {
+      curCarrier.addChild(n)
+    }
+    carriers :+= curCarrier
   }
-  res
+
+  networks :+= new Network(id=generateId(), name="glob net", bandwidth=globNet, carriers)
+
+  new CarrierNodeEnvironment[CpuRamNode](carriers, networks)
 }
 
-  def parseWorkload(workloadPath: String): List[DaxTask] = {
-    var res = List[DaxTask]()
+
+  def parseWorkload(workloadPath: String): java.util.HashMap[String, DaxTask] = {
+    var res = new java.util.HashMap[String, DaxTask]()
     val map = mutable.Map[DaxTask, List[String]]()
     val idMap = mutable.Map[String, DaxTask]()
     var myString: String = null
     if (workloadPath.contains(".json")) {
-
-
       myString = Source.fromFile(workloadPath).mkString
     } else {
       myString = workloadPath
@@ -60,56 +83,41 @@ def parseEnv(envPath: String, band: Double): List[CapRamBandResource] = {
     implicit val formats = DefaultFormats
     val size = myJSON.values.asInstanceOf[List[Any]].size
 
-
-    var ids: List[String] = List[String]()
-
-    val symb = "$"
-
     for (i <- 0 until size) {
       val curJ = myJSON(i).values.asInstanceOf[Map[String, Any]]
-      var id: String = curJ.get("id").get.asInstanceOf[String]
-      while (ids.contains(id)) {
-        id = id + symb
-      }
-      ids :+= id
+      val id: String = curJ.get("id").get.asInstanceOf[String]
+      val name: String = curJ.get("name").get.asInstanceOf[String]
       val cpu: Double = curJ.get("cpu.pcore.percent").get.asInstanceOf[Double]
-      var data: Double = 128
       val ram: Double = curJ.get("max.heap.size.mb").get.asInstanceOf[Double]
-      var chs: List[String] = List[String]()
-      val childIds: List[String] = curJ.get("children").get.asInstanceOf[List[String]]
+
+      var outData: Double = 0
       var children: List[String] = List[String]()
-      for (c <- childIds) {
-        var curC = c
-        while (children.contains(curC)) {
-          curC = c + symb
-        }
-        children :+= curC
+      var parents: List[String] = List[String]()
+      var dataFromParents: List[Double] = List[Double]()
+      var parentData: java.util.HashMap[String, Double] = new java.util.HashMap[String, Double]()
+      var megabytesPerSecond: Double = 0
+      if (curJ.get("megabytesOut").isDefined) {
+        outData = curJ.get("megabytesOut").get.asInstanceOf[Double]
       }
-      if (children.isEmpty) {
-        data = 0
+      if (curJ.get("children").isDefined) {
+        children = curJ.get("children").get.asInstanceOf[List[String]]
+      }
+      if (curJ.get("parents").isDefined) {
+        parents = curJ.get("parents").get.asInstanceOf[List[String]]
+      }
+      if (curJ.get("megabytesFromParent").isDefined) {
+        dataFromParents = curJ.get("megabytesFromParent").get.asInstanceOf[List[Double]]
+        parentData = new java.util.HashMap[String, Double]()
+        parents.zip(dataFromParents).foreach(x => parentData.put(x._1, x._2))
+      }
+      if (curJ.get("megabytesPerSecond").isDefined) {
+        megabytesPerSecond = curJ.get("megabytesPerSecond").get.asInstanceOf[Double]
       }
 
-      val task = new DaxTask(id=id, execTime=cpu, ramReq=ram, name=id, children=List[DaxTask](), parents=List[DaxTask](),
-        inputData=List[DataFile](),
-        outputData=List[DataFile](new DataFile(id + "_data", id + "_data", data)))
-      res :+= task
-      map.put(task, children)
-      idMap.put(id, task)
+      val task = new DaxTask(id=id, cpu=cpu, ram=ram, name=name,
+        children=children, parents=parents, inputData = parentData, outputData = outData, maxData=megabytesPerSecond)
+      res.put(task.id, task)
     }
-    for ((k, v) <- map) {
-      for (c <- v) {
-        val child: DaxTask = idMap.get(c).get
-        k.children :+= child
-        child.parents :+= k
-        child.inputData ++= k.outputData
-      }
-    }
-    for ((k, v) <- map) {
-      if (k.parents.isEmpty) {
-        k.inputData :+= new DataFile("empty", "empty", 0.0)
-      }
-    }
-
     res
   }
 
