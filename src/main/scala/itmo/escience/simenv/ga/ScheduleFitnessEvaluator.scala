@@ -11,7 +11,7 @@ import scala.collection.JavaConversions._
   * Created by mikhail on 22.01.2016.
   */
 class ScheduleFitnessEvaluator(env: CarrierNodeEnvironment[CpuRamNode], tasks: util.HashMap[String, DaxTask]) extends FitnessEvaluator[SSSolution] {
-  override def isNatural: Boolean = false
+  override def isNatural: Boolean = true
 
   override def getFitness(sol: SSSolution, list: util.List[_ <: SSSolution]): Double = {
     val perfMap: util.HashMap[String, Double] = new util.HashMap[String, Double]()
