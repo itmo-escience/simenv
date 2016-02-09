@@ -1,7 +1,5 @@
 package itmo.escience.simenv
 
-import itmo.escience.simenv.utilities.JSONParser
-
 /**
  * Created by Mishanya on 12.10.2015.
  */
@@ -18,16 +16,9 @@ object Main {
     val globNet = 5
     // запуск
 
-    val env = JSONParser.parseEnv(envPath, globNet, localNet)
-    val workload = JSONParser.parseWorkload(wfPath)
-
-//    val storm = new StormSimulatedAnnealing(wfPath, envPath, globNet, localNet)
-//    storm.initialization()
-//    storm.runAlg()
-//    val cpu = storm.getCpuUtilization(storm.schedule)
-//    println(s"Usage: ${cpu}")
-//    val transfer = storm.getTransfer(storm.schedule)
-//    println(s"Transfer: ${transfer}")
+    val storm = new StormScheduler(wfPath, envPath, globNet, localNet)
+    storm.initialization()
+    val result = storm.run()
 
     println("finish")
   }

@@ -1,11 +1,8 @@
 package itmo.escience.simenv.utilities
 
-import java.util
-
-import itmo.escience.simenv.environment.entities._
+import itmo.escience.simenv.entities._
 import itmo.escience.simenv.utilities.Utilities._
 
-import scala.collection.mutable
 import scala.io.Source
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
@@ -68,9 +65,7 @@ def parseEnv(envPath: String, globNet: Int, localNet: Int): CarrierNodeEnvironme
 
 
   def parseWorkload(workloadPath: String): java.util.HashMap[String, DaxTask] = {
-    var res = new java.util.HashMap[String, DaxTask]()
-    val map = mutable.Map[DaxTask, List[String]]()
-    val idMap = mutable.Map[String, DaxTask]()
+    val res = new java.util.HashMap[String, DaxTask]()
     var myString: String = null
     if (workloadPath.contains(".json")) {
       myString = Source.fromFile(workloadPath).mkString

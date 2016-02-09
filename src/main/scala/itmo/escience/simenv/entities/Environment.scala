@@ -1,4 +1,4 @@
-package itmo.escience.simenv.environment.entities
+package itmo.escience.simenv.entities
 
 /**
  * Created by user on 27.11.2015.
@@ -9,18 +9,18 @@ trait Environment[N <: Node] {
    * Adds physical or virtual nodes to the pool of resources
    * the node is virtual if we cannot directly control physical machine when it runs
    * (for example, a node which has been bought of Amazon EC2 or GAE)
-   * @param nodes sequence of nodes
+   * @param nodes Listuence of nodes
    * @return
    */
-  def addNodes(nodes: Seq[N]):Unit
+  def addNodes(nodes: List[N]):Unit
 
-  def removeNodes(nodesIds: Seq[NodeId]):Unit
+  def removeNodes(nodesIds: List[String]):Unit
 
-  def nodes: Seq[N]
+  def nodes: List[N]
 
-  def carriers: Seq[Carrier[N]]
+  def carriers: List[Carrier[N]]
 
-  def networks: Seq[Network]
+  def networks: List[Network]
 
 //  def addContainer(node: N): Unit
 
@@ -28,9 +28,9 @@ trait Environment[N <: Node] {
 
 //  def nodeOrContainerById(nodeId:NodeId):Node
 
-  def nodeById(nodeId:NodeId):Node
+  def nodeById(nodeId:String):Node
 
   def changeNodeParams(newNodeDescription: N)
 
-  def networksByNode(node:N): Seq[Network]
+  def networksByNode(node:N): List[Network]
 }

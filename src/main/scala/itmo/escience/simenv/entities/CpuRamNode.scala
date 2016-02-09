@@ -1,26 +1,26 @@
-package itmo.escience.simenv.environment.entities
+package itmo.escience.simenv.entities
 
 /**
  * Created by user on 18.01.2016.
  */
-class CpuRamNode(val id: NodeId,
+class CpuRamNode(val id: String,
                  val name: String,
                  val cpu: Double,
                  val ram: Double,
                  var reliability: Double = 1,
-                 val parent: NodeId = NullNode.id,
-                 var status: NodeStatus = NodeStatus.UP) extends Node {
+                 val parent: String = NullNode.id,
+                 var status: String = NodeStatus.UP) extends Node {
   def printNode(): String = {
     s"$id, $cpu, $ram"
   }
 }
 
-class CpuRamCarrier(val id: NodeId,
+class CpuRamCarrier(val id: String,
                     val name: String,
                     val cpu: Double,
                     val ram: Double,
                     var reliability: Double = 1,
-                    var parent: NodeId = NullNode.id,
-                    var status: NodeStatus = NodeStatus.UP) extends Carrier[CpuRamNode] {
+                    var parent: String = NullNode.id,
+                    var status: String = NodeStatus.UP) extends Carrier[CpuRamNode] {
 
 }

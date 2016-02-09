@@ -1,13 +1,14 @@
-package itmo.escience.simenv.environment.entities
+package itmo.escience.simenv.entities
+
 
 import scala.collection.mutable
 
 /**
   * Created by Mishanya on 14.01.2016.
   */
-class CarrierNodeEnvironment[N <: Node](nodesSeq: Seq[Node], networksSeq: Seq[Network]) extends Environment[N] {
+class CarrierNodeEnvironment[N <: Node](nodesSeq: List[Node], networksSeq: List[Network]) extends Environment[N] {
 
-  val _nodes: mutable.HashMap[NodeId, Node] = new mutable.HashMap[NodeId, Node]()
+  val _nodes: mutable.HashMap[String, Node] = new mutable.HashMap[String, Node]()
 
   for (x <- nodesSeq){
     _nodes.put(x.id, x)
@@ -19,10 +20,11 @@ class CarrierNodeEnvironment[N <: Node](nodesSeq: Seq[Node], networksSeq: Seq[Ne
     * Adds physical or virtual nodes to the pool of resources
     * the node is virtual if we cannot directly control physical machine when it runs
     * (for example, a node which has been bought of Amazon EC2 or GAE)
+    *
     * @param nodes sequence of nodes
     * @return
     */
-  override def addNodes(nodes: Seq[N]): Unit = {
+  override def addNodes(nodes: List[N]): Unit = {
     for (node <- nodes) {
       if (_nodes.contains(node.id)) {
         throw new IllegalArgumentException(s"Node ${node.id} is already added")
@@ -34,7 +36,7 @@ class CarrierNodeEnvironment[N <: Node](nodesSeq: Seq[Node], networksSeq: Seq[Ne
     }
   }
 
-  override def nodeById(nodeId: NodeId): Node = {
+  override def nodeById(nodeId: String): Node = {
     if (_nodes.contains(nodeId)) {
       _nodes.get(nodeId).get
     } else {
@@ -42,8 +44,8 @@ class CarrierNodeEnvironment[N <: Node](nodesSeq: Seq[Node], networksSeq: Seq[Ne
     }
   }
 
-  override def nodes: Seq[N] = {
-    var result: Seq[N] = Seq[N]()
+  override def nodes: List[N] = {
+    var result: List[N] = List[N]()
     for (key <- _nodes.keySet) {
       val node = _nodes.get(key).get
       node match {
@@ -55,24 +57,24 @@ class CarrierNodeEnvironment[N <: Node](nodesSeq: Seq[Node], networksSeq: Seq[Ne
     result
   }
 
-  def nodesIds: Seq[NodeId] = nodes.map(x => x.id)
+  def nodesIds: List[String] = nodes.map(x => x.id)
 
   override def changeNodeParams(newNodeDescription: N): Unit = ???
 
-  override def networksByNode(node: N): Seq[Network] = {
+  override def networksByNode(node: N): List[Network] = {
     networks.filter(x => x.nodes.map(y => y.id).contains(node.parent)) ++ networks.filter(x => x.nodes.map(y => y.id).contains(node.id))
   }
 
-  override def removeNodes(nodesIds: Seq[NodeId]): Unit = {
+  def removeNodes(nodesIds: List[String]): Unit = {
     for (id <- nodesIds) {
       _nodes.remove(id)
     }
   }
 
-  override def carriers: Seq[Carrier[N]] = _nodes.map({case (nodeId, node) => node}).
-    toSeq.filter(x => x.isInstanceOf[Carrier[N]]).map(x => x.asInstanceOf[Carrier[N]])
+  override def carriers: List[Carrier[N]] = _nodes.map({case (nodeId, node) => node}).
+    toList.filter(x => x.isInstanceOf[Carrier[N]]).map(x => x.asInstanceOf[Carrier[N]])
 
-  override def networks: Seq[Network] = _networks.toSeq
+  override def networks: List[Network] = _networks.toList
 
   def envPrint(): String = {
     var res: String = ""
@@ -81,4 +83,5 @@ class CarrierNodeEnvironment[N <: Node](nodesSeq: Seq[Node], networksSeq: Seq[Ne
     }
     res
   }
+
 }

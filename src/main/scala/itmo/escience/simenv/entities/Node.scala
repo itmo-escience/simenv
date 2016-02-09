@@ -1,4 +1,4 @@
-package itmo.escience.simenv.environment.entities
+package itmo.escience.simenv.entities
 
 import itmo.escience.simenv.common.NameAndId
 
@@ -7,25 +7,25 @@ import itmo.escience.simenv.common.NameAndId
  */
 
 object NodeStatus {
-  val UP: NodeStatus = "NodeUp"
-  val DOWN: NodeStatus = "NodeDown"
-  val STARTING: NodeStatus = "NodeStarting"
-  val Stopping: NodeStatus = "NodeStopping"
+  val UP: String = "NodeUp"
+  val DOWN: String = "NodeDown"
+  val STARTING: String = "NodeStarting"
+  val Stopping: String = "NodeStopping"
 }
 
-trait Node extends NameAndId[NodeId]{
-    def parent: NodeId
-    def status: NodeStatus
+trait Node extends NameAndId[String]{
+    def parent: String
+    def status: String
 }
 
 object NullNode extends Node{
-  override def parent: NodeId = null
+  override def parent: String = null
 
-  override def status: NodeStatus = NodeStatus.UP
+  override def status: String = NodeStatus.UP
 
   override def name: String = "NULL_NODE"
 
-  override def id: NodeId = "NULL_NODE"
+  override def id: String = "NULL_NODE"
 }
 
 trait Carrier[N <: Node] extends Node {
@@ -35,13 +35,13 @@ trait Carrier[N <: Node] extends Node {
 
   def children: List[N] = _children
 
-  def getChildById(childId: NodeId) = _children.filter(x => x.id == childId).head
+  def getChildById(childId: String) = _children.filter(x => x.id == childId).head
 
   def addChild(child: N): Unit = {
     _children :+= child
   }
 
-  def removeChild(childId: NodeId): N = {
+  def removeChild(childId: String): N = {
     val deleted: N = getChildById(childId)
     _children = _children.filter(x => x.id != childId)
     deleted
