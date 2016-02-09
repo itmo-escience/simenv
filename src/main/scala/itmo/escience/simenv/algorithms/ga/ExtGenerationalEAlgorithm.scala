@@ -3,9 +3,7 @@ package itmo.escience.simenv.algorithms.ga
 import java.util
 import java.util.Random
 
-import itmo.escience.simenv.algorithms.ga.WFSchedSolution
 import itmo.escience.simenv.environment.entities.{Node, Task}
-import itmo.escience.simenv.ga.SSSolution
 import org.uncommons.watchmaker.framework._
 
 /**
