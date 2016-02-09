@@ -5,6 +5,7 @@ import java.util.Random
 
 import itmo.escience.simenv.algorithms.ga.WFSchedSolution
 import itmo.escience.simenv.environment.entities.{Node, Task}
+import itmo.escience.simenv.ga.SSSolution
 import org.uncommons.watchmaker.framework._
 
 /**
@@ -24,11 +25,17 @@ class ExtGenerationalEAlgorithm[T <: Task, N <: Node](factory: ScheduleCandidate
     val elite: util.ArrayList[WFSchedSolution] = new util.ArrayList[WFSchedSolution](eliteCount)
     val iterator: util.Iterator[EvaluatedCandidate[WFSchedSolution]] = evaluatedPopulation.iterator()
 
+    val nextEvaluatedPopulation: util.List[EvaluatedCandidate[WFSchedSolution]] = new  util.ArrayList[EvaluatedCandidate[WFSchedSolution]]()
+
     while(elite.size() < eliteCount) {
       elite.add(iterator.next.getCandidate)
     }
 
-    population.addAll(selector.select(evaluatedPopulation, this.fitnessEvaluator.isNatural, popSize - eliteCount, rng))
+    while (iterator.hasNext) {
+      nextEvaluatedPopulation.add(iterator.next)
+    }
+
+    population.addAll(selector.select(nextEvaluatedPopulation, this.fitnessEvaluator.isNatural, popSize - eliteCount, rng))
     val population1: util.List[WFSchedSolution] = this.pipeline.apply(population, rng)
     population1.addAll(elite)
     evaluatePopulation(population1)

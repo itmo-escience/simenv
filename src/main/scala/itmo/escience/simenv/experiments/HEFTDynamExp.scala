@@ -61,7 +61,7 @@ class HEFTDynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double
     simulator.runSimulation()
     print("HEFT Makespan:")
     println(ctx.schedule.makespan())
-    println(ctx.schedule.prettyPrint())
+//    println(ctx.schedule.prettyPrint())
     ctx.schedule.makespan()
 
   }
