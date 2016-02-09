@@ -25,6 +25,8 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
 
   var seeds: util.ArrayList[SSSolution] = new util.ArrayList[SSSolution]()
 
+  var fitnessEvaluator: ScheduleFitnessEvaluator = null
+
   val rnd: Random = new Random()
 
   // GA params
@@ -49,7 +51,7 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
 
     val pipeline: EvolutionaryOperator[SSSolution] = new EvolutionPipeline[SSSolution](operators)
 
-    val fitnessEvaluator: ScheduleFitnessEvaluator = new ScheduleFitnessEvaluator(env, tasks)
+    fitnessEvaluator = new ScheduleFitnessEvaluator(env, tasks)
 
     val selector: SelectionStrategy[Object] = new RouletteWheelSelection()
 
@@ -73,7 +75,6 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
   }
 
   def run(): java.util.HashMap[String, (String, Double)] = {
-    val fitnessEvaluator: ScheduleFitnessEvaluator = new ScheduleFitnessEvaluator(env, tasks)
     val result = scheduler.evolve(popSize, 1, seeds, new GenerationCount(iterations))
     println(s"result: ${fitnessEvaluator.getFitness(result)}\n" + StormSchedulingProblem.mapToString(result.genes))
     result.genes
