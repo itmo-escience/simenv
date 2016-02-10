@@ -1,6 +1,7 @@
 package itmo.escience.simenv.utilities
 
 import itmo.escience.simenv.entities._
+import itmo.escience.simenv.ga.SSSolution
 import itmo.escience.simenv.utilities.Utilities._
 
 import scala.io.Source
@@ -116,5 +117,33 @@ def parseEnv(envPath: String, globNet: Int, localNet: Int): CarrierNodeEnvironme
     res
   }
 
+
+  def parseSolution(solution: String): SSSolution = {
+    val res = new java.util.HashMap[String, (String, Double)]()
+    var myString: String = null
+    if (solution.contains(".json")) {
+      myString = Source.fromFile(solution).mkString
+    } else {
+      myString = solution
+    }
+    val myJSON = parse(myString)
+
+    // Converting from JOjbect to plain object
+    implicit val formats = DefaultFormats
+    val size = myJSON.values.asInstanceOf[List[Any]].size
+    for (i <- 0 until size) {
+      val curJ = myJSON(i).values.asInstanceOf[Map[String, Any]]
+      val nodeId = curJ.get("nodeId").get.asInstanceOf[String]
+      val tasks = curJ.get("tasks").get.asInstanceOf[List[(String, Double)]]
+      val tasksSize = tasks.size
+      for (j <- 0 until tasksSize) {
+        val item = tasks(j).asInstanceOf[List[Any]]
+        val task = item(0).asInstanceOf[String]
+        val proc = item(1).asInstanceOf[Double]
+        res.put(task, (nodeId, proc))
+      }
+    }
+    new SSSolution(res)
+  }
 }
 

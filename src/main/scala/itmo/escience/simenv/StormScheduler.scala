@@ -33,15 +33,19 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
   val crossProb = 0.5
   val mutProb = 0.3
   val popSize = 50
-  val iterations = 1000
+  val iterations = 100
 
   // Объект визуализатора.
 //    var vis: StormScheduleVisualizer = null
 
   def initialization(): Unit = {
     // Из JSON
-    env = JSONParser.parseEnv(envPath, globNet, globNet)
+    env = JSONParser.parseEnv(envPath, globNet, localNet)
     tasks = JSONParser.parseWorkload(workloadPath)
+    if (initSol != null) {
+      val sol: SSSolution = JSONParser.parseSolution(initSol)
+      seeds.add(sol)
+    }
 
     val factory: ScheduleCandidateFactory = new ScheduleCandidateFactory(env, tasks)
 
@@ -74,10 +78,14 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
     println("Initialization complete")
   }
 
-  def run(): java.util.HashMap[String, (String, Double)] = {
+  def run(): java.util.HashMap[String, List[(String, Double)]] = {
+    val seedFitness = fitnessEvaluator.getFitness(seeds.get(0))
+    println("Fitness of init solution: " + seedFitness)
+
     val result = scheduler.evolve(popSize, 1, seeds, new GenerationCount(iterations))
     println(s"result: ${fitnessEvaluator.getFitness(result)}\n" + StormSchedulingProblem.mapToString(result.genes))
-    result.genes
+    val schedule = StormSchedulingProblem.solutionToSchedule(result)
+    schedule
   }
 
 }

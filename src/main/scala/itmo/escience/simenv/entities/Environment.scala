@@ -28,7 +28,7 @@ trait Environment[N <: Node] {
 
 //  def nodeOrContainerById(nodeId:NodeId):Node
 
-  def nodeById(nodeId:String):Node
+  def nodeById(nodeId:String):N
 
   def changeNodeParams(newNodeDescription: N)
 

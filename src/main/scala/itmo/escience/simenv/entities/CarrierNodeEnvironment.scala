@@ -36,9 +36,9 @@ class CarrierNodeEnvironment[N <: Node](nodesSeq: List[Node], networksSeq: List[
     }
   }
 
-  override def nodeById(nodeId: String): Node = {
+  override def nodeById(nodeId: String): N = {
     if (_nodes.contains(nodeId)) {
-      _nodes.get(nodeId).get
+      _nodes.get(nodeId).get.asInstanceOf[N]
     } else {
       nodes.filter(x => x.id == nodeId).head
     }

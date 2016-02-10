@@ -35,4 +35,19 @@ object StormSchedulingProblem {
     }
     result
   }
+
+  def solutionToSchedule(sol: SSSolution): java.util.HashMap[String, List[(String, Double)]] = {
+    val genes = sol.genes
+    val result = new java.util.HashMap[String, List[(String, Double)]]()
+    for (item <- genes) {
+      val task = item._1
+      val node = item._2._1
+      val proc = item._2._2
+      if (!result.containsKey(node)) {
+        result.put(node, List[(String, Double)]())
+      }
+      result.put(node, result.get(node) :+ (task, proc))
+    }
+    result
+  }
 }

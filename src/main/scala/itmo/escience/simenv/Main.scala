@@ -12,11 +12,12 @@ object Main {
     // Указываем путь к файлу с вф или пайплайном
     val wfPath = ".\\resources\\tplgs\\tplg1.json"
     val envPath = ".\\resources\\envs\\env1.json"
+    val seedSolution = ".\\resources\\solutions\\sol1.json"
     val localNet = 5000
     val globNet = 5
     // запуск
 
-    val storm = new StormScheduler(wfPath, envPath, globNet, localNet)
+    val storm = new StormScheduler(wfPath, envPath, globNet, localNet, seedSolution)
     storm.initialization()
     val result = storm.run()
 
