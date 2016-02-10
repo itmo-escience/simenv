@@ -50,4 +50,17 @@ object StormSchedulingProblem {
     }
     result
   }
+
+  def scheduleToSolution(schedule: java.util.HashMap[String, List[(String, Double)]]): SSSolution = {
+    val result = new java.util.HashMap[String, (String, Double)]()
+    for (item <- schedule) {
+      val node = item._1
+      for (t <- item._2) {
+        val task = t._1
+        val proc = t._2
+        result.put(task, (node, proc))
+      }
+    }
+    new SSSolution(result)
+  }
 }

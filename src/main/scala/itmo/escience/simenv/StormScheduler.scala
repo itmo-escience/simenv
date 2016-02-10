@@ -6,7 +6,7 @@ import java.util.Random
 import itmo.escience.simenv.entities.{CpuRamNode, DaxTask}
 import itmo.escience.simenv.entities.CarrierNodeEnvironment
 import itmo.escience.simenv.ga._
-import itmo.escience.simenv.utilities.JSONParser
+import itmo.escience.simenv.utilities.{StormScheduleVisualizer, JSONParser}
 import org.uncommons.maths.random.MersenneTwisterRNG
 import org.uncommons.watchmaker.framework.selection.RouletteWheelSelection
 import org.uncommons.watchmaker.framework._
@@ -36,7 +36,7 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
   val iterations = 100
 
   // Объект визуализатора.
-//    var vis: StormScheduleVisualizer = null
+    var vis: StormScheduleVisualizer = null
 
   def initialization(): Unit = {
     // Из JSON
@@ -73,7 +73,7 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
       }
     })
 
-    // vis = new StormScheduleVisualizer(tasks)
+     vis = new StormScheduleVisualizer(env, tasks)
 
     println("Initialization complete")
   }
@@ -86,6 +86,10 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
     println(s"result: ${fitnessEvaluator.getFitness(result)}\n" + StormSchedulingProblem.mapToString(result.genes))
     val schedule = StormSchedulingProblem.solutionToSchedule(result)
     schedule
+  }
+
+  def drawSolution(solution: SSSolution) = {
+    vis.drawSched(solution)
   }
 
 }

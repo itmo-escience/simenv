@@ -1,5 +1,7 @@
 package itmo.escience.simenv
 
+import itmo.escience.simenv.ga.StormSchedulingProblem
+
 /**
  * Created by Mishanya on 12.10.2015.
  */
@@ -19,7 +21,11 @@ object Main {
 
     val storm = new StormScheduler(wfPath, envPath, globNet, localNet, seedSolution)
     storm.initialization()
+    // Get result schedule
     val result = storm.run()
+
+    // Visualize schedule
+    storm.drawSolution(StormSchedulingProblem.scheduleToSolution(result))
 
     println("finish")
   }
