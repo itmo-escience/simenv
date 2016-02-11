@@ -145,5 +145,9 @@ def parseEnv(envPath: String, globNet: Int, localNet: Int): CarrierNodeEnvironme
     }
     new SSSolution(res)
   }
+
+//  def scheduleToJSON(schedule: java.util.HashMap[String, List[(String, Double)]]): String = {
+//
+//  }
 }
 

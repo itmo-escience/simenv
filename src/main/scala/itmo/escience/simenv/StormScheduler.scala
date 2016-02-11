@@ -12,6 +12,7 @@ import org.uncommons.watchmaker.framework.selection.RouletteWheelSelection
 import org.uncommons.watchmaker.framework._
 import org.uncommons.watchmaker.framework.operators.EvolutionPipeline
 import org.uncommons.watchmaker.framework.termination.GenerationCount
+import scala.collection.JavaConversions._
 
 /**
   * Created by Mishanya on 23.12.2015.
@@ -90,6 +91,26 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
 
   def drawSolution(solution: SSSolution) = {
     vis.drawSched(solution)
+  }
+
+//  def scheduleToJSON(schedule: java.util.HashMap[String, List[(String, Double)]]): String = {
+//    JSONParser.scheduleToJSON(schedule)
+//  }
+
+  def scheduleToMapList(schedule: java.util.HashMap[String, List[(String, Double)]]): java.util.HashMap[String, java.util.ArrayList[java.util.ArrayList[Object]]] = {
+    val result = new java.util.HashMap[String, java.util.ArrayList[java.util.ArrayList[Object]]]()
+    for (k <- schedule.keySet()) {
+      val list = schedule.get(k)
+      val outList = new java.util.ArrayList[java.util.ArrayList[Object]]()
+      for (l <- list) {
+        val inList = new java.util.ArrayList[Object]()
+        inList.add(l._1.asInstanceOf[Object])
+        inList.add(l._2.asInstanceOf[Object])
+        outList.add(inList)
+      }
+      result.put(k, outList)
+    }
+    result
   }
 
 }
