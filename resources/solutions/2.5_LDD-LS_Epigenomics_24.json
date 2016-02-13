@@ -1,0 +1,147 @@
+[
+{
+"resourse_id": "8 - ef0d7e56-e03d-486b-838d-5cd74337c731",
+"power": "20",
+"price": "200",
+"start_time": "0",
+"end_time": "6427.36255163193",
+"tasks": [
+{
+"name": "ID00000"
+},
+{
+"name": "ID00005"
+},
+{
+"name": "ID00010"
+},
+{
+"name": "ID00015"
+},
+{
+"name": "ID00020"
+},
+{
+"name": "ID00023"
+}
+]
+},
+{
+"resourse_id": "7 - 943fa17c-4052-4224-af2d-e576913a37a1",
+"power": "10",
+"price": "100",
+"start_time": "124.827914495468",
+"end_time": "5052.11196004868",
+"tasks": [
+{
+"name": "ID00004"
+},
+{
+"name": "ID00009"
+},
+{
+"name": "ID00014"
+},
+{
+"name": "ID00018"
+},
+{
+"name": "ID00021"
+},
+{
+"name": "ID00022"
+}
+]
+},
+{
+"resourse_id": "8 - 3481cb55-90c1-4406-80b9-bc850b9652a1",
+"power": "20",
+"price": "200",
+"start_time": "158.887914495468",
+"end_time": "3782.39782634735",
+"tasks": [
+{
+"name": "ID00019"
+}
+]
+},
+{
+"resourse_id": "7 - 4098e62a-3349-44e0-8fe9-a8f9e5100aa7",
+"power": "10",
+"price": "100",
+"start_time": "124.827914495468",
+"end_time": "160.187914495468",
+"tasks": [
+{
+"name": "ID00002"
+},
+{
+"name": "ID00007"
+},
+{
+"name": "ID00012"
+}
+]
+},
+{
+"resourse_id": "8 - 24c63cbd-cb58-4a71-8d2d-dc6eb007c8fc",
+"power": "20",
+"price": "200",
+"start_time": "160.187914495468",
+"end_time": "3357.08016841888",
+"tasks": [
+{
+"name": "ID00017"
+}
+]
+},
+{
+"resourse_id": "7 - c94dbcce-98db-4326-9685-7c6c7ea7674e",
+"power": "10",
+"price": "100",
+"start_time": "124.827914495468",
+"end_time": "166.647914495468",
+"tasks": [
+{
+"name": "ID00001"
+},
+{
+"name": "ID00006"
+},
+{
+"name": "ID00011"
+},
+{
+"name": "ID00008"
+},
+{
+"name": "ID00013"
+}
+]
+},
+{
+"resourse_id": "8 - 960e741a-cfc8-4195-892f-5607d7fdc7b3",
+"power": "20",
+"price": "200",
+"start_time": "152.067914495468",
+"end_time": "2982.93782482147",
+"tasks": [
+{
+"name": "ID00016"
+}
+]
+},
+{
+"resourse_id": "7 - 1c93007f-5f0f-42e2-a6ba-d72197d2b72d",
+"power": "10",
+"price": "100",
+"start_time": "124.827914495468",
+"end_time": "141.127914495468",
+"tasks": [
+{
+"name": "ID00003"
+}
+]
+}
+]
+

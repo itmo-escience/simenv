@@ -1,0 +1,315 @@
+[
+{
+"resourse_id": "8 - 15bd91b5-19e1-4557-b399-4ec599436f0e",
+"power": "20",
+"price": "200",
+"start_time": "0",
+"end_time": "4421.01143266754",
+"tasks": [
+{
+"name": "ID00021"
+},
+{
+"name": "ID00022"
+},
+{
+"name": "ID00025"
+},
+{
+"name": "ID00028"
+}
+]
+},
+{
+"resourse_id": "7 - 8d59bd9f-aaa4-4b08-9ba5-055dc1c5bf74",
+"power": "10",
+"price": "100",
+"start_time": "0",
+"end_time": "1962.41239543953",
+"tasks": [
+{
+"name": "ID00018"
+}
+]
+},
+{
+"resourse_id": "3 - e590414d-fc89-4cce-a900-a991fa33b02f",
+"power": "0.6",
+"price": "6",
+"start_time": "0",
+"end_time": "1584.22294325193",
+"tasks": [
+{
+"name": "ID00019"
+}
+]
+},
+{
+"resourse_id": "3 - 82fd6621-6b23-4216-9a63-7becb0cc9d07",
+"power": "0.6",
+"price": "6",
+"start_time": "0",
+"end_time": "1482.66989090284",
+"tasks": [
+{
+"name": "ID00020"
+}
+]
+},
+{
+"resourse_id": "0 - c007fb5f-89dc-45f4-af4c-f43f24ec3b19",
+"power": "0.075",
+"price": "0.75",
+"start_time": "2952.37833107338",
+"end_time": "3366.91556255048",
+"tasks": [
+{
+"name": "ID00023"
+}
+]
+},
+{
+"resourse_id": "4 - b9f46e54-ae8b-4b03-88e8-23b1c8af23c3",
+"power": "1.2",
+"price": "12",
+"start_time": "3366.91556255048",
+"end_time": "3916.96146189397",
+"tasks": [
+{
+"name": "ID00026"
+}
+]
+},
+{
+"resourse_id": "1 - 601665c4-e4b5-45fb-bbf4-62d41b695630",
+"power": "0.15",
+"price": "1.5",
+"start_time": "2952.37833107338",
+"end_time": "3751.10237641678",
+"tasks": [
+{
+"name": "ID00024"
+}
+]
+},
+{
+"resourse_id": "0 - 60f8840c-1a0d-4c76-9e8d-299a08b6cf80",
+"power": "0.075",
+"price": "0.75",
+"start_time": "2952.37833107338",
+"end_time": "3875.52929599787",
+"tasks": [
+{
+"name": "ID00027"
+}
+]
+},
+{
+"resourse_id": "0 - b379d321-f770-407f-bdda-0bfabdb26567",
+"power": "0.075",
+"price": "0.75",
+"start_time": "0",
+"end_time": "481.036673682531",
+"tasks": [
+{
+"name": "ID00013"
+},
+{
+"name": "ID00000"
+}
+]
+},
+{
+"resourse_id": "0 - f906e5ae-1e40-4910-aa10-e9bd6288a3be",
+"power": "0.075",
+"price": "0.75",
+"start_time": "0",
+"end_time": "425.536920833588",
+"tasks": [
+{
+"name": "ID00001"
+}
+]
+},
+{
+"resourse_id": "0 - d9b01c23-d5a4-433b-8a4f-015bf173890c",
+"power": "0.075",
+"price": "0.75",
+"start_time": "0",
+"end_time": "424.816920833588",
+"tasks": [
+{
+"name": "ID00002"
+}
+]
+},
+{
+"resourse_id": "0 - 8ecc747f-54e8-42dc-b4db-e7bf3002c6a7",
+"power": "0.075",
+"price": "0.75",
+"start_time": "0",
+"end_time": "423.030254166921",
+"tasks": [
+{
+"name": "ID00007"
+}
+]
+},
+{
+"resourse_id": "0 - 72ef6cf7-241a-4419-a438-ab4bea2ad250",
+"power": "0.075",
+"price": "0.75",
+"start_time": "0",
+"end_time": "414.550254166921",
+"tasks": [
+{
+"name": "ID00009"
+}
+]
+},
+{
+"resourse_id": "0 - 36cab798-f85a-4542-a3fd-24e68c55b052",
+"power": "0.075",
+"price": "0.75",
+"start_time": "0",
+"end_time": "366.416920833588",
+"tasks": [
+{
+"name": "ID00003"
+}
+]
+},
+{
+"resourse_id": "0 - 78ec1d47-9c49-4926-a5e9-a6724f6e2389",
+"power": "0.075",
+"price": "0.75",
+"start_time": "0",
+"end_time": "324.043587500254",
+"tasks": [
+{
+"name": "ID00010"
+}
+]
+},
+{
+"resourse_id": "0 - 55ae5da4-be4d-4570-997a-d47db1eb6014",
+"power": "0.075",
+"price": "0.75",
+"start_time": "0",
+"end_time": "292.256920833588",
+"tasks": [
+{
+"name": "ID00008"
+}
+]
+},
+{
+"resourse_id": "0 - 874f6d08-1658-4f88-b4f3-b056c76d2e54",
+"power": "0.075",
+"price": "0.75",
+"start_time": "0",
+"end_time": "290.150254166921",
+"tasks": [
+{
+"name": "ID00017"
+}
+]
+},
+{
+"resourse_id": "0 - 58c38dcd-6117-411a-9885-2c483d1ed012",
+"power": "0.075",
+"price": "0.75",
+"start_time": "0",
+"end_time": "289.403587500254",
+"tasks": [
+{
+"name": "ID00006"
+}
+]
+},
+{
+"resourse_id": "0 - 204462c8-4f4d-4ddc-b8a0-a22252295924",
+"power": "0.075",
+"price": "0.75",
+"start_time": "0",
+"end_time": "286.176920833588",
+"tasks": [
+{
+"name": "ID00012"
+}
+]
+},
+{
+"resourse_id": "0 - 48be60a5-17c5-46d6-9320-c550135e5dce",
+"power": "0.075",
+"price": "0.75",
+"start_time": "0",
+"end_time": "279.590254166921",
+"tasks": [
+{
+"name": "ID00016"
+}
+]
+},
+{
+"resourse_id": "0 - 8ed20712-0d6b-4d86-9716-c4eb8b6607ed",
+"power": "0.075",
+"price": "0.75",
+"start_time": "0",
+"end_time": "265.510254166921",
+"tasks": [
+{
+"name": "ID00011"
+}
+]
+},
+{
+"resourse_id": "0 - db5eb61f-d5dd-468f-b5a8-f4724cab1e1f",
+"power": "0.075",
+"price": "0.75",
+"start_time": "0",
+"end_time": "259.963587500254",
+"tasks": [
+{
+"name": "ID00015"
+}
+]
+},
+{
+"resourse_id": "0 - 7bcb4919-1520-41d7-a85c-a9a168b01373",
+"power": "0.075",
+"price": "0.75",
+"start_time": "0",
+"end_time": "224.923587500254",
+"tasks": [
+{
+"name": "ID00014"
+}
+]
+},
+{
+"resourse_id": "0 - 4fc442af-bf69-42d9-857e-6f0517cd9eaa",
+"power": "0.075",
+"price": "0.75",
+"start_time": "0",
+"end_time": "217.430254166921",
+"tasks": [
+{
+"name": "ID00004"
+}
+]
+},
+{
+"resourse_id": "0 - 0fd16891-1cd8-4ea9-a859-c2034bd5812c",
+"power": "0.075",
+"price": "0.75",
+"start_time": "0",
+"end_time": "211.696920833588",
+"tasks": [
+{
+"name": "ID00005"
+}
+]
+}
+]
+

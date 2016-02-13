@@ -6,7 +6,7 @@ import itmo.escience.simenv.environment.modelling.{Environment, Estimator}
 /**
  * Created by Nikolay on 11/29/2015.
  */
-class BasicEstimator[N <: CapacityBasedNode](idealCapacity:Double, env: Environment[N]) extends Estimator[DaxTask, N]{
+class BasicEstimator[N <: CapacityBasedNode](idealCapacity:Double, env: Environment[N], bandwidth: Double) extends Estimator[DaxTask, N]{
 
   override def calcTime(task: DaxTask, node: N): Double = {
     (idealCapacity / node.capacity) * task.execTime
@@ -20,17 +20,15 @@ class BasicEstimator[N <: CapacityBasedNode](idealCapacity:Double, env: Environm
       return 0.0
     }
 
-    val from_networks = env.networksByNode(from_node)
-    val to_networks = env.networksByNode(to_node)
-
-    // TODO: ATTENTION! intersection is possible if the entity of network is immutable
-    val transferNetwork = from_networks.intersect(to_networks).max(new Ordering[Network] {
-      override def compare(x: Network, y: Network): Int = x.bandwidth.compare(y.bandwidth)
-    })
-
     val volume = child_task.volumeToTransfer(parent_task)
 
     //estimate time
-    volume / transferNetwork.bandwidth
+    volume / bandwidth
+  }
+
+  def calcTransferTime(to: (DaxTask, N)): Double = {
+    val (child_task, to_node) = to
+    val volume = child_task.inputData.map(x => x.volume).sum
+    volume / bandwidth
   }
 }

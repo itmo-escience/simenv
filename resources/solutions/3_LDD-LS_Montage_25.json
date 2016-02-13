@@ -1,0 +1,150 @@
+[
+{
+"resourse_id": "8 - 04a5ea81-3415-4407-b1eb-14dc62c9c9df",
+"power": "20",
+"price": "200",
+"start_time": "0",
+"end_time": "48.8026779174805",
+"tasks": [
+{
+"name": "ID00001"
+},
+{
+"name": "ID00000"
+},
+{
+"name": "ID00006"
+},
+{
+"name": "ID00005"
+}
+]
+},
+{
+"resourse_id": "7 - a791e4dc-71fb-4831-abae-3dacc37e3470",
+"power": "10",
+"price": "100",
+"start_time": "0",
+"end_time": "93.4562069797516",
+"tasks": [
+{
+"name": "ID00003"
+},
+{
+"name": "ID00007"
+},
+{
+"name": "ID00014"
+},
+{
+"name": "ID00015"
+},
+{
+"name": "ID00019"
+},
+{
+"name": "ID00021"
+},
+{
+"name": "ID00022"
+},
+{
+"name": "ID00023"
+},
+{
+"name": "ID00024"
+}
+]
+},
+{
+"resourse_id": "7 - a6f73570-2d29-4e34-8129-da1930292e69",
+"power": "10",
+"price": "100",
+"start_time": "0",
+"end_time": "75.5973495769501",
+"tasks": [
+{
+"name": "ID00004"
+},
+{
+"name": "ID00008"
+},
+{
+"name": "ID00018"
+}
+]
+},
+{
+"resourse_id": "7 - c3ac5ca6-b431-41a3-b021-f0701d63a09e",
+"power": "10",
+"price": "100",
+"start_time": "0",
+"end_time": "75.4573495769501",
+"tasks": [
+{
+"name": "ID00002"
+},
+{
+"name": "ID00012"
+},
+{
+"name": "ID00020"
+}
+]
+},
+{
+"resourse_id": "7 - 766660fe-6732-45fb-8740-abaa79a37d70",
+"power": "10",
+"price": "100",
+"start_time": "27.4013389587402",
+"end_time": "75.2173495769501",
+"tasks": [
+{
+"name": "ID00011"
+},
+{
+"name": "ID00017"
+}
+]
+},
+{
+"resourse_id": "7 - 97101a8a-6846-4dac-b089-7d2c56741011",
+"power": "10",
+"price": "100",
+"start_time": "26.9213389587402",
+"end_time": "74.7173495769501",
+"tasks": [
+{
+"name": "ID00009"
+},
+{
+"name": "ID00016"
+}
+]
+},
+{
+"resourse_id": "7 - 466bae8b-ac7a-4041-9965-1ce9b106b0c9",
+"power": "10",
+"price": "100",
+"start_time": "27.7613389587402",
+"end_time": "48.8983722686768",
+"tasks": [
+{
+"name": "ID00013"
+}
+]
+},
+{
+"resourse_id": "7 - e76890bf-1573-42d4-aeff-a7546ee6f280",
+"power": "10",
+"price": "100",
+"start_time": "26.9213389587402",
+"end_time": "48.3373423957825",
+"tasks": [
+{
+"name": "ID00010"
+}
+]
+}
+]
+

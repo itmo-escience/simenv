@@ -45,7 +45,15 @@ class ScheduleMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env: En
     val i = rnd.nextInt(mutant.getNumberOfVariables)
     val gene = mutant.getVariableValue(i)
 
-    mutant.setVariableValue(i, MappedTask(gene.taskId, rnd.nextInt(mutant.maxNodeIdx)))
+    var newNode = 0
+    if (mutant.maxNodeIdx > 0) {
+      newNode = rnd.nextInt(mutant.maxNodeIdx)
+    }
+    if (rnd.nextDouble() < 0.2) {
+      newNode = rnd.nextInt(mutant.maxNodeIdx + 1)
+    }
+
+    mutant.setVariableValue(i, MappedTask(gene.taskId, newNode))
   }
 
   private def doSwapMutation(mutant:WFSchedSolution, rnd: Random) = {

@@ -6,6 +6,8 @@ import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.modelling.Environment
 import scala.collection._
 import scala.collection.JavaConversions._
+import scala.collection.immutable.HashMap
+
 /**
  * Created by Nikolay on 11/29/2015.
  */
@@ -57,4 +59,6 @@ class BasicEnvironment(nodesSequence:Seq[CapacityBasedNode], networksSeq: Seq[Ne
   override def envPrint: String = "Nodes: (" + nodes.map(x => x.capacity + " ") + ")"
 
   def getTypes: List[Double] = types
+
+
 }

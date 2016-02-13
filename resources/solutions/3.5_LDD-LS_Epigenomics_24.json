@@ -1,0 +1,165 @@
+[
+{
+"resourse_id": "8 - 2eac7203-3e6a-4b5d-9a60-4f1be276dce2",
+"power": "20",
+"price": "200",
+"start_time": "0",
+"end_time": "8992.82538772583",
+"tasks": [
+{
+"name": "ID00000"
+},
+{
+"name": "ID00005"
+},
+{
+"name": "ID00010"
+},
+{
+"name": "ID00015"
+},
+{
+"name": "ID00020"
+},
+{
+"name": "ID00023"
+}
+]
+},
+{
+"resourse_id": "5 - 5988511c-7b22-46c0-8186-bbbed919b235",
+"power": "2.5",
+"price": "25",
+"start_time": "124.827914495468",
+"end_time": "7617.57479614258",
+"tasks": [
+{
+"name": "ID00004"
+},
+{
+"name": "ID00006"
+},
+{
+"name": "ID00021"
+},
+{
+"name": "ID00022"
+}
+]
+},
+{
+"resourse_id": "6 - f60100ed-518c-46ce-8ec3-79a3eb5ddce8",
+"power": "5",
+"price": "50",
+"start_time": "198.827914495468",
+"end_time": "232.209825696945",
+"tasks": [
+{
+"name": "ID00009"
+},
+{
+"name": "ID00014"
+}
+]
+},
+{
+"resourse_id": "7 - 4a03369c-73d2-49af-a032-73855da63382",
+"power": "10",
+"price": "100",
+"start_time": "232.209825696945",
+"end_time": "7478.79973754883",
+"tasks": [
+{
+"name": "ID00019"
+}
+]
+},
+{
+"resourse_id": "5 - 44097413-a4cf-48e3-b597-679d878f681f",
+"power": "2.5",
+"price": "25",
+"start_time": "124.827914495468",
+"end_time": "218.987914495468",
+"tasks": [
+{
+"name": "ID00002"
+},
+{
+"name": "ID00007"
+}
+]
+},
+{
+"resourse_id": "7 - fb595839-90a1-4be6-b683-05a33343af22",
+"power": "10",
+"price": "100",
+"start_time": "218.987914495468",
+"end_time": "6625.74195008278",
+"tasks": [
+{
+"name": "ID00012"
+},
+{
+"name": "ID00017"
+}
+]
+},
+{
+"resourse_id": "5 - 06b0aff0-28a9-4cf4-a761-17f5fc531a93",
+"power": "2.5",
+"price": "25",
+"start_time": "124.827914495468",
+"end_time": "217.946289777756",
+"tasks": [
+{
+"name": "ID00001"
+},
+{
+"name": "ID00008"
+}
+]
+},
+{
+"resourse_id": "7 - 147aa850-2169-4dc6-b555-489237385d57",
+"power": "10",
+"price": "100",
+"start_time": "217.707914495468",
+"end_time": "5888.46156723976",
+"tasks": [
+{
+"name": "ID00011"
+},
+{
+"name": "ID00016"
+}
+]
+},
+{
+"resourse_id": "5 - a8d9e899-d377-4929-95fb-f50cb48807ba",
+"power": "2.5",
+"price": "25",
+"start_time": "124.827914495468",
+"end_time": "190.027914495468",
+"tasks": [
+{
+"name": "ID00003"
+}
+]
+},
+{
+"resourse_id": "7 - 938fe8de-1d0e-4609-b83a-624a74b7aacb",
+"power": "10",
+"price": "100",
+"start_time": "217.946289777756",
+"end_time": "5077.81692083359",
+"tasks": [
+{
+"name": "ID00013"
+},
+{
+"name": "ID00018"
+}
+]
+}
+]
+

@@ -1,0 +1,219 @@
+[
+{
+"resourse_id": "4 - 4f640a38-4e28-4b54-978e-8af2f1449277",
+"power": "1.2",
+"price": "12",
+"start_time": "0",
+"end_time": "6147.51084237099",
+"tasks": [
+{
+"name": "ID00013"
+},
+{
+"name": "ID00018"
+},
+{
+"name": "ID00019"
+},
+{
+"name": "ID00000"
+}
+]
+},
+{
+"resourse_id": "4 - 5a3f6461-dd18-48e3-ae82-69c3c6bd4d08",
+"power": "1.2",
+"price": "12",
+"start_time": "5066.08857296308",
+"end_time": "6052.45780685743",
+"tasks": [
+{
+"name": "ID00014"
+},
+{
+"name": "ID00015"
+}
+]
+},
+{
+"resourse_id": "4 - 6d3f54e0-237d-4e89-bbb8-e4c8cc02c0fc",
+"power": "1.2",
+"price": "12",
+"start_time": "5066.08857296308",
+"end_time": "5758.20454713503",
+"tasks": [
+{
+"name": "ID00022"
+},
+{
+"name": "ID00023"
+}
+]
+},
+{
+"resourse_id": "4 - a0155b10-f879-4fa5-9972-29acf679ecdb",
+"power": "1.2",
+"price": "12",
+"start_time": "5066.08857296308",
+"end_time": "5956.48289008141",
+"tasks": [
+{
+"name": "ID00024"
+},
+{
+"name": "ID00025"
+}
+]
+},
+{
+"resourse_id": "3 - a3d1c3e3-f2a3-4cf9-b031-c3550160666c",
+"power": "0.6",
+"price": "6",
+"start_time": "5066.08857296308",
+"end_time": "6079.09241410891",
+"tasks": [
+{
+"name": "ID00020"
+},
+{
+"name": "ID00021"
+}
+]
+},
+{
+"resourse_id": "4 - 3c955fcc-1fa7-4134-a884-49810af150d8",
+"power": "1.2",
+"price": "12",
+"start_time": "5066.08857296308",
+"end_time": "5750.48714261055",
+"tasks": [
+{
+"name": "ID00028"
+},
+{
+"name": "ID00029"
+}
+]
+},
+{
+"resourse_id": "4 - 39e3d304-f0fb-46d5-8491-ad0030e88a64",
+"power": "1.2",
+"price": "12",
+"start_time": "5066.08857296308",
+"end_time": "5836.02048932711",
+"tasks": [
+{
+"name": "ID00016"
+},
+{
+"name": "ID00017"
+}
+]
+},
+{
+"resourse_id": "4 - 2a66dde1-49eb-4fe5-ba3d-88087348a3f2",
+"power": "1.2",
+"price": "12",
+"start_time": "5066.08857296308",
+"end_time": "5778.35097355843",
+"tasks": [
+{
+"name": "ID00026"
+},
+{
+"name": "ID00027"
+}
+]
+},
+{
+"resourse_id": "3 - 70bcf92b-d6a9-40bb-bdbc-e1c86f8d1b25",
+"power": "0.6",
+"price": "6",
+"start_time": "0",
+"end_time": "6002.61524883906",
+"tasks": [
+{
+"name": "ID00002"
+},
+{
+"name": "ID00005"
+},
+{
+"name": "ID00006"
+}
+]
+},
+{
+"resourse_id": "4 - 9fc72d24-985a-4cde-9a38-7ffdfb42d228",
+"power": "1.2",
+"price": "12",
+"start_time": "4514.59371534983",
+"end_time": "5364.79985545476",
+"tasks": [
+{
+"name": "ID00009"
+},
+{
+"name": "ID00010"
+}
+]
+},
+{
+"resourse_id": "2 - 7fb58a72-b97c-46d3-be99-3c95a1c80185",
+"power": "0.3",
+"price": "3",
+"start_time": "4514.59371534983",
+"end_time": "6096.10102764765",
+"tasks": [
+{
+"name": "ID00003"
+},
+{
+"name": "ID00004"
+}
+]
+},
+{
+"resourse_id": "3 - 82703ed0-fd1e-4959-a430-e96029540e48",
+"power": "0.6",
+"price": "6",
+"start_time": "4514.59371534983",
+"end_time": "5834.87713168462",
+"tasks": [
+{
+"name": "ID00011"
+},
+{
+"name": "ID00012"
+}
+]
+},
+{
+"resourse_id": "3 - ee410126-ac3d-44ef-a236-53d30b7c19fb",
+"power": "0.6",
+"price": "6",
+"start_time": "4514.59371534983",
+"end_time": "5592.72384169896",
+"tasks": [
+{
+"name": "ID00007"
+},
+{
+"name": "ID00008"
+}
+]
+},
+{
+"resourse_id": "0 - b6e0a46f-a136-4cb8-9644-70f4cc4b3bd2",
+"power": "0.075",
+"price": "0.75",
+"start_time": "6131.00968766213",
+"end_time": "6152.34416540464",
+"tasks": [
+{
+"name": "ID00001"
+}
+]
+}
+]
+

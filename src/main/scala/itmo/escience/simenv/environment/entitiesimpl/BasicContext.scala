@@ -1,5 +1,7 @@
 package itmo.escience.simenv.environment.entitiesimpl
 
+import java.util
+
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.modelling.{Environment, Estimator, Workload}
 import itmo.escience.simenv.simulator.events.EventQueue
@@ -9,7 +11,7 @@ import itmo.escience.simenv.simulator.events.EventQueue
  */
 class BasicContext[T <: Task, N <: Node](var environment:Environment[N], var schedule: Schedule[T, N], var estimator: Estimator[T, N],
                          var currentTime:ModellingTimestamp,
-                         var workload: Workload[T]) extends Context[T, N] {
+                         var workload: Workload[T], costs: java.util.HashMap[Double, Double]) extends Context[T, N] {
 
   def applySchedule(newSched: Schedule[T, N], queue: EventQueue) = {
     schedule = newSched
@@ -25,4 +27,6 @@ class BasicContext[T <: Task, N <: Node](var environment:Environment[N], var sch
   def setEnvironment(env: Environment[N]) = {
     environment = env
   }
+
+  def getCosts: util.HashMap[Double, Double] = costs
 }

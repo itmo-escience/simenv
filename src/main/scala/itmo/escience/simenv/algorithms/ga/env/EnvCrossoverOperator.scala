@@ -8,7 +8,7 @@ import org.uncommons.watchmaker.framework.operators.AbstractCrossover
 /**
   * Created by mikhail on 27.01.2016.
   */
-class EnvCrossoverOperator (crossoverPoints: Int = 1)
+class EnvCrossoverOperator (crossoverProb: Double, crossoverPoints: Int = 1)
   extends AbstractCrossover[EnvConfSolution](crossoverPoints){
 
   override def apply(parents: util.List[EnvConfSolution], random: Random): util.List[EnvConfSolution] = {
@@ -21,10 +21,12 @@ class EnvCrossoverOperator (crossoverPoints: Int = 1)
       val parent1: EnvConfSolution = iterator.next().copy()
       if(iterator.hasNext) {
         val parent2: EnvConfSolution = iterator.next().copy()
-        result.addAll(mate(parent1, parent2, crossoverPoints, random))
+        if (random.nextDouble() < crossoverProb) {
+          result.addAll(mate(parent1, parent2, crossoverPoints, random))
+        }
       }
     }
-
+    result.addAll(parents)
     result
   }
 

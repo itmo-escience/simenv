@@ -12,7 +12,7 @@ import scala.xml.{Node, XML}
  */
 object Utilities {
 
-  def parseDAX(path:String, wfName:String, deadline: Double): Workflow[DaxTask] = {
+  def parseDAX(path:String, deadline: Double): Workflow[DaxTask] = {
 
     //TODO: correct assigning of id
     //TODO: generic should be here
@@ -23,10 +23,10 @@ object Utilities {
     val childs = dax \ "child"
 
 
-    val idf = (job:Node) => job.attribute("id").get.head.text + "_" + wfName
+    val idf = (job:Node) => job.attribute("id").get.head.text
     val name = (job:Node) => job.attribute("name").get.head.text
     val runtime = (job:Node) => job.attribute("runtime").get.head.text.toDouble
-    val refId = (job:Node) => job.attribute("ref").get.head.text + "_" + wfName
+    val refId = (job:Node) => job.attribute("ref").get.head.text
 
     def toDataFile(y:Node):DataFile = {
       val file = y.attribute("file").get.head.text
@@ -45,7 +45,7 @@ object Utilities {
         inputData=inputData,
         outputData=outputData,
         parents=List(),
-        children=List(), workflowId=wfName)
+        children=List(), workflowId="wf")
 
       task.id -> task
     }).toMap
@@ -60,7 +60,7 @@ object Utilities {
       }
     }
 
-    val headtask = new HeadDaxTask(id= "000" + wfName, name="headtask_" + wfName, List(), workflowId = wfName)
+    val headtask = new HeadDaxTask(id= "000", name="headtask", List(), workflowId = "wf")
     val topLevelTasks = tasks.filter(x => x._2.parents.isEmpty).
       map(x => x._2).
       map(x => {
@@ -69,7 +69,7 @@ object Utilities {
     }).toList
     headtask.children = topLevelTasks
 
-    new Workflow(id=wfName, name=wfName, deadline=deadline, headTask=headtask)
+    new Workflow(id="wf", name="wf", deadline=deadline, headTask=headtask)
 
   }
 
@@ -88,6 +88,7 @@ class Units(a:Int) {
   def MB = a * 1024*1024
   def KB = a * 1024
   //Network bandwidth
+  def Mb_Sec = a * 1024*1024
   def Mbit_Sec = a * 1024*1024 / 8
   def Gbit_Sec = a * 1024*1024*1024 / 8
   def Kbit_Sec = a * 1024 /8

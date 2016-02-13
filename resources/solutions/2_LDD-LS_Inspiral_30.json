@@ -1,0 +1,156 @@
+[
+{
+"resourse_id": "9 - 235ff914-9471-4af0-b44e-6c4738d1e204",
+"power": "40",
+"price": "400",
+"start_time": "0",
+"end_time": "1303.13285992622",
+"tasks": [
+{
+"name": "ID00000"
+},
+{
+"name": "ID00007"
+},
+{
+"name": "ID00009"
+},
+{
+"name": "ID00014"
+},
+{
+"name": "ID00015"
+},
+{
+"name": "ID00022"
+},
+{
+"name": "ID00023"
+},
+{
+"name": "ID00029"
+}
+]
+},
+{
+"resourse_id": "9 - 1f004194-2375-4247-aca4-491c936422c5",
+"power": "40",
+"price": "400",
+"start_time": "0",
+"end_time": "1300.69031312942",
+"tasks": [
+{
+"name": "ID00002"
+},
+{
+"name": "ID00011"
+},
+{
+"name": "ID00010"
+},
+{
+"name": "ID00016"
+},
+{
+"name": "ID00020"
+},
+{
+"name": "ID00027"
+},
+{
+"name": "ID00024"
+},
+{
+"name": "ID00028"
+}
+]
+},
+{
+"resourse_id": "9 - 73452a22-de0f-4d2f-92a2-734d4eb03202",
+"power": "40",
+"price": "400",
+"start_time": "0",
+"end_time": "936.579824895859",
+"tasks": [
+{
+"name": "ID00004"
+},
+{
+"name": "ID00008"
+},
+{
+"name": "ID00013"
+},
+{
+"name": "ID00012"
+},
+{
+"name": "ID00017"
+},
+{
+"name": "ID00021"
+},
+{
+"name": "ID00019"
+},
+{
+"name": "ID00026"
+},
+{
+"name": "ID00025"
+}
+]
+},
+{
+"resourse_id": "9 - 1347b1ec-6dc6-436b-a268-a4a87a7ce122",
+"power": "40",
+"price": "400",
+"start_time": "0",
+"end_time": "650.969770774841",
+"tasks": [
+{
+"name": "ID00003"
+},
+{
+"name": "ID00018"
+}
+]
+},
+{
+"resourse_id": "9 - de74feda-083a-44d7-973e-0af4b96d01fe",
+"power": "40",
+"price": "400",
+"start_time": "0",
+"end_time": "10.9189950084686",
+"tasks": [
+{
+"name": "ID00001"
+}
+]
+},
+{
+"resourse_id": "9 - a516f4aa-e8a2-414d-9bdb-3a5bd9c9a85b",
+"power": "40",
+"price": "400",
+"start_time": "0",
+"end_time": "11.0460316085815",
+"tasks": [
+{
+"name": "ID00006"
+}
+]
+},
+{
+"resourse_id": "9 - b7073c9a-757d-4616-a837-14b34257bd85",
+"power": "40",
+"price": "400",
+"start_time": "0",
+"end_time": "10.7162530517578",
+"tasks": [
+{
+"name": "ID00005"
+}
+]
+}
+]
+

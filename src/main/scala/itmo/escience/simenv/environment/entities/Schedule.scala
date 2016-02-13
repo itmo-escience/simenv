@@ -2,6 +2,7 @@ package itmo.escience.simenv.environment.entities
 
 import java.util
 
+import itmo.escience.simenv.environment.entitiesimpl.BasicEstimator
 import itmo.escience.simenv.utilities.Utilities
 
 import scala.collection.JavaConversions._
@@ -17,13 +18,24 @@ class Schedule[T <: Task, N <: Node] {
 
   def findTimeSlot(task: T, node: N, context: Context[T, N]): TaskScheduleItem[T, N] = {
     // calculate time when all transfer from each node will be ended
-    val stageInEndTime = task.parents.map({
-      case _: HeadDaxTask => 0.0
-      case x =>
-        val parentItem = this.lastTaskItem(x.id)
-        val transferTime = context.estimator.calcTransferTime(from = (parentItem.task, parentItem.node), to = (task, node))
-        parentItem.endTime + transferTime
-    }).max
+    var stageInEndTime = 0.0
+    var transferTime = 0.0
+    var parentsTimes = List[Double]()
+    if (task.isInstanceOf[HeadDaxTask] || !(task.parents.size == 1 && task.parents.head.isInstanceOf[HeadDaxTask])) {
+      transferTime = task.parents.map({
+        case _: HeadDaxTask => 0.0
+        case x =>
+          val parentItem = this.lastTaskItem(x.id)
+          parentsTimes :+= parentItem.endTime
+          context.estimator.calcTransferTime(from = (parentItem.task, parentItem.node), to = (task, node))
+      }).sum
+    } else {
+      parentsTimes :+= 0.0
+      transferTime = context.estimator.asInstanceOf[BasicEstimator[CapacityBasedNode]].calcTransferTime((task.asInstanceOf[DaxTask], node.asInstanceOf[CapacityBasedNode]))
+    }
+    stageInEndTime = parentsTimes.max
+
+
 
     val runningTime = context.estimator.calcTime(task, node)
 
@@ -33,28 +45,29 @@ class Schedule[T <: Task, N <: Node] {
     // searching for a slot
     if (map.containsKey(node.id)) {
       val endOfLastTask = if (map.get(node.id).isEmpty) 0.0 else map.get(node.id).last.endTime
-      if (map.get(node.id).nonEmpty && endOfLastTask > earliestStartTime) {
+//      if (map.get(node.id).nonEmpty && endOfLastTask > earliestStartTime) {
+      if (endOfLastTask > foundStartTime) {
 
         foundStartTime = endOfLastTask
-        var st = endOfLastTask
-        var end = endOfLastTask
-
-        import scala.util.control.Breaks._
-        breakable {
-          for (x <- map.get(node.id).toList.reverseIterator) {
-
-            if (end > earliestStartTime) {
-              break
-            }
-
-            st = x.endTime
-            if (end - st <= runningTime) {
-              foundStartTime = st
-            }
-            end = x.startTime
-
-          }
-        }
+//        var st = endOfLastTask
+//        var end = endOfLastTask
+//
+//        import scala.util.control.Breaks._
+//        breakable {
+//          for (x <- map.get(node.id).toList.reverseIterator) {
+//
+//            if (end > earliestStartTime) {
+//              break
+//            }
+//
+//            st = x.endTime
+//            if (end - st <= runningTime) {
+//              foundStartTime = st
+//            }
+//            end = x.startTime
+//
+//          }
+//        }
       }
     }
 
@@ -62,7 +75,7 @@ class Schedule[T <: Task, N <: Node] {
     val newItem = new TaskScheduleItem(id = Utilities.generateId(),
       name = task.name,
       startTime = foundStartTime,
-      endTime = foundStartTime + runningTime,
+      endTime = foundStartTime + runningTime + transferTime,
       status = ScheduleItemStatus.UNSTARTED,
       node,
       task)

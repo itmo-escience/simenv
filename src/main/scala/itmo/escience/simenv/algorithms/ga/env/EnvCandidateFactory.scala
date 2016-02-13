@@ -12,7 +12,7 @@ import org.uncommons.watchmaker.framework.factories.AbstractCandidateFactory
 class EnvCandidateFactory[T <: Task, N <: Node](ctx: Context[T, N], env: Environment[N], types: List[Double]) extends AbstractCandidateFactory[EnvConfSolution] {
   override def generateRandomCandidate(random: Random): EnvConfSolution = {
     val tasksCount = ctx.workload.apps.foldLeft(0)((s, x) => s + x.tasks.size)
-    val nodesNumber = random.nextInt(tasksCount / 5) + 1
+    val nodesNumber = random.nextInt(5) + 1
     generateRandomCandidate(random, nodesNumber)
   }
 

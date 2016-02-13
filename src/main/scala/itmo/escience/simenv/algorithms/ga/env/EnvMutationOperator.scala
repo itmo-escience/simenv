@@ -34,11 +34,15 @@ class EnvMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env: Environ
   }
 
   def doMutation(mutant:EnvConfSolution, rnd: Random) = {
-    val option: Int = rnd.nextInt(3)
+    var options = List[Int](13, 666)
+    if (mutant.size > 1) {
+      options :+= 21
+    }
+    val option: Int = options(rnd.nextInt(options.size))
     option match {
-      case 0 => changeNode(mutant, rnd)
-      case 1 => addNode(mutant, rnd)
-      case 2 => deleteNode(mutant, rnd)
+      case 13 => changeNode(mutant, rnd)
+      case 666 => addNode(mutant, rnd)
+      case 21 => deleteNode(mutant, rnd)
     }
     mutant
   }
