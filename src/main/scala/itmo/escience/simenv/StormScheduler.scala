@@ -80,8 +80,8 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
   }
 
   def run(): java.util.HashMap[String, List[(String, Double)]] = {
-    val seedFitness = fitnessEvaluator.getFitness(seeds.get(0))
-    println("Fitness of init solution: " + seedFitness)
+//    val seedFitness = fitnessEvaluator.getFitness(seeds.get(0))
+//    println("Fitness of init solution: " + seedFitness)
 
     val result = scheduler.evolve(popSize, 1, seeds, new GenerationCount(iterations))
     println(s"result: ${fitnessEvaluator.getFitness(result)}\n" + StormSchedulingProblem.mapToString(result.genes))

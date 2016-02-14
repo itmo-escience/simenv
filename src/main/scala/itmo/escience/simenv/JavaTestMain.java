@@ -17,7 +17,7 @@ public class JavaTestMain {
         int localNet = 5000;
         int globNet = 5;
 
-        StormScheduler storm = new StormScheduler(wfPath, envPath, globNet, localNet, seedSolution);
+        StormScheduler storm = new StormScheduler(wfPath, envPath, globNet, localNet, null);
         storm.initialization();
         HashMap<String, java.util.ArrayList<java.util.ArrayList<Object>>> result = storm.scheduleToMapList(storm.run());
         System.out.println("Finished");
