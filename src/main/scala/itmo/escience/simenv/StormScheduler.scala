@@ -68,11 +68,11 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
       selector,
       rng, popSize)
 
-    scheduler.addEvolutionObserver(new EvolutionObserver[SSSolution]() {
-      def populationUpdate(data: PopulationData[_ <: SSSolution]) = {
-        println(s"Generation ${data.getGenerationNumber}: ${data.getBestCandidateFitness}\n")
-      }
-    })
+//    scheduler.addEvolutionObserver(new EvolutionObserver[SSSolution]() {
+//      def populationUpdate(data: PopulationData[_ <: SSSolution]) = {
+//        println(s"Generation ${data.getGenerationNumber}: ${data.getBestCandidateFitness}\n")
+//      }
+//    })
 
      vis = new StormScheduleVisualizer(env, tasks)
 
