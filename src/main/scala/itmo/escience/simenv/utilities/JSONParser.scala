@@ -14,6 +14,7 @@ import scala.io.Source
 object JSONParser {
 
   def parseSolution(file: String): (WFSchedSolution, EnvConfSolution) = {
+    var mappedTasks = List[(String, Int, Double)]()
     var sched = List[MappedTask]()
     var env = List[MappedEnv]()
     var myString: String = Source.fromFile(file).mkString
@@ -34,9 +35,12 @@ object JSONParser {
       val tasks = curNode.get("tasks").get.asInstanceOf[List[Map[String, String]]]
       for (t <- tasks) {
         val taskId = t.get("name").get
-        sched :+= new MappedTask(taskId, c)
+        val startTime = t.get("start_time").get.toDouble
+        mappedTasks :+= (taskId, c, startTime)
       }
     }
+    mappedTasks = mappedTasks.sortBy(x => x._3)
+    sched = mappedTasks.map(x => new MappedTask(x._1, x._2))
 
     (new WFSchedSolution(sched), new EnvConfSolution(env))
   }

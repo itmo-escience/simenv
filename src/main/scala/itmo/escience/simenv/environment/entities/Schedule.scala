@@ -9,68 +9,65 @@ import scala.collection.JavaConversions._
 import scala.collection.mutable
 
 
-class InvalidScheduleException(msg:String) extends RuntimeException(msg)
+class InvalidScheduleException(msg: String) extends RuntimeException(msg)
 
 /**
- * Created by Mishanya on 14.10.2015.
- */
+  * Created by Mishanya on 14.10.2015.
+  */
 class Schedule[T <: Task, N <: Node] {
 
   def findTimeSlot(task: T, node: N, context: Context[T, N]): TaskScheduleItem[T, N] = {
     // calculate time when all transfer from each node will be ended
+
+//    if (task.id == "ID00005"){
+//      println("hooy")
+//    }
+
     var stageInEndTime = 0.0
     var transferTime = 0.0
     var parentsTimes = List[Double]()
-    if (task.isInstanceOf[HeadDaxTask] || !(task.parents.size == 1 && task.parents.head.isInstanceOf[HeadDaxTask])) {
-      transferTime = task.parents.map({
-        case _: HeadDaxTask => 0.0
-        case x =>
-          val parentItem = this.lastTaskItem(x.id)
-          parentsTimes :+= parentItem.endTime
-          context.estimator.calcTransferTime(from = (parentItem.task, parentItem.node), to = (task, node))
-      }).sum
-    } else {
-      parentsTimes :+= 0.0
-      transferTime = context.estimator.asInstanceOf[BasicEstimator[CapacityBasedNode]].calcTransferTime((task.asInstanceOf[DaxTask], node.asInstanceOf[CapacityBasedNode]))
+
+    transferTime = (task.parents.map({
+      case _: HeadDaxTask => 0.0
+      case x =>
+        val parentItem = this.lastTaskItem(x.id)
+        parentsTimes :+= parentItem.endTime
+        context.estimator.calcTransferTime(from = (parentItem.task, parentItem.node), to = (task, node))
+    }) :+ 0.0).sum
+    stageInEndTime = if (parentsTimes.nonEmpty) parentsTimes.max else 0.0
+
+
+    if (task.parents.head.isInstanceOf[HeadDaxTask]) {
+      // out transfer
+      val input_files = task.inputData.map(x => x.name)
+      val parents_output = task.parents.foldLeft(List[String]())((s, x) => s ++ x.outputData.map(y => y.name))
+      val out_files = input_files.diff(parents_output)
+      val trans_files = task.inputData.filter(x => out_files.contains(x.name))
+      transferTime += (if (trans_files.nonEmpty) trans_files.map(x => x.volume / 20 / 1024 / 1024).sum else 0.0)
     }
-    stageInEndTime = parentsTimes.max
-
-
 
     val runningTime = context.estimator.calcTime(task, node)
 
-    val earliestStartTime = List(stageInEndTime, context.currentTime).max
+    val earliestStartTime = stageInEndTime
     var foundStartTime = earliestStartTime
 
     // searching for a slot
+    var endOfLastTask = 0.0
     if (map.containsKey(node.id)) {
-      val endOfLastTask = if (map.get(node.id).isEmpty) 0.0 else map.get(node.id).last.endTime
-//      if (map.get(node.id).nonEmpty && endOfLastTask > earliestStartTime) {
+      endOfLastTask = if (map.get(node.id).isEmpty) 0.0 else map.get(node.id).last.endTime
+      //      if (map.get(node.id).nonEmpty && endOfLastTask > earliestStartTime) {
       if (endOfLastTask > foundStartTime) {
 
         foundStartTime = endOfLastTask
-//        var st = endOfLastTask
-//        var end = endOfLastTask
-//
-//        import scala.util.control.Breaks._
-//        breakable {
-//          for (x <- map.get(node.id).toList.reverseIterator) {
-//
-//            if (end > earliestStartTime) {
-//              break
-//            }
-//
-//            st = x.endTime
-//            if (end - st <= runningTime) {
-//              foundStartTime = st
-//            }
-//            end = x.startTime
-//
-//          }
-//        }
       }
     }
 
+    val differ = endOfLastTask - earliestStartTime
+    var deleteTrasfer = 0.0
+    if (differ > 0) {
+      deleteTrasfer = math.min(transferTime, differ)
+    }
+    transferTime -= deleteTrasfer
 
     val newItem = new TaskScheduleItem(id = Utilities.generateId(),
       name = task.name,
@@ -271,8 +268,8 @@ class Schedule[T <: Task, N <: Node] {
   }
 }
 
-object Schedule{
-  def emptySchedule[T <: Task, N <: Node]():Schedule[T, N] = {
+object Schedule {
+  def emptySchedule[T <: Task, N <: Node](): Schedule[T, N] = {
     new Schedule[T, N]()
   }
 }

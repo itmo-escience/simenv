@@ -19,14 +19,18 @@ import org.uncommons.watchmaker.framework.termination.GenerationCount
   * Created by mikhail on 25.01.2016.
   */
 class CGAScheduler (crossoverProb:Double, mutationProb: Double, swapMutationProb: Double,
-                    popSize:Int, iterationCount: Int) extends Scheduler{
+                    popSize:Int, iterationCount: Int, seedPairs: util.ArrayList[EvSolution[_]]=new util.ArrayList[EvSolution[_]]()) extends Scheduler{
 
   def evaluateSolution[T <: Task, N <: Node](context: Context[T, N], environment: Environment[N], sched: WFSchedSolution, env: EnvConfSolution): Double = {
     val fitnessEvaluator = new ScheduleFitnessEvaluator[T, N](context, environment)
     fitnessEvaluator.getFitness(sched, env)
   }
 
-  override def schedule[T <: Task, N <: Node](context: Context[T, N], environment: Environment[N]): Schedule[T, N] = {
+  def schedule[T <: Task, N <: Node](context: Context[T, N], environment: Environment[N]): Schedule[T, N] = {
+    null
+  }
+
+  def costSchedule[T <: Task, N <: Node](context: Context[T, N], environment: Environment[N]): (Schedule[T, N], Double) = {
     val schedFactory: ScheduleCandidateFactory[T, N] = new ScheduleCandidateFactory[T, N](context, environment)
     val envFactory: EnvCandidateFactory[T, N] = new EnvCandidateFactory[T, N](context, environment, environment.asInstanceOf[BasicEnvironment].getTypes)
 
@@ -63,11 +67,14 @@ class CGAScheduler (crossoverProb:Double, mutationProb: Double, swapMutationProb
       }
     })
 
-    val result: (WFSchedSolution, EnvConfSolution, Double) = engine.evolve(popSize, 1, new util.ArrayList[EvSolution[_]](), new GenerationCount(iterationCount))
+    val result: (WFSchedSolution, EnvConfSolution, Double) = engine.evolve(popSize, 1, seedPairs, new GenerationCount(iterationCount))
     val newEnv = EnvConfigurationProblem.solutionToEnvironment[T, N](result._2, context)
     println(newEnv.envPrint())
-    println(newEnv.nodes.map(x => x.asInstanceOf[CapacityBasedNode].capacity * 10).sum)
+
+
     val schedule = WorkflowSchedulingProblem.solutionToSchedule(result._1, context, newEnv)
-    schedule
+    val cost = newEnv.nodes.filter(x => schedule.getMap.containsKey(x.id) && schedule.getMap.get(x.id).nonEmpty).map(x => x.asInstanceOf[CapacityBasedNode].capacity * 10).sum
+    println(cost)
+    (schedule, cost)
   }
 }
