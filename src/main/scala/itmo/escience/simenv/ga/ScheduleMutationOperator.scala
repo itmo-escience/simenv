@@ -36,36 +36,12 @@ class ScheduleMutationOperator(env: CarrierNodeEnvironment[CpuRamNode], tasks: u
   private def doMutation(mutant:SSSolution, rnd: Random) = {
     val taskIds = tasks.keySet().toList
     val mutT = taskIds(rnd.nextInt(taskIds.size))
-    val curN = mutant.getVal(mutT)._1
-    var proc = 0.0
-    var nodeTasks = 0
-    var nodeTasksList = List[String]()
-    for (t <- mutant.genes.keySet()) {
-      val item = mutant.getVal(t)
-      if (item._1 == curN) {
-        nodeTasks += 1
-        proc += item._2
-        nodeTasksList :+= t
-      }
-    }
+    val curN = mutant.getVal(mutT)
     // change node
-    var options: List[Int] = List[Int](666)
-    // transfer proc
-    if (nodeTasks > 1.0) {
-      options :+= 13
-    }
-    // change proc
-    if (proc < 1) {
-      options :+= 69
-      options :+= 21
-    }
-    val option = options(rnd.nextInt(options.size))
-    option match {
-      case 666 => changeNode(mutant, mutT, rnd)
-      case 13 => transferProc(mutant, mutT, nodeTasksList, rnd)
-      case 69 => changeProc(mutant, mutT, proc, rnd)
-      case 21 => increaseProc(mutant, mutT, proc, rnd)
-    }
+    changeNode(mutant, mutT, rnd)
+//      case 13 => transferProc(mutant, mutT, nodeTasksList, rnd)
+//      case 69 => changeProc(mutant, mutT, proc, rnd)
+//      case 21 => increaseProc(mutant, mutT, proc, rnd)
 
   }
 
@@ -73,29 +49,29 @@ class ScheduleMutationOperator(env: CarrierNodeEnvironment[CpuRamNode], tasks: u
     val item = mutant.getVal(task)
     val nodeIds = env.nodesIds
     val newNode = nodeIds(rnd.nextInt(nodeIds.size))
-    mutant.put(task, (newNode, item._2))
-    val repaired = StormSchedulingProblem.repairMap(mutant.genes)
-    mutant.setGenes(repaired)
+    mutant.put(task, newNode)
+//    val repaired = StormSchedulingProblem.repairMap(mutant.genes)
+//    mutant.setGenes(repaired)
   }
 
-  private def transferProc(mutant: SSSolution, task: String, nodeTasks: List[String], rnd: Random) = {
-    val otherTasks = nodeTasks.filter(x => x!= task)
-    val other = otherTasks(rnd.nextInt(otherTasks.size))
-    val item = mutant.getVal(task)
-    val otherItem = mutant.getVal(other)
-    val transProc = rnd.nextDouble() * item._2
-    mutant.put(task, (item._1, item._2 - transProc))
-    mutant.put(other, (item._1, otherItem._2 + transProc))
-  }
+//  private def transferProc(mutant: SSSolution, task: String, nodeTasks: List[String], rnd: Random) = {
+//    val otherTasks = nodeTasks.filter(x => x!= task)
+//    val other = otherTasks(rnd.nextInt(otherTasks.size))
+//    val item = mutant.getVal(task)
+//    val otherItem = mutant.getVal(other)
+//    val transProc = rnd.nextDouble() * item._2
+//    mutant.put(task, (item._1, item._2 - transProc))
+//    mutant.put(other, (item._1, otherItem._2 + transProc))
+//  }
 
-  private def changeProc(mutant: SSSolution, task: String, proc: Double, rnd: Random) = {
-    val item = mutant.getVal(task)
-    val freeProc = 1.0 - proc
-    mutant.put(task, (item._1, rnd.nextDouble() * (item._2 + freeProc)))
-  }
-  private def increaseProc(mutant: SSSolution, task: String, proc: Double, rnd: Random) = {
-    val item = mutant.getVal(task)
-    val freeProc = 1.0 - proc
-    mutant.put(task, (item._1, item._2 + rnd.nextDouble() * freeProc))
-  }
+//  private def changeProc(mutant: SSSolution, task: String, proc: Double, rnd: Random) = {
+//    val item = mutant.getVal(task)
+//    val freeProc = 1.0 - proc
+//    mutant.put(task, (item._1, rnd.nextDouble() * (item._2 + freeProc)))
+//  }
+//  private def increaseProc(mutant: SSSolution, task: String, proc: Double, rnd: Random) = {
+//    val item = mutant.getVal(task)
+//    val freeProc = 1.0 - proc
+//    mutant.put(task, (item._1, item._2 + rnd.nextDouble() * freeProc))
+//  }
 }

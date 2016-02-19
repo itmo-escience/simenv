@@ -16,13 +16,13 @@ class ScheduleCandidateFactory(env: CarrierNodeEnvironment[CpuRamNode], tasks: u
 
   override def generateRandomCandidate(random: Random): SSSolution = {
 
-    val map: java.util.HashMap[String, (String, Double)] = new java.util.HashMap[String, (String, Double)]
+    val map: java.util.HashMap[String, String] = new java.util.HashMap[String, String]
 
     for (t <- tasks.keySet()) {
-      map.put(t, (nodeIds(random.nextInt(nodeIds.size)), random.nextDouble()))
+      map.put(t, nodeIds(random.nextInt(nodeIds.size)))
     }
 
-    val repMap = StormSchedulingProblem.repairMap(map)
-    new SSSolution(repMap)
+//    val repMap = StormSchedulingProblem.repairMap(map)
+    new SSSolution(map)
   }
 }

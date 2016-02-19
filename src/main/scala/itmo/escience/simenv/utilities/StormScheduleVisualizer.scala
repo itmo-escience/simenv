@@ -171,8 +171,7 @@ class StormScheduleVisualizer(env: CarrierNodeEnvironment[CpuRamNode], tasks: ut
       if (schedule.containsKey(n.id)) {
         for (item <- schedule.get(n.id)) {
 
-          val tId = item._1
-          val proc = item._2
+          val tId = item
           val task = tasks.get(tId)
 
           val node_statistics: Element = doc.createElement("node_statistics")
@@ -195,8 +194,8 @@ class StormScheduleVisualizer(env: CarrierNodeEnvironment[CpuRamNode], tasks: ut
           node_endTime.setAttribute("name", "end_time")
           //        node_endTime.setAttribute("value", "" + (task.inputVolume() + task.outputVolume()))
           //        node_endTime.setAttribute("value", "" + endTime)
-          node_endTime.setAttribute("value", "" + (time + (n.ram * proc).toInt))
-          time += (n.ram * proc).toInt
+          node_endTime.setAttribute("value", "" + (time + (task.ram).toInt))
+          time += (task.ram).toInt
 
           node_statistics.appendChild(node_id)
           node_statistics.appendChild(node_type)
@@ -213,7 +212,7 @@ class StormScheduleVisualizer(env: CarrierNodeEnvironment[CpuRamNode], tasks: ut
 
           val conf_hosts: Element = doc.createElement("conf_property")
           conf_hosts.setAttribute("name", "host_nb")
-          conf_hosts.setAttribute("value", "" + (n.cpu * proc).toInt)
+          conf_hosts.setAttribute("value", "" + (task.cpu).toInt)
 
           configuration.appendChild(conf_cluster)
           configuration.appendChild(conf_hosts)
@@ -223,8 +222,8 @@ class StormScheduleVisualizer(env: CarrierNodeEnvironment[CpuRamNode], tasks: ut
 
           val hosts: Element = doc.createElement("hosts")
           hosts.setAttribute("start", "" + hostIdx)
-          hosts.setAttribute("nb", "" + (n.cpu * proc).toInt)
-          hostIdx += (n.cpu * proc).toInt
+          hosts.setAttribute("nb", "" + (task.cpu).toInt)
+          hostIdx += (task.cpu).toInt
           host_lists.appendChild(hosts)
         }
       }

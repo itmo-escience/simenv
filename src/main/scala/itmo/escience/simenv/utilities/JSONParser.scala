@@ -119,7 +119,7 @@ def parseEnv(envPath: String, globNet: Int, localNet: Int): CarrierNodeEnvironme
 
 
   def parseSolution(solution: String): SSSolution = {
-    val res = new java.util.HashMap[String, (String, Double)]()
+    val res = new java.util.HashMap[String, String]()
     var myString: String = null
     if (solution.contains(".json")) {
       myString = Source.fromFile(solution).mkString
@@ -139,8 +139,8 @@ def parseEnv(envPath: String, globNet: Int, localNet: Int): CarrierNodeEnvironme
       for (j <- 0 until tasksSize) {
         val item = tasks(j).asInstanceOf[List[Any]]
         val task = item(0).asInstanceOf[String]
-        val proc = item(1).asInstanceOf[Double]
-        res.put(task, (nodeId, proc))
+//        val proc = item(1).asInstanceOf[Double]
+        res.put(task, nodeId)
       }
     }
     new SSSolution(res)

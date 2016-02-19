@@ -1,18 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <adag>
-  <job id="ID000" namespace="Test" name="pipeline" version="1.0" runtime="6">
-    <uses file="input0" link="input" register="true" transfer="true" optional="false" type="data" size="30"/>
-    <uses file="output0" link="output" register="true" transfer="true" optional="false" type="data" size="30"/>
+  <job id="ID000" namespace="Workflow" name="pipeline" runtime="6">
+    <uses file="input0" link="input" size="30"/>
+    <uses file="output0" link="output" size="30"/>
   </job>
-  <job id="ID001" namespace="Test" name="pipeline" version="1.0" runtime="4">
-    <uses file="output0" link="input" register="true" transfer="true" optional="false" type="data" size="20"/>
-    <uses file="output1" link="output" register="true" transfer="true" optional="false" type="data" size="10"/>
+  <job id="ID001" namespace="Workflow" name="pipeline" runtime="4">
+    <uses file="output0" link="input" size="20"/>
+    <uses file="output1" link="output" size="10"/>
   </job>
-  <job id="ID002" namespace="Test" name="pipeline" version="1.0" runtime="2">
-    <uses file="output1" link="input" register="true" transfer="true" optional="false" type="data" size="10"/>
-    <uses file="output2" link="output" register="true" transfer="true" optional="false" type="data" size="20"/>
+  <job id="ID002" namespace="Workflow" name="pipeline" runtime="2">
+    <uses file="output1" link="input" size="10"/>
+    <uses file="output2" link="output" size="20"/>
   </job>
-<!-- part 3: list of control-flow dependencies (may be empty) -->
+<!-- list of control-flow dependencies (may be empty) -->
   <child ref="ID001">
     <parent ref="ID000"/>
   </child>

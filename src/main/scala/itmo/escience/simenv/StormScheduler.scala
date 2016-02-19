@@ -79,11 +79,12 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
     println("Initialization complete")
   }
 
-  def run(): java.util.HashMap[String, List[(String, Double)]] = {
+  def run(): java.util.HashMap[String, List[String]] = {
 //    val seedFitness = fitnessEvaluator.getFitness(seeds.get(0))
 //    println("Fitness of init solution: " + seedFitness)
 
     val result = scheduler.evolve(popSize, 1, seeds, new GenerationCount(iterations))
+//    val result = scheduler.evolve(popSize, 1, null, new GenerationCount(iterations))
     println(s"result: ${fitnessEvaluator.getFitness(result)}\n" + StormSchedulingProblem.mapToString(result.genes))
     val schedule = StormSchedulingProblem.solutionToSchedule(result)
     schedule
@@ -97,15 +98,15 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
 //    JSONParser.scheduleToJSON(schedule)
 //  }
 
-  def scheduleToMapList(schedule: java.util.HashMap[String, List[(String, Double)]]): java.util.HashMap[String, java.util.ArrayList[java.util.ArrayList[Object]]] = {
+  def scheduleToMapList(schedule: java.util.HashMap[String, List[String]]): java.util.HashMap[String, java.util.ArrayList[java.util.ArrayList[Object]]] = {
     val result = new java.util.HashMap[String, java.util.ArrayList[java.util.ArrayList[Object]]]()
     for (k <- schedule.keySet()) {
       val list = schedule.get(k)
       val outList = new java.util.ArrayList[java.util.ArrayList[Object]]()
       for (l <- list) {
         val inList = new java.util.ArrayList[Object]()
-        inList.add(l._1.asInstanceOf[Object])
-        inList.add(l._2.asInstanceOf[Object])
+        inList.add(l.asInstanceOf[Object])
+//        inList.add(l._2.asInstanceOf[Object])
         outList.add(inList)
       }
       result.put(k, outList)

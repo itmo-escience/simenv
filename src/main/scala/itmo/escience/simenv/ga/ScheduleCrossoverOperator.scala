@@ -33,8 +33,8 @@ class ScheduleCrossoverOperator(env: CarrierNodeEnvironment[CpuRamNode], tasks: 
 
   override def mate(p1: SSSolution, p2: SSSolution, points: Int, rnd: Random): util.List[SSSolution] = {
 
-    var ch1m: util.HashMap[String, (String, Double)] = new util.HashMap[String, (String, Double)]()
-    var ch2m: util.HashMap[String, (String, Double)] = new util.HashMap[String, (String, Double)]()
+    var ch1m: util.HashMap[String, String] = new util.HashMap[String, String]()
+    var ch2m: util.HashMap[String, String] = new util.HashMap[String, String]()
 
     for (k <- tasks.keySet()) {
       if (rnd.nextBoolean()) {
@@ -46,8 +46,8 @@ class ScheduleCrossoverOperator(env: CarrierNodeEnvironment[CpuRamNode], tasks: 
       }
     }
 
-    ch1m = StormSchedulingProblem.repairMap(ch1m)
-    ch2m = StormSchedulingProblem.repairMap(ch2m)
+//    ch1m = StormSchedulingProblem.repairMap(ch1m)
+//    ch2m = StormSchedulingProblem.repairMap(ch2m)
 
     val res = new util.ArrayList[SSSolution](2)
     res.add(new SSSolution(ch1m))

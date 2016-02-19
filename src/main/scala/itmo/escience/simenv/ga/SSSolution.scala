@@ -7,13 +7,13 @@ import scala.collection.JavaConversions._
 /**
  * individual for genetic algorithm
  */
-class SSSolution(mappedTasks: java.util.HashMap[String, (String, Double)]) {
+class SSSolution(mappedTasks: java.util.HashMap[String, String]) {
 
   def this(that:SSSolution) = this(that._genes)
 
-  private var _genes: java.util.HashMap[String, (String, Double)] = mappedTasks
+  private var _genes: java.util.HashMap[String,String] = mappedTasks
 
-  def setGenes(sol: java.util.HashMap[String, (String, Double)]) = {
+  def setGenes(sol: java.util.HashMap[String, String]) = {
     _genes = sol
   }
 
@@ -23,13 +23,13 @@ class SSSolution(mappedTasks: java.util.HashMap[String, (String, Double)]) {
 
   def getNumberOfVariables: Int = _genes.size()
 
-  def genes: java.util.HashMap[String, (String, Double)] = _genes
+  def genes: java.util.HashMap[String, String] = _genes
 
   def getVal(k: String) = {
     _genes.get(k)
   }
 
-  def put(k: String, v: (String, Double)) = {
+  def put(k: String, v: String) = {
     _genes.put(k, v)
   }
 }
