@@ -1,6 +1,5 @@
 package itmo.escience.simenv.experiments
 
-import itmo.escience.simenv.algorithms.HEFTScheduler
 import itmo.escience.simenv.algorithms.ga.CGAScheduler
 import itmo.escience.simenv.simulator.SchedConfSimulator
 

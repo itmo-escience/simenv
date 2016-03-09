@@ -61,6 +61,13 @@
             <artifactId>watchmaker-framework</artifactId>
             <version>0.7.1</version>
         </dependency>
+        <dependency>
+            <groupId>jedule</groupId>
+            <artifactId>jedule</artifactId>
+            <version>0.3.2</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/jedule-0.3.2.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <build>

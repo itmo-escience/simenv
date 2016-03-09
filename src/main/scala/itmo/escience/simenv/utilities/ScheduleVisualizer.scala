@@ -1,7 +1,6 @@
 package itmo.escience.simenv.utilities
 
 import java.io._
-import java.nio.file.{Paths, Files}
 import javax.xml.parsers.{ParserConfigurationException, DocumentBuilderFactory, DocumentBuilder}
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
@@ -9,11 +8,9 @@ import javax.xml.transform.{TransformerException, Transformer, TransformerFactor
 
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl.CarrierNodeEnvironment
-import itmo.escience.simenv.environment.modelling.Environment
 import net.sf.jedule.JeduleStarter
 import org.w3c.dom.{Element, Document}
 import org.xml.sax.{InputSource, SAXException}
-import sun.reflect.generics.reflectiveObjects.NotImplementedException
 
 /**
   * Created by Mishanya on 29.10.2015.

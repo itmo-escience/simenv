@@ -58,6 +58,6 @@ val wfPath = ".\\resources\\wf-examples\\Montage_25"
     val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule[DaxTask, CapacityBasedNode](),
       estimator, 0.0, new SingleAppWorkload(wf))
 
-    scheduler.schedule(ctx, environment)
+    val sched = scheduler.schedule(ctx, environment)
   }
 }
