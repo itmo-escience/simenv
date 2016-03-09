@@ -20,6 +20,7 @@ import org.uncommons.watchmaker.framework.operators.EvolutionPipeline
 class CGAScheduler (crossoverProb:Double, mutationProb: Double, swapMutationProb: Double,
                     popSize:Int, iterationCount: Int) extends Scheduler{
   override def schedule[T <: Task, N <: Node](context: Context[T, N], environment: Environment[N]): Schedule[T, N] = {
+    // not used
     val schedFactory: ScheduleCandidateFactory[T, N] = new ScheduleCandidateFactory[T, N](context, environment)
     val envFactory: EnvCandidateFactory[T, N] = new EnvCandidateFactory[T, N](environment)
 
@@ -39,7 +40,7 @@ class CGAScheduler (crossoverProb:Double, mutationProb: Double, swapMutationProb
 
     val rng: Random = new MersenneTwisterRNG()
 
-    val  engine: CoevolutionGenerationalEvolutionEngine[T, N] = new CoevolutionGenerationalEvolutionEngine[T, N](schedFactory=schedFactory,
+    val engine: CoevolutionGenerationalEvolutionEngine[T, N] = new CoevolutionGenerationalEvolutionEngine[T, N](schedFactory=schedFactory,
       envFactory=envFactory, schedMutOperator=schedMut, schedCrossOperator=schedCross, envOperators=envPipeline,
       fitnessEvaluator=fitnessEvaluator,
       selector,
@@ -70,6 +71,8 @@ class CGAScheduler (crossoverProb:Double, mutationProb: Double, swapMutationProb
     println(newEnv.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
     WorkflowSchedulingProblem.solutionToSchedule(result._1, context, newEnv)
   }
+
+
 
   def coevSchedule[T <: Task, N <: Node](context: Context[T, N], environment: Environment[N]): (Schedule[T, N], Environment[N]) = {
     val schedFactory: ScheduleCandidateFactory[T, N] = new ScheduleCandidateFactory[T, N](context, environment)

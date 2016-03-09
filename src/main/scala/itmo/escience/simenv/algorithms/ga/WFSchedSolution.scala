@@ -38,15 +38,5 @@ class WFSchedSolution(mappedTasks: List[MappedTask]) extends EvSolution[MappedTa
 
   def genSeq: List[MappedTask] = _genes.toList
 
-//  def maxNodeIdx: Int = {
-//    var max = 0
-//    for (item <-_genes) {
-//      if (item.nodeId > max) {
-//        max = item.nodeId
-//      }
-//    }
-//    max
-//  }
-
   override var fitness: Double = 66613666
 }

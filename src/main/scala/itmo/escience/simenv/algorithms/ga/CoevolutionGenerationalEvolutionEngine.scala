@@ -20,7 +20,7 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
    schedMutOperator: ScheduleMutationOperator[T, N], schedCrossOperator: ScheduleCrossoverOperator, envOperators: EvolutionaryOperator[EnvConfSolution],
    fitnessEvaluator: ScheduleFitnessEvaluator[T, N],
    selectionStrategy: SelectionStrategy[Object], rng: Random) extends GenerationalEvolutionEngine[WFSchedSolution](schedFactory,
-  schedMutOperator, fitnessEvaluator, selectionStrategy, rng) {
+   schedMutOperator, fitnessEvaluator, selectionStrategy, rng) {
 
   private var concurrentWorker: BuddiesEvaluationWorker = null
   private val observers: util.Set[EvolutionObserver[_ >: WFSchedSolution]] = new util.HashSet[EvolutionObserver[_ >: WFSchedSolution]]
@@ -68,8 +68,8 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
     val buddies: util.List[(WFSchedSolution, EnvConfSolution)] = createBuddies(schedPop, envPop)
     val friendship: util.Map[(WFSchedSolution, EnvConfSolution), Double] = evaluateFriendship(buddies)
     val (schedBuddies, envBuddies) = parseFriendship(friendship)
-    averageFitnessS(schedBuddies)
-    averageFitnessE(envBuddies)
+    minFitnessS(schedBuddies)
+    minFitnessE(envBuddies)
 
     val newSchedPop: util.ArrayList[WFSchedSolution] = new util.ArrayList[WFSchedSolution](schedPop)
     for (buddy <- schedBuddies) {
@@ -103,9 +103,6 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
 
     val evalSchedPop = getEvaluatedPopulationS(newSchedPop)
     val evalEnvPop = getEvaluatedPopulationE(newEnvPop)
-
-//    val evalSchedPop = getEvaluatedPopulationS(schedPop)
-//    val evalEnvPop = getEvaluatedPopulationE(envPop)
 
     (evalSchedPop, evalEnvPop)
   }
@@ -272,15 +269,13 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
     (schedBuddies, envBuddies)
   }
 
-  def averageFitnessS(solutions: util.Map[WFSchedSolution, util.List[Double]]) = {
+  def minFitnessS(solutions: util.Map[WFSchedSolution, util.List[Double]]) = {
     for ((k, v) <- solutions) {
-//      k.fitness = v.sum / v.size
       k.fitness = v.min
     }
   }
-  def averageFitnessE(solutions: util.Map[EnvConfSolution, util.List[Double]]) = {
+  def minFitnessE(solutions: util.Map[EnvConfSolution, util.List[Double]]) = {
     for ((k, v) <- solutions) {
-//      k.fitness = v.sum / v.size
       k.fitness = v.min
     }
   }
@@ -298,8 +293,6 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
     }
     concurrentWorker
   }
-
-
 
   override def addEvolutionObserver(observer: EvolutionObserver[_ >: WFSchedSolution]): Unit = {
     observers.add(observer)
@@ -331,25 +324,6 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
     }
     new WFSchedSolution(genes)
   }
-
-//  def adaptation2(sched: WFSchedSolution, env: EnvConfSolution): EnvConfSolution = {
-//    var genes: List[MappedEnv] = List[MappedEnv]()
-//    val emptyNodes = env.genSeq.filter(x => x.cap == 0).map(x => x.vmId)
-//    val availableNodes = env.genSeq.filter(x => x.cap > 1).map(x => x.vmId)
-//    for (e <- emptyNodes) {
-//      if (sched.genSeq.map(x => x.nodeId).contains(e)) {
-//
-//      }
-//    }
-//    for (x <- sched.genSeq) {
-//      if (availableNodes.contains(x.nodeId)) {
-//        genes :+= x
-//      } else {
-//        genes :+= new MappedTask(x.taskId, availableNodes(rng.nextInt(availableNodes.size)))
-//      }
-//    }
-//    new EnvConfSolution(genes)
-//  }
 
 }
 

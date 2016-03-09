@@ -21,7 +21,6 @@ class ScheduleFitnessEvaluator[T <: Task, N <: Node](ctx: Context[T, N], env: En
   }
 
   def getFitness(s: WFSchedSolution, e: EnvConfSolution): Double = {
-//    val sAdapt = adaptation(s.copy, e.copy)
     val environment = EnvConfigurationProblem.solutionToEnvironment[T, N](e, ctx)
     val schedule = WorkflowSchedulingProblem.coevSolutionToSchedule[T, N](s, ctx, environment)
     schedule.makespan()

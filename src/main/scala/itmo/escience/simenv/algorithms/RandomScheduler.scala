@@ -20,7 +20,6 @@ object RandomScheduler extends Scheduler{
     val wf = context.workload.asInstanceOf[SingleAppWorkload].app
     val newSchedule = Schedule.emptySchedule[T, N]()
     var tasksToSchedule = wf.headTask.children
-//    val nodes = context.environment.nodes.filter(x => x.status == Node.UP)
     val nodes = environment.nodes.filter(x => x.status == NodeStatus.UP)
 
     var scheduledTasks = tasksToSchedule.map(task => task.id).toSet

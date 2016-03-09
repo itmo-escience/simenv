@@ -7,8 +7,6 @@ abstract class EvSolution[T] {
 
   def copy(): EvSolution[T]
 
-//  def genSeq(): List[T]
-
   var fitness: Double
 
 }

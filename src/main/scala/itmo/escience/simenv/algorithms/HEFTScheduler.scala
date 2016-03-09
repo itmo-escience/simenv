@@ -28,11 +28,6 @@ object HEFTScheduler extends Scheduler{
 
 
     // TODO make fixed_tasks as a function of schedule!!!
-//    var fixed_tasks = List[String]()
-//    for (n <- newSchedule.nodeIds()) {
-//      fixed_tasks = fixed_tasks ++ newSchedule.getMap.get(n).toList.filter(x => x.status != ScheduleItemStatus.FAILED
-//      ).map(x => x.asInstanceOf[TaskScheduleItem[T, N]].task.id)
-//    }
 
     for (task <- tasks.filter(x => !fixed_tasks.contains(x.id))) {
       val item = nodes.map((node) => newSchedule.findTimeSlot(task, node, context)).minBy(x => x.endTime)

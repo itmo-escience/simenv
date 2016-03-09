@@ -34,13 +34,6 @@ class EnvMutationOperator[N <: Node](env: Environment[N],
   }
 
   def doMutation(mutant:EnvConfSolution, rnd: Random) = {
-//    val option: Int = rnd.nextInt(3)
-//    option match {
-//      case 0 => changeNode(mutant, rnd)
-//      case 1 => addNode(mutant, rnd)
-//      case 2 => deleteNode(mutant, rnd)
-//    }
-//    mutant
 
     val nodes = env.carriers.filter(x => x.children.count(y => y.status == NodeStatus.UP) > 1)
     if (nodes.nonEmpty) {

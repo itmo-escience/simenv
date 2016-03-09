@@ -56,11 +56,9 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
     val seeds: util.ArrayList[WFSchedSolution] = new util.ArrayList[WFSchedSolution]()
     val heft_sol = WorkflowSchedulingProblem.scheduleToSolution[T, N](heft_schedule, context, environment)
     seeds.add(heft_sol)
-    seeds.add(heft_sol)
     seeds.add(WorkflowSchedulingProblem.scheduleToSolution[T, N](min_schedule, context, environment))
-//    seeds.add(new WFSchedSolution(heft_sol.genSeq.map(x => new MappedTask(x.taskId, "res_0_node_3"))))
 
-    val result = engine.evolve(popSize, 5, seeds, new GenerationCount(iterationCount))
+    val result = engine.evolve(popSize, 2, seeds, new GenerationCount(iterationCount))
     WorkflowSchedulingProblem.solutionToSchedule(result, context, environment)
   }
 
