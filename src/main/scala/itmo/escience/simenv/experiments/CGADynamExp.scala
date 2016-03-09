@@ -2,9 +2,8 @@ package itmo.escience.simenv.experiments
 
 import itmo.escience.simenv.algorithms.HEFTScheduler
 import itmo.escience.simenv.algorithms.ga.CGAScheduler
-import itmo.escience.simenv.simulator.{SchedConfSimulator, BasicSimulator}
+import itmo.escience.simenv.simulator.SchedConfSimulator
 
-//import itmo.escience.simenv.algorithms.gaOld.cga.CoevGAScheduler
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl._
 import itmo.escience.simenv.environment.modelling.Environment
@@ -45,54 +44,26 @@ class CGADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double,
 
   override def run(): Double = {
 //    println("Init environment:")
-//    println(environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
 
     val scheduler = new CGAScheduler(crossoverProb = 0.4,
       mutationProb = 0.3,
       swapMutationProb = 0.3,
       popSize = 50,
-      iterationCount = 200)
-    //
+      iterationCount = 100)
+
     val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule[DaxTask, CapacityBasedNode](),
       estimator, 0.0, new SingleAppWorkload(wf))
-    //
-
-//    val minmin_schedule = MinMinScheduler.schedule(ctx.asInstanceOf[Context[DaxTask, Node]], environment.asInstanceOf[Environment[Node]])
-//    val heft_schedule = HEFTScheduler.schedule(ctx.asInstanceOf[Context[DaxTask, Node]], environment.asInstanceOf[Environment[Node]])
-//    val ga_schedule = scheduler.schedule(ctx, environment)
-//
-//    println("_________")
-//    println("GA SCHEDULE:")
-//    println(ga_schedule.prettyPrint())
-//    println(s"GA makespan: ${ga_schedule.makespan()}")
-//    println("_________")
-//    println("MINMIN SCHEDULE:")
-////    println(minmin_schedule.prettyPrint())
-//    println(s"MinMin makespan: ${minmin_schedule.makespan()}")
-//    println("_________")
-//    println("HEFT SCHEDULE:")
-////    println(heft_schedule.prettyPrint())
-//    println(s"HEFT makespan: ${heft_schedule.makespan()}")
 
     val simulator = new SchedConfSimulator(scheduler, ctx, nodeDownTime, resDownTime, nodeResizeTime)
     simulator.init()
     simulator.runSimulation()
     print("Makespan:")
     println(ctx.schedule.makespan())
-
-//    println("CGA env: ")
-//    println(ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
-
-
-//    println("________")
-//    println("COEVOLUTION SCHEDULE")
-//    val (coev_schedule, coev_env) = coevScheduler.scheduleAndConfiguration(ctx.asInstanceOf[Context[DaxTask, Node]], environment.asInstanceOf[Environment[Node]])
-//    println(coev_schedule.prettyPrint())
-//    println("COEVOLUTION ENVIRONMENT")
-//    println(coev_env.envPrint())
-//    println(s"coev makespan: ${coev_schedule.makespan()}")
 //    println(ctx.schedule.prettyPrint())
-//    println("Finished")
+
+    println("CGA env: ")
+    println(ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
+
     ctx.schedule.makespan()
   }
 }

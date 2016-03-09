@@ -43,45 +43,24 @@ class CGAStaticExp(wfPath: String, envArray: List[List[Double]], globNet: Double
 
   override def run() = {
 //    println("Init environment:")
-//    println(environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
 
     val scheduler = new CGAScheduler(crossoverProb = 0.5,
       mutationProb = 0.8,
       swapMutationProb = 0.5,
       popSize = 50,
-      iterationCount = 300)
+      iterationCount = 100)
     //
     val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule[DaxTask, CapacityBasedNode](),
       estimator, 0.0, new SingleAppWorkload(wf))
     //
 
-//    val minmin_schedule = MinMinScheduler.schedule(ctx.asInstanceOf[Context[DaxTask, Node]], environment.asInstanceOf[Environment[Node]])
-//    val heft_schedule = HEFTScheduler.schedule(ctx.asInstanceOf[Context[DaxTask, Node]], environment.asInstanceOf[Environment[Node]])
     val ga_schedule = scheduler.schedule(ctx, environment)
 
     println("_________")
     println("CGA SCHEDULE:")
-//    println(ga_schedule.prettyPrint())
     println(s"CGA makespan: ${ga_schedule.makespan()}")
     ga_schedule.makespan()
 
-//    println("_________")
-//    println("MINMIN SCHEDULE:")
-////    println(minmin_schedule.prettyPrint())
-//    println(s"MinMin makespan: ${minmin_schedule.makespan()}")
-//    println("_________")
-//    println("HEFT SCHEDULE:")
-////    println(heft_schedule.prettyPrint())
-//    println(s"HEFT makespan: ${heft_schedule.makespan()}")
-
-
-//    println("________")
-//    println("COEVOLUTION SCHEDULE")
-//    val (coev_schedule, coev_env) = coevScheduler.scheduleAndConfiguration(ctx.asInstanceOf[Context[DaxTask, Node]], environment.asInstanceOf[Environment[Node]])
-//    println(coev_schedule.prettyPrint())
-//    println("COEVOLUTION ENVIRONMENT")
-//    println(coev_env.envPrint())
-//    println(s"coev makespan: ${coev_schedule.makespan()}")
 
   }
 }

@@ -3,15 +3,18 @@ package itmo.escience.simenv.simulator
 
 import itmo.escience.simenv.algorithms.Scheduler
 import itmo.escience.simenv.environment.entities._
+import itmo.escience.simenv.environment.entitiesimpl.CarrierNodeEnvironment
 import itmo.escience.simenv.simulator.events.Rescheduling
 import itmo.escience.simenv.simulator.events.{InitEvent, TaskStarted, _}
 import itmo.escience.simenv.utilities.SimLogger
+import itmo.escience.simenv.utilities.ScheduleVisualizer
 
 import scala.util.Random
 
 
 /**
   * Perform discrete event-drivent simulation of workflows execution
+  *
   * @param scheduler algorithm for scheduling, must implement Scheduler interface
   * @param ctx contains description of computational environments and may perform actions on it
   */
@@ -21,6 +24,7 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
   val queue = new EventQueue()
   val rnd = new Random()
   SimLogger.setCtx(ctx.asInstanceOf[Context[DaxTask, CapacityBasedNode]])
+  val vis = new ScheduleVisualizer[T, N]
 
   /**
     * generates and adds the very first event [[InitEvent]] to the event queue
@@ -45,10 +49,13 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
     }
     SimLogger.log("Finished")
     SimLogger.logSched(ctx.schedule.asInstanceOf[Schedule[DaxTask, CapacityBasedNode]])
+
+    vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
   }
 
   /**
     * chooses an appropriate event handler for the current event
+    *
     * @param event
     */
   def dispatchEvent(event: Event): Unit = event match {
@@ -69,6 +76,8 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
     // This function applies new schedule and generates events
     ctx.applySchedule(schedule, queue)
     SimLogger.logSched(ctx.schedule.asInstanceOf[Schedule[DaxTask, CapacityBasedNode]])
+
+    vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
 
     SimLogger.log("Init schedule has been applied")
     // Generate initial events
@@ -93,7 +102,6 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
   }
 
   private def onTaskStarted(event: TaskStarted) = {
-    //TODO: add logging here
     ctx.setTime(event.eventTime)
     val nid = event.node.id
     val schedMap = ctx.schedule.getMap
@@ -109,7 +117,6 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
 
   private def onTaskFinished(event: TaskFinished) = {
     ctx.setTime(event.eventTime)
-    //TODO: add logging here
     // 1) set status on finished
     val nid = event.node.id
     val schedMap = ctx.schedule.getMap
@@ -147,6 +154,9 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
         queue.eq = queue.eq.filter(x => !x.isInstanceOf[TaskStarted])
         // Apply new schedule
         ctx.applySchedule(sc, queue)
+
+        vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
+
 
         SimLogger.log("Rescheduling has been completed")
         SimLogger.logSched(sc.asInstanceOf[Schedule[DaxTask, CapacityBasedNode]])

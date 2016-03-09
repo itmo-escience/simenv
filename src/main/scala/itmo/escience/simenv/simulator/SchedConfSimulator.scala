@@ -8,7 +8,7 @@ import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl.{CarrierNodeEnvironment, BasicContext}
 import itmo.escience.simenv.environment.modelling.Environment
 import itmo.escience.simenv.simulator.events.{InitEvent, TaskStarted, _}
-import itmo.escience.simenv.utilities.SimLogger
+import itmo.escience.simenv.utilities.{ScheduleVisualizer, SimLogger}
 import org.apache.logging.log4j.{LogManager, Logger}
 
 import scala.util.Random
@@ -28,9 +28,13 @@ class SchedConfSimulator[T <: Task, N <: Node](scheduler: Scheduler, ctx:Context
   override val queue = new EventQueue()
   override val rnd = new Random()
 
+  override val vis = new ScheduleVisualizer[T, N]
+
   override def runSimulation(): Unit = {
     super.runSimulation()
     SimLogger.logEnv(ctx.environment.asInstanceOf[Environment[CapacityBasedNode]])
+
+    vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
   }
 
   override def onInitEvent() = {
@@ -41,6 +45,8 @@ class SchedConfSimulator[T <: Task, N <: Node](scheduler: Scheduler, ctx:Context
     SimLogger.log("Init schedule is generated")
     ctx.setEnvironment(env)
     ctx.applySchedule(schedule, queue)
+
+    vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
 
     SimLogger.logSched(schedule.asInstanceOf[Schedule[DaxTask, CapacityBasedNode]])
     SimLogger.logEnv(ctx.environment.asInstanceOf[Environment[CapacityBasedNode]])
@@ -63,6 +69,10 @@ class SchedConfSimulator[T <: Task, N <: Node](scheduler: Scheduler, ctx:Context
         // Apply new schedule
         ctx.setEnvironment(env)
         ctx.applySchedule(sc, queue)
+
+        vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
+
+
         SimLogger.log("Rescheduling has been completed")
         SimLogger.logSched(sc.asInstanceOf[Schedule[DaxTask, CapacityBasedNode]])
 
@@ -74,20 +84,6 @@ class SchedConfSimulator[T <: Task, N <: Node](scheduler: Scheduler, ctx:Context
     }
   }
 
-//  override def onTaskFailed(event: TaskFailed) = {
-//    task_failed_before(event)
-//
-//    // Reschedule
-//    val (sc, env) = scheduler.asInstanceOf[CGAScheduler].coevSchedule[T, N](ctx, ctx.environment)
-//    ctx.setEnvironment(env)
-//    queue.eq = queue.eq.filter(x => !x.isInstanceOf[TaskStarted])
-//    ctx.applySchedule(sc, queue)
-//    SimLogger.log("Rescheduling has been completed")
-//    SimLogger.logSched(sc.asInstanceOf[Schedule[DaxTask, CapacityBasedNode]])
-//    SimLogger.logEnv(ctx.environment.asInstanceOf[Environment[CapacityBasedNode]])
-//
-//    task_failed_after()
-//  }
 }
 
 

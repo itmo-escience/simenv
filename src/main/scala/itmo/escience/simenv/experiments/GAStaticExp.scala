@@ -42,44 +42,26 @@ class GAStaticExp(wfPath: String, envArray: List[List[Double]], globNet: Double,
 
 
   override def run() = {
-//    println("Init environment:")
-//    println(environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
 
     val scheduler = new GAScheduler(crossoverProb = 0.4,
       mutationProb = 0.3,
       swapMutationProb = 0.2,
-      popSize = 50,
-      iterationCount = 300)
-    //
+      popSize = 100,
+      iterationCount = 100)
+
     val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule[DaxTask, CapacityBasedNode](),
       estimator, 0.0, new SingleAppWorkload(wf))
-    //
 
-    val minmin_schedule = MinMinScheduler.schedule(ctx.asInstanceOf[Context[DaxTask, Node]], environment.asInstanceOf[Environment[Node]])
+//    val minmin_schedule = MinMinScheduler.schedule(ctx.asInstanceOf[Context[DaxTask, Node]], environment.asInstanceOf[Environment[Node]])
+    val hstartTime = System.currentTimeMillis()
     val heft_schedule = HEFTScheduler.schedule(ctx.asInstanceOf[Context[DaxTask, Node]], environment.asInstanceOf[Environment[Node]])
+    val htime = System.currentTimeMillis() - hstartTime
+    println("HEFT Time = " + htime)
+
+    val startTime = System.currentTimeMillis()
     val ga_schedule = scheduler.schedule(ctx, environment)
-
-    println("_________")
-    println("GA SCHEDULE:")
-//    println(ga_schedule.prettyPrint())
-    println(s"GA makespan: ${ga_schedule.makespan()}")
-    println("_________")
-    println("MINMIN SCHEDULE:")
-//    println(minmin_schedule.prettyPrint())
-    println(s"MinMin makespan: ${minmin_schedule.makespan()}")
-    println("_________")
-    println("HEFT SCHEDULE:")
-//    println(heft_schedule.prettyPrint())
-    println(s"HEFT makespan: ${heft_schedule.makespan()}")
-
-
-//    println("________")
-//    println("COEVOLUTION SCHEDULE")
-//    val (coev_schedule, coev_env) = coevScheduler.scheduleAndConfiguration(ctx.asInstanceOf[Context[DaxTask, Node]], environment.asInstanceOf[Environment[Node]])
-//    println(coev_schedule.prettyPrint())
-//    println("COEVOLUTION ENVIRONMENT")
-//    println(coev_env.envPrint())
-//    println(s"coev makespan: ${coev_schedule.makespan()}")
+    val time = System.currentTimeMillis() - startTime
+    println("Time = " + time)
 
     println("Finished")
     ga_schedule.makespan()
