@@ -26,10 +26,6 @@ object Main {
     val nodeDownTime = 5
     val resDownTime = 10
 
-//    val gaExp = new GAStaticExp(wfPath + wfName, envArray, globNet, locNet, reliability)
-//    val cgaExp = new CGAStaticExp(wfPath + wfName, envArray, globNet, locNet, reliability)
-//    gaExp.run()
-//    cgaExp.run()
     val heftExp = new HEFTDynamExp(wfPath + wfName, envArray, globNet, locNet, reliability, 0, nodeDownTime, resDownTime)
     heftExp.run()
 

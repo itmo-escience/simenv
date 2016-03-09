@@ -259,10 +259,9 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
 //  }
 
   private def taskFailer(taskScheduleItem: TaskScheduleItem[T, N]) = {
-    //TODO: add logging here
     //    taskScheduleItem.status = TaskScheduleItemStatus.RUNNING
     val dice = rnd.nextDouble()
-    // TODO reliablity not via CpuTimeNode
+    // TODO reliablity not via specific node
     if (dice < taskScheduleItem.node.asInstanceOf[CapacityBasedNode].reliability) {
       // Task will be finished
       val taskFinishedEvent = new TaskFinished(id = taskScheduleItem.id, name = taskScheduleItem.name, postTime = ctx.currentTime,

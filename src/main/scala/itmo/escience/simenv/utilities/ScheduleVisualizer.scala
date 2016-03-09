@@ -117,10 +117,9 @@ class ScheduleVisualizer[T <: Task, N <: Node] {
   }
 
   def schedToXML(sched: Schedule[T, N], env: CarrierNodeEnvironment[CapacityBasedNode]): Document = {
-    // TODO: remake it later
     val doc: Document = db.newDocument
-    var nodes = env.nodes
-    var carriers = env.carriers
+    val nodes = env.nodes
+    val carriers = env.carriers
 
     val grid_schedule: Element = doc.createElement("grid_schedule")
     doc.appendChild(grid_schedule)
