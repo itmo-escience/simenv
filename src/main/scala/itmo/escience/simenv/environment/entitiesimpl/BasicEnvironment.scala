@@ -70,5 +70,9 @@ class BasicEnvironment(fixedNodesSequence:Seq[CapacityBasedNode], nodesSequence:
 
   def getTypes: List[Double] = types
 
+  def getRelByIdx(idx: Int): Double = {
+    nodes(idx).reliability
+  }
+
 
 }

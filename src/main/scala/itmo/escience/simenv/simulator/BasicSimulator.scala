@@ -2,7 +2,7 @@ package itmo.escience.simenv.simulator
 
 import itmo.escience.simenv.algorithms.Scheduler
 import itmo.escience.simenv.environment.entities._
-import itmo.escience.simenv.simulator.events.{InitEvent, Rescheduling, TaskStarted, _}
+import itmo.escience.simenv.simulator.events.{InitEvent, TaskStarted, _}
 //import itmo.escience.simenv.utilities.SimLogger
 
 import scala.util.Random
@@ -58,10 +58,10 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
     case InitEvent => onInitEvent()
     case ev: TaskStarted => onTaskStarted(ev)
     case ev: TaskFinished => onTaskFinished(ev)
-    case ev: TaskFailed => onTaskFailed(ev)
+//    case ev: TaskFailed => onTaskFailed(ev)
 //    case ev: NodeFailed => onNodeFailed(ev)
 //    case ev: NodeUpped => onNodeUpped(ev)
-    case ev: Rescheduling => onRescheduling(ev)
+//    case ev: Rescheduling => onRescheduling(ev)
     case _ => throw new Exception(s"Unknown type of the event: ${event.getClass}")
   }
 
@@ -135,32 +135,32 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
     }
   }
 
-  def onTaskFailed(event: TaskFailed) = {
-    task_failed_before(event)
-    queue.submitEvent(new Rescheduling(id="reschedule", name="reschedule", postTime = ctx.currentTime, eventTime = ctx.currentTime))
-  }
+//  def onTaskFailed(event: TaskFailed) = {
+//    task_failed_before(event)
+//    queue.submitEvent(new Rescheduling(id="reschedule", name="reschedule", postTime = ctx.currentTime, eventTime = ctx.currentTime))
+//  }
 
-  def onRescheduling(event: Rescheduling) = {
-    ctx.setTime(event.eventTime)
-    // Reschedule
-
-      if (ctx.schedule.restTasks().nonEmpty) {
-
-        val sc = scheduler.schedule(ctx, ctx.environment)
-        queue.eq = queue.eq.filter(x => !x.isInstanceOf[TaskStarted])
-        // Apply new schedule
-        ctx.applySchedule(sc, queue)
-
-//        vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
+//  def onRescheduling(event: Rescheduling) = {
+//    ctx.setTime(event.eventTime)
+//    // Reschedule
 //
-
-//        SimLogger.log("Rescheduling has been completed")
-//        SimLogger.logSched(sc.asInstanceOf[Schedule[DaxTask, CapacityBasedNode]])
-
-        // submit new events, if it is required after the failed task
-        task_failed_after()
-      }
-  }
+//      if (ctx.schedule.restTasks().nonEmpty) {
+//
+//        val sc = scheduler.schedule(ctx, ctx.environment)
+//        queue.eq = queue.eq.filter(x => !x.isInstanceOf[TaskStarted])
+//        // Apply new schedule
+//        ctx.applySchedule(sc, queue)
+//
+////        vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
+////
+//
+////        SimLogger.log("Rescheduling has been completed")
+////        SimLogger.logSched(sc.asInstanceOf[Schedule[DaxTask, CapacityBasedNode]])
+//
+//        // submit new events, if it is required after the failed task
+//        task_failed_after()
+//      }
+//  }
 
   def task_failed_before(event: TaskFailed) = {
     ctx.setTime(event.eventTime)
