@@ -3,8 +3,9 @@ package itmo.escience.simenv.algorithms.ga
 import java.util
 
 import itmo.escience.simenv.environment.entities._
-import itmo.escience.simenv.environment.entitiesimpl.BasicEnvironment
+import itmo.escience.simenv.environment.entitiesimpl.{BasicEstimator, BasicEnvironment}
 import itmo.escience.simenv.environment.modelling.Environment
+import itmo.escience.simenv.utilities.MathFunctions
 
 import scala.collection.JavaConversions._
 
@@ -26,7 +27,9 @@ object WorkflowSchedulingProblem {
       ).map(x => x.asInstanceOf[TaskScheduleItem[T, N]].task.id)
     }
     val restTasks = taskItems.filter(x => !fixed_tasks.contains(x.task.id))
-    val genes = restTasks.map(x => MappedTask(x.task.id, environment.asInstanceOf[BasicEnvironment].indexOfNode(x.node.id))).toList
+    val genes = restTasks.map(x => MappedTask(x.task.id,
+      environment.asInstanceOf[BasicEnvironment].indexOfNode(x.node.id),
+      MathFunctions.getZPercents(x.task.asInstanceOf[DaxTask], x.endTime-x.startTime))).toList
     new WFSchedSolution(genes)
   }
 

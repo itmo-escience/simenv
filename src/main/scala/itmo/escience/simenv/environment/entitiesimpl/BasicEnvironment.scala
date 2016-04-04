@@ -11,14 +11,21 @@ import scala.collection.immutable.HashMap
 /**
  * Created by Nikolay on 11/29/2015.
  */
-class BasicEnvironment(nodesSequence:Seq[CapacityBasedNode], networksSeq: Seq[Network], types: List[Double]) extends Environment[CapacityBasedNode]{
+class BasicEnvironment(fixedNodesSequence:Seq[CapacityBasedNode], nodesSequence:Seq[CapacityBasedNode], networksSeq: Seq[Network], types: List[Double]) extends Environment[CapacityBasedNode]{
   val _nodes:java.util.HashMap[NodeId, CapacityBasedNode] = new java.util.HashMap()
   val nodeSeq: java.util.List[CapacityBasedNode] = new util.ArrayList[CapacityBasedNode]()
+
+  for (x <- fixedNodesSequence){
+    _nodes.put(x.id, x)
+    nodeSeq.add(x)
+  }
 
   for (x <- nodesSequence){
     _nodes.put(x.id, x)
     nodeSeq.add(x)
   }
+
+
 
   var _networks = mutable.HashSet(networksSeq:_*)
 
@@ -40,6 +47,9 @@ class BasicEnvironment(nodesSequence:Seq[CapacityBasedNode], networksSeq: Seq[Ne
 
   override def nodes: Seq[CapacityBasedNode] = nodeSeq
 
+  def fixedNodes: Seq[CapacityBasedNode] = nodeSeq.filter(x => x.fixed)
+  def publicNodes: Seq[CapacityBasedNode] = nodeSeq.filter(x => !x.fixed)
+
   override def networks: Seq[Network] = _networks.toSeq
 
   override def networksByNode(node: CapacityBasedNode): scala.Seq[Network] = {
@@ -56,7 +66,7 @@ class BasicEnvironment(nodesSequence:Seq[CapacityBasedNode], networksSeq: Seq[Ne
 
   override def carriers: scala.Seq[Carrier[CapacityBasedNode]] = throw new Exception("Invalid Operation")
 
-  override def envPrint: String = "Nodes: (" + nodes.map(x => x.capacity + " ") + ")"
+  override def envPrint: String = "Nodes: (" + nodes.map(x => "(" + x.capacity +  ", " + x.fixed + ") ") + ")"
 
   def getTypes: List[Double] = types
 

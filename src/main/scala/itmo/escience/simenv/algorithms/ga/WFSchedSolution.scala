@@ -43,5 +43,13 @@ class WFSchedSolution(mappedTasks: List[MappedTask]) extends EvSolution[MappedTa
     max
   }
 
+  def addAfter(elem: MappedTask) = {
+    val taskId = elem.taskId
+    val res = elem.nodeIdx
+    var counter = 0
+    val idx = _genes.indexWhere(x => x.taskId == taskId)
+    _genes.insert(idx, elem)
+  }
+
   override var fitness: Double = _
 }

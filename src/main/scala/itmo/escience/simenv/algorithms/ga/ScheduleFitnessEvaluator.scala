@@ -18,7 +18,14 @@ class ScheduleFitnessEvaluator[T <: Task, N <: Node](ctx: Context[T, N], env: En
 
   override def getFitness(t: WFSchedSolution, list: util.List[_ <: WFSchedSolution]): Double = {
     val schedule = WorkflowSchedulingProblem.solutionToSchedule[T, N](t, ctx, env)
-    schedule.makespan()
+    val makespan = schedule.makespan()
+//    val deadline = ctx.workload.asInstanceOf[MultiWfWorkload[DaxTask]].deadlines.head._2
+    var fitness = makespan
+//    if (makespan > deadline) {
+//      fitness += (makespan - deadline) * 666
+//    }
+    fitness
+
   }
 
   def getFitness(s: WFSchedSolution, e: EnvConfSolution): Double = {

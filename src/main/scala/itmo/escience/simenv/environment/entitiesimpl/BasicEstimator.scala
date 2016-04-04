@@ -2,14 +2,17 @@ package itmo.escience.simenv.environment.entitiesimpl
 
 import itmo.escience.simenv.environment.entities.{Node, Network, CapacityBasedNode, DaxTask}
 import itmo.escience.simenv.environment.modelling.{Environment, Estimator}
+import itmo.escience.simenv.utilities.MathFunctions
+import org.apache.commons.math3.special.Erf
 
 /**
  * Created by Nikolay on 11/29/2015.
  */
 class BasicEstimator[N <: CapacityBasedNode](idealCapacity:Double, env: Environment[N], bandwidth: Double) extends Estimator[DaxTask, N]{
 
-  override def calcTime(task: DaxTask, node: N): Double = {
-    (idealCapacity / node.capacity) * task.execTime
+  override def calcTime(task: DaxTask, node: N, perc: Double = 0.99): Double = {
+    val exTime = MathFunctions.getZVal(task, perc)
+    (idealCapacity / node.capacity) * exTime
   }
 
   override def calcTransferTime(from: (DaxTask, N), to: (DaxTask, N)): Double = {
@@ -24,6 +27,7 @@ class BasicEstimator[N <: CapacityBasedNode](idealCapacity:Double, env: Environm
 
     //estimate time
     volume / bandwidth
+//    10
   }
 
   def calcTransferTime(to: (DaxTask, N)): Double = {
@@ -31,4 +35,8 @@ class BasicEstimator[N <: CapacityBasedNode](idealCapacity:Double, env: Environm
     val volume = child_task.inputData.map(x => x.volume).sum
     volume / bandwidth
   }
+
+  def getBandwidth: Double = bandwidth
+
+
 }

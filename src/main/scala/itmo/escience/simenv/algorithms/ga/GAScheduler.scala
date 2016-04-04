@@ -17,7 +17,7 @@ import org.uncommons.watchmaker.framework.termination.GenerationCount
   */
 
 class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: Double,
-                   popSize:Int, iterationCount: Int) extends Scheduler{
+                   popSize:Int, iterationCount: Int, seeds: java.util.ArrayList[WFSchedSolution]) extends Scheduler{
 
 //  def coevSchedule(context: Context[DaxTask, N], environment: Environment[N], schedPop: List[WorkflowSchedulingSolution]): (Schedule, List[WorkflowSchedulingSolution]) = {
   //
@@ -89,7 +89,7 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
       }
     })
 
-    val result = engine.evolve(popSize, 1, new GenerationCount(iterationCount))
+    val result = engine.evolve(popSize, 1, seeds, new GenerationCount(iterationCount))
     WorkflowSchedulingProblem.solutionToSchedule(result, context, environment)
   }
 

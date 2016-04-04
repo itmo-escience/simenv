@@ -5,7 +5,8 @@ import java.util.concurrent._
 import java.util.{Collections, Random}
 
 import itmo.escience.simenv.algorithms.ga.env.{MappedEnv, EnvCandidateFactory, EnvConfSolution}
-import itmo.escience.simenv.environment.entities.{Node, Task}
+import itmo.escience.simenv.environment.entities.{CapacityBasedNode, Node, Task}
+import itmo.escience.simenv.utilities.MathFunctions
 import org.uncommons.util.concurrent.ConfigurableThreadFactory
 import org.uncommons.util.id.{IDSource, IntSequenceIDSource, StringPrefixIDSource}
 import org.uncommons.watchmaker.framework._
@@ -329,7 +330,7 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
       if (x.nodeIdx < nodeSize) {
         genes :+= x
       } else {
-        genes :+= new MappedTask(x.taskId, rng.nextInt(nodeSize))
+        genes :+= new MappedTask(x.taskId, rng.nextInt(nodeSize), x.rel)
       }
     }
     new WFSchedSolution(genes)

@@ -3,15 +3,15 @@ package itmo.escience.simenv.algorithms.ga
 import java.util
 import java.util.Random
 
-import itmo.escience.simenv.environment.entities.{Node, Task, Context, NodeStatus}
+import itmo.escience.simenv.environment.entities.{Context, Node, NodeStatus, Task}
 import itmo.escience.simenv.environment.modelling.Environment
 import org.uncommons.watchmaker.framework.EvolutionaryOperator
 
 /**
   * Created by mikhail on 22.01.2016.
   */
-class ScheduleMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env: Environment[N],
-                                                     probability: Double, swapProbability: Double)
+class FixScheduleMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env: Environment[N],
+                                                        probability: Double, swapProbability: Double)
                                                       extends EvolutionaryOperator[WFSchedSolution]{
 
   override def apply(mutants: util.List[WFSchedSolution], random: Random): util.List[WFSchedSolution] = {

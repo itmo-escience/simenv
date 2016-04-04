@@ -5,4 +5,4 @@ import itmo.escience.simenv.environment.entities.TaskId
 /**
  * gene for genetic algorithm
  */
-case class MappedTask(taskId: TaskId, nodeIdx: Int)
+case class MappedTask(taskId: TaskId, nodeIdx: Int, rel: Double)

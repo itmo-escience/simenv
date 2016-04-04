@@ -30,21 +30,14 @@ class Schedule[T <: Task, N <: Node] {
     transferTime = (task.parents.map({
       case _: HeadDaxTask => 0.0
       case x =>
-        val parentItem = this.lastTaskItem(x.id)
-        parentsTimes :+= parentItem.endTime
-        context.estimator.calcTransferTime(from = (parentItem.task, parentItem.node), to = (task, node))
+//        val parentItem = this.lastTaskItem(x.id)
+        val parentItems = this.taskItems(x.id)
+        val parentTime = parentItems.map(x => x.endTime + context.estimator.calcTransferTime(from = (x.task, x.node), to = (task, node))).max
+        parentsTimes :+= parentTime
+        parentTime
     }) :+ 0.0).sum
+
     stageInEndTime = if (parentsTimes.nonEmpty) parentsTimes.max else 0.0
-
-
-    if (task.parents.head.isInstanceOf[HeadDaxTask]) {
-      // out transfer
-      val input_files = task.inputData.map(x => x.name)
-      val parents_output = task.parents.foldLeft(List[String]())((s, x) => s ++ x.outputData.map(y => y.name))
-      val out_files = input_files.diff(parents_output)
-      val trans_files = task.inputData.filter(x => out_files.contains(x.name))
-      transferTime += (if (trans_files.nonEmpty) trans_files.map(x => x.volume / 20 / 1024 / 1024).sum else 0.0)
-    }
 
     val runningTime = context.estimator.calcTime(task, node)
 
@@ -62,17 +55,10 @@ class Schedule[T <: Task, N <: Node] {
       }
     }
 
-    val differ = endOfLastTask - earliestStartTime
-    var deleteTrasfer = 0.0
-    if (differ > 0) {
-      deleteTrasfer = math.min(transferTime, differ)
-    }
-    transferTime -= deleteTrasfer
-
     val newItem = new TaskScheduleItem(id = Utilities.generateId(),
       name = task.name,
       startTime = foundStartTime,
-      endTime = foundStartTime + runningTime + transferTime,
+      endTime = foundStartTime + runningTime,
       status = ScheduleItemStatus.UNSTARTED,
       node,
       task)

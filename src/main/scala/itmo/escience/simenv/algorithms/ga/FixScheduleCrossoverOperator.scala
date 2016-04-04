@@ -1,14 +1,14 @@
 package itmo.escience.simenv.algorithms.ga
 
 import java.util
-import java.util.{List, Collections, Random}
+import java.util.{Collections, Random}
 
 import org.uncommons.watchmaker.framework.operators.AbstractCrossover
 
 /**
   * Created by mikhail on 22.01.2016.
   */
-class ScheduleCrossoverOperator(crossoverPoints: Int = 1)
+class FixScheduleCrossoverOperator(crossoverPoints: Int = 1)
   extends AbstractCrossover[WFSchedSolution](crossoverPoints){
 
   override def apply(parents: util.List[WFSchedSolution], random: Random): util.List[WFSchedSolution] = {

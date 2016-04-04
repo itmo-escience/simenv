@@ -10,7 +10,7 @@ import itmo.escience.simenv.environment.entities.{Task, Node, DaxTask}
  */
 trait Estimator [T <: Task, N <: Node] {
 
-  def calcTime(task: T, node: N): Double
+  def calcTime(task: T, node: N, perc: Double = 0.99): Double
 
   def calcTransferTime(from: (T, N), to: (T, N)): Double
 

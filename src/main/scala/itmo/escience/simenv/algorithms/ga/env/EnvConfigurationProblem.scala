@@ -35,7 +35,7 @@ object EnvConfigurationProblem {
     //TODO DANGER!!!!!!!!!!!
     val bandwidth = 100 Mbit_Sec
     val networks = List(new Network(id=generateId(), name="", bandwidth=bandwidth, newNodes))
-    val environment: Environment[N] = new BasicEnvironment(newNodes, networks, context.environment.asInstanceOf[BasicEnvironment].getTypes).asInstanceOf[Environment[N]]
+    val environment: Environment[N] = new BasicEnvironment(newNodes, Seq[CapacityBasedNode](), networks, context.environment.asInstanceOf[BasicEnvironment].getTypes).asInstanceOf[Environment[N]]
 
     environment
   }

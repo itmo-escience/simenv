@@ -1,6 +1,6 @@
 package itmo.escience.simenv
 
-import itmo.escience.simenv.experiments.CGACloudCostOptimization
+import itmo.escience.simenv.experiments.{UrgentCostOptimization, CGACloudCostOptimization}
 
 /**
  * Created by Mishanya on 12.10.2015.
@@ -15,9 +15,7 @@ object Main {
     // 3. Run experiment
     // 4. Exit
 
-    val exp = new CGACloudCostOptimization()
-
-    exp.init()
+    val exp = new UrgentCostOptimization()
     exp.run()
 
   }

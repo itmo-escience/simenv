@@ -20,14 +20,17 @@ class CGACloudCostOptimization extends Experiment {
   var env: Environment[CapacityBasedNode] = null
   var scheduler: Scheduler = null
 
-  val wfs = List[String]("Montage_25", "CyberShake_30", "Epigenomics_24", "Inspiral_30", "Sipht_30")
-  val deadMultipliers = List[Double](2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0)
-  val deadlines = List[Double](31.18, 2051.34, 2945.15, 674.09, 2232.96)
+//  val wfs = List[String]("Montage_25", "CyberShake_30", "Epigenomics_24", "Inspiral_30", "Sipht_30")
+  val wfs = List[String]("Montage_25")
+//  val deadMultipliers = List[Double](2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0)
+  val deadMultipliers = List[Double](3.0)
+//  val deadlines = List[Double](31.18, 2051.34, 2945.15, 674.09, 2232.96)
+  val deadlines = List[Double](31.18)
   val deadMap = new java.util.HashMap[String, Double]()
   wfs.zip(deadlines).foreach(x => deadMap.put(x._1, x._2))
 
   val idealCapacity: Double = 20
-  val nodeTypes: List[Double] = List(0.075, 0.15, 0.3, 0.6, 1.2, 2.5, 5, 10, 20, 40)
+  val nodeTypes: List[Double] = List(10, 15, 25, 30)
   val costs: List[Double] = nodeTypes.map(x => x * 10)
   val costsMap: java.util.HashMap[Double, Double] = new java.util.HashMap[Double, Double]()
   for (i <- costs.indices) {
@@ -35,6 +38,9 @@ class CGACloudCostOptimization extends Experiment {
   }
 
   val basepath = ".\\resources\\wf-examples\\"
+
+  val privRel = 0.95
+  val pubRel = 0.8
 
   def init(): Unit = {
 
@@ -49,7 +55,7 @@ class CGACloudCostOptimization extends Experiment {
         val deadline = deadMap.get(wf_name)
         val deadMultiplier = deadMultipliers(dead_idx)
 
-        val gaFile: PrintWriter = new PrintWriter(".\\temp\\results\\" + deadMultiplier + "_GA_" + wf_name + ".txt", "UTF-8")
+//        val gaFile: PrintWriter = new PrintWriter(".\\temp\\results\\" + deadMultiplier + "_GA_" + wf_name + ".txt", "UTF-8")
 
         println("wf = " + wf_name + "; " + "deadMult = " + deadMultiplier)
 
@@ -59,18 +65,28 @@ class CGACloudCostOptimization extends Experiment {
         val workload = new MultiWfWorkload(List(wf1))
 
         var nodes = List[CapacityBasedNode]()
-        for (i <- 0 until 5) {
-          val res: CapacityBasedNode = new CapacityBasedNode(id = s"res_$i", name = s"res_$i",
+
+        var fixedNodes = List[CapacityBasedNode]()
+        for (i <- nodeTypes.indices) {
+          val res: CapacityBasedNode = new CapacityBasedNode(id = s"res_$i", name = s"res_$i", reliability=privRel,
             capacity = nodeTypes(i))
-          nodes :+= res
+          fixedNodes :+= res
+        }
+
+        var publicNodes = List[CapacityBasedNode]()
+        for (i <- nodeTypes.indices) {
+          val res: CapacityBasedNode = new CapacityBasedNode(id = s"res_$i", name = s"res_$i", reliability=pubRel, fixed=false,
+            capacity = nodeTypes(i))
+          publicNodes :+= res
         }
 
         val bandwidth = 20 * 1024 * 1024
+        nodes = fixedNodes ++ publicNodes
         val globalNet = new Network(id = generateId(), name = "global net", bandwidth = bandwidth, nodes)
 
         val networks = List(globalNet)
 
-        env = new BasicEnvironment(nodes, networks, nodeTypes)
+        env = new BasicEnvironment(fixedNodes, publicNodes, networks, nodeTypes)
         val estimator = new BasicEstimator[CapacityBasedNode](idealCapacity, env, bandwidth)
 
 
@@ -81,8 +97,8 @@ class CGACloudCostOptimization extends Experiment {
         scheduler = new CGAScheduler(crossoverProb = 0.4,
           mutationProb = 0.3,
           swapMutationProb = 0.3,
-          popSize = 50,
-          iterationCount = 500)
+          popSize = 20,
+          iterationCount = 50)
 
         //    val solutionsPath = "d:\\Projects\\simenv_dead\\resources\\solutions\\"
         val solutionsPath = ".\\resources\\solutions\\"
@@ -117,28 +133,25 @@ class CGACloudCostOptimization extends Experiment {
         seeds.add(lddlsSol._1)
         seeds.add(lddlsSol._2)
 
-        for (zalupa <- 0 until 20) {
+        for (zalupa <- 0 until 1) {
 
           scheduler = new CGAScheduler(crossoverProb = 0.4,
             mutationProb = 0.2,
             swapMutationProb = 0.3,
-            popSize = 50,
-            iterationCount = 500, seedPairs = seeds)
-
-          val random_schedule = RandomScheduler.schedule[DaxTask, CapacityBasedNode](ctx, env)
-
+            popSize = 25,
+            iterationCount = 50, seedPairs = seeds)
 
           val ga_res = scheduler.asInstanceOf[CGAScheduler].costSchedule(ctx, env)
           println("!GA SCHEDULE:")
-          //    println(ga_schedule.prettyPrint())
+//              println(ga_schedule.prettyPrint())
           println(s"GA makespan: ${ga_res._1.makespan()}")
           println(s"GA cost: ${ga_res._2}")
 
-          gaFile.write(ga_res._2 + "\n")
+//          gaFile.write(ga_res._2 + "\n")
           println("-----")
         }
 
-        gaFile.close()
+//        gaFile.close()
       }
     }
   }

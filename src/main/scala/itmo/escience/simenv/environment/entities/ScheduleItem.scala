@@ -42,4 +42,8 @@ case class TaskScheduleItem[T <: Task, N <: Node](id: ScheduleItemId,
     new TaskScheduleItem(id=id, name=name, startTime=startTime, endTime=failTime,
       status=ScheduleItemStatus.FAILED, node=node, task=task)
   }
+
+  def copy(newNode: N): TaskScheduleItem[T, N] = {
+    new TaskScheduleItem[T, N](id=id, name=name, startTime=startTime, endTime=endTime, status=status, node=newNode, task=task)
+  }
 }
