@@ -1,6 +1,6 @@
 package itmo.escience.simenv.simulator.events
 
-import itmo.escience.simenv.environment.entities.{Task, ModellingTimestamp, DaxTask, Node}
+import itmo.escience.simenv.environment.entities.{ModellingTimestamp, Node, Task}
 import itmo.escience.simenv.simulator.EventId
 
 /**

@@ -51,5 +51,13 @@ class WFSchedSolution(mappedTasks: List[MappedTask]) extends EvSolution[MappedTa
     _genes.insert(idx, elem)
   }
 
+  def removeGene(idx: Int) = {
+    _genes.remove(idx)
+  }
+
+  def insertGene(idx: Int, elem: MappedTask) = {
+    _genes.insert(idx, elem)
+  }
+
   override var fitness: Double = _
 }

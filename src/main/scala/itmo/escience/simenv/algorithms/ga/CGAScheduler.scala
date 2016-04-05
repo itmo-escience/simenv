@@ -4,8 +4,7 @@ import java.util
 import java.util.Random
 
 import itmo.escience.simenv.algorithms.Scheduler
-import itmo.escience.simenv.algorithms.ga.env.{EnvCrossoverOperator, EnvMutationOperator, EnvConfSolution, EnvCandidateFactory}
-import itmo.escience.simenv.algorithms.vm.env.EnvConfigurationProblem
+import itmo.escience.simenv.algorithms.ga.env._
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl.BasicEnvironment
 import itmo.escience.simenv.environment.modelling.Environment
@@ -18,7 +17,7 @@ import org.uncommons.watchmaker.framework.termination.GenerationCount
 /**
   * Created by mikhail on 25.01.2016.
   */
-class CGAScheduler (crossoverProb:Double, mutationProb: Double, swapMutationProb: Double,
+class CGAScheduler (crossoverProb:Double, mutationProb: Double,
                     popSize:Int, iterationCount: Int, seedPairs: util.ArrayList[EvSolution[_]]=new util.ArrayList[EvSolution[_]]()) extends Scheduler{
 
   def evaluateSolution[T <: Task, N <: Node](context: Context[T, N], environment: Environment[N], sched: WFSchedSolution, env: EnvConfSolution): Double = {
@@ -35,7 +34,7 @@ class CGAScheduler (crossoverProb:Double, mutationProb: Double, swapMutationProb
     val envFactory: EnvCandidateFactory[T, N] = new EnvCandidateFactory[T, N](context, environment, environment.asInstanceOf[BasicEnvironment].getTypes)
 
     val schedCross = new ScheduleCrossoverOperator()
-    val schedMut = new ScheduleMutationOperator[T, N](context, environment, mutationProb, swapMutationProb)
+    val schedMut = new ScheduleMutationOperator[T, N](context, environment, mutationProb)
 
     val envOperators: util.List[EvolutionaryOperator[EnvConfSolution]] = new util.LinkedList[EvolutionaryOperator[EnvConfSolution]]()
     envOperators.add(new EnvCrossoverOperator(crossoverProb))
@@ -73,8 +72,10 @@ class CGAScheduler (crossoverProb:Double, mutationProb: Double, swapMutationProb
 
 
     val schedule = WorkflowSchedulingProblem.solutionToSchedule(result._1, context, newEnv)
-    val cost = newEnv.nodes.filter(x => schedule.getMap.containsKey(x.id) && schedule.getMap.get(x.id).nonEmpty).map(x => x.asInstanceOf[CapacityBasedNode].capacity * 10).sum
-    println(cost)
+    val cost = fitnessEvaluator.evaluateNodeCosts(schedule, newEnv)
+    println(s"$cost   ${schedule.makespan()}")
+    println("wf solution:")
+    println(result._1.genSeq.foldLeft("")((s, x) => s + s"(${x.taskId} ${x.nodeIdx} ${x.rel})"))
     (schedule, cost)
   }
 }

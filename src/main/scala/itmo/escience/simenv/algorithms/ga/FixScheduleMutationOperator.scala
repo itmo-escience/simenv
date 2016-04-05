@@ -64,7 +64,7 @@ class FixScheduleMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env:
     val gene_1 = mutant.getVariableValue(a)
     val gene_2 = mutant.getVariableValue(b)
 
-    mutant.setVariableValue(a, MappedTask(gene_1.taskId, gene_2.nodeIdx, gene_1.rel))
-    mutant.setVariableValue(b, MappedTask(gene_2.taskId, gene_1.nodeIdx, gene_2.rel))
+    mutant.setVariableValue(b, MappedTask(gene_1.taskId, gene_1.nodeIdx, gene_1.rel))
+    mutant.setVariableValue(a, MappedTask(gene_2.taskId, gene_2.nodeIdx, gene_2.rel))
   }
 }

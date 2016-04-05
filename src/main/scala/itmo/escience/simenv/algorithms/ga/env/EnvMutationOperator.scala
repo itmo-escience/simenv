@@ -35,7 +35,7 @@ class EnvMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env: Environ
 
   def doMutation(mutant:EnvConfSolution, rnd: Random) = {
     var options = List[Int](13, 666)
-    if (mutant.size > 1) {
+    if (mutant.genSeq.size > 1) {
       options :+= 21
     }
     val option: Int = options(rnd.nextInt(options.size))

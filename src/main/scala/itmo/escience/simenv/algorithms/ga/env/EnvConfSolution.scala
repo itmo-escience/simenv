@@ -11,9 +11,9 @@ import scala.collection.JavaConversions._
 /**
  * individual for genetic algorithm
  */
-class EnvConfSolution(mappedVms: List[MappedEnv]) extends EvSolution {
+class EnvConfSolution(mappedVms: List[MappedEnv], fixLen: Int) extends EvSolution {
 
-  def this(that:EnvConfSolution) = this(that._genes.toList)
+  def this(that:EnvConfSolution) = this(that._genes.toList, that.fixedSize)
 
   private val _genes = new util.ArrayList(mappedVms)
 
@@ -58,7 +58,9 @@ class EnvConfSolution(mappedVms: List[MappedEnv]) extends EvSolution {
 
   def genSeq: List[MappedEnv] = _genes.toList
 
-  def size = _genes.size
+  def size = _genes.size + fixedSize
 
   override var fitness: Double = _
+
+  def fixedSize = fixLen
 }

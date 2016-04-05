@@ -11,7 +11,7 @@ import itmo.escience.simenv.simulator.events.EventQueue
  */
 class BasicContext[T <: Task, N <: Node](var environment:Environment[N], var schedule: Schedule[T, N], var estimator: Estimator[T, N],
                          var currentTime:ModellingTimestamp,
-                         var workload: Workload[T], costs: java.util.HashMap[Double, Double]) extends Context[T, N] {
+                         var workload: Workload[T], costs: java.util.HashMap[Double, Double], fixRel:Double, pubRel: Double) extends Context[T, N] {
 
   def applySchedule(newSched: Schedule[T, N], queue: EventQueue) = {
     schedule = newSched
@@ -29,4 +29,7 @@ class BasicContext[T <: Task, N <: Node](var environment:Environment[N], var sch
   }
 
   def getCosts: util.HashMap[Double, Double] = costs
+
+  def getPubRel = pubRel
+  def getFixRel = fixRel
 }

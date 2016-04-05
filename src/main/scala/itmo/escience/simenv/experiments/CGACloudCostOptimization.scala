@@ -2,7 +2,7 @@ package itmo.escience.simenv.experiments
 
 import java.io.PrintWriter
 
-import itmo.escience.simenv.algorithms.vm.env.EnvConfigurationProblem
+import itmo.escience.simenv.algorithms.ga.env.EnvConfigurationProblem
 import itmo.escience.simenv.algorithms.{RandomScheduler, Scheduler}
 import itmo.escience.simenv.algorithms.ga.{EvSolution, WorkflowSchedulingProblem, CGAScheduler, GAScheduler}
 import itmo.escience.simenv.environment.entities._
@@ -92,11 +92,10 @@ class CGACloudCostOptimization extends Experiment {
 
 
         ctx = new BasicContext[DaxTask, CapacityBasedNode](env, Schedule.emptySchedule(),
-          estimator, 0.0, workload, costsMap)
+          estimator, 0.0, workload, costsMap, 1.0, 1.0)
 
         scheduler = new CGAScheduler(crossoverProb = 0.4,
           mutationProb = 0.3,
-          swapMutationProb = 0.3,
           popSize = 20,
           iterationCount = 50)
 
@@ -137,7 +136,6 @@ class CGACloudCostOptimization extends Experiment {
 
           scheduler = new CGAScheduler(crossoverProb = 0.4,
             mutationProb = 0.2,
-            swapMutationProb = 0.3,
             popSize = 25,
             iterationCount = 50, seedPairs = seeds)
 

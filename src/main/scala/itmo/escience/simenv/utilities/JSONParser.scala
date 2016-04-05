@@ -42,7 +42,7 @@ object JSONParser {
     mappedTasks = mappedTasks.sortBy(x => x._3)
     sched = mappedTasks.map(x => new MappedTask(x._1, x._2, x._3))
 
-    (new WFSchedSolution(sched), new EnvConfSolution(env))
+    (new WFSchedSolution(sched), new EnvConfSolution(env, 0))
   }
 
 }

@@ -16,6 +16,7 @@ object NodeStatus {
 trait Node extends NameAndId[NodeId]{
     def parent: NodeId
     def status: NodeStatus
+
 }
 
 trait Carrier[N <: Node] extends Node {

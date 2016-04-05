@@ -47,8 +47,8 @@ class BasicEnvironment(fixedNodesSequence:Seq[CapacityBasedNode], nodesSequence:
 
   override def nodes: Seq[CapacityBasedNode] = nodeSeq
 
-  def fixedNodes: Seq[CapacityBasedNode] = nodeSeq.filter(x => x.fixed)
-  def publicNodes: Seq[CapacityBasedNode] = nodeSeq.filter(x => !x.fixed)
+  override def fixedNodes: Seq[CapacityBasedNode] = nodeSeq.filter(x => x.fixed)
+  override def publicNodes: Seq[CapacityBasedNode] = nodeSeq.filter(x => !x.fixed)
 
   override def networks: Seq[Network] = _networks.toSeq
 

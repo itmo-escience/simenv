@@ -21,6 +21,10 @@ trait Environment[N <: Node] {
 
   def nodes: Seq[N]
 
+  def fixedNodes: Seq[N]
+
+  def publicNodes: Seq[N]
+
   def carriers: Seq[Carrier[N]]
 
   def networks: Seq[Network]

@@ -37,7 +37,8 @@ class UrgentCostOptimization extends Experiment {
   }
 
   val basepath = ".\\resources\\wf-examples\\"
-  val wf1 = parseDAX(basepath + wf_name + ".xml", deadline * deadMultiplier)
+//  val wf1 = parseDAX(basepath + wf_name + ".xml", deadline * deadMultiplier)
+  val wf1 = parseDAX(basepath + wf_name + ".xml", 60.0 * deadMultiplier)
 
 
   def initSchedule(): (Schedule[DaxTask, CapacityBasedNode], BasicEnvironment) = {
@@ -67,7 +68,7 @@ class UrgentCostOptimization extends Experiment {
     val estimator = new BasicEstimator[CapacityBasedNode](idealCapacity, initEnv, bandwidth)
 
     ctx = new BasicContext[DaxTask, CapacityBasedNode](initEnv, Schedule.emptySchedule(),
-      estimator, 0.0, workload, costsMap)
+      estimator, 0.0, workload, costsMap, fixRel=privRel, pubRel=pubRel)
 
     val heftSched = HEFTScheduler.schedule(ctx, initEnv)
     println("HEFT makespan = " + heftSched.makespan())
@@ -76,11 +77,11 @@ class UrgentCostOptimization extends Experiment {
     val seeds: java.util.ArrayList[WFSchedSolution] = new java.util.ArrayList[WFSchedSolution]()
     seeds.add(heftSol)
 
-    scheduler = new GAScheduler(crossoverProb = 0.4,
+    scheduler = new GAFixScheduler(crossoverProb = 0.4,
       mutationProb = 0.2,
       swapMutationProb = 0.3,
       popSize = 50,
-      iterationCount = 10, seeds = seeds)
+      iterationCount = 100, seeds = seeds)
 
     val ga_res = scheduler.schedule(ctx, initEnv)
     println("!GA SCHEDULE:")
@@ -99,10 +100,21 @@ class UrgentCostOptimization extends Experiment {
     val maxReplicas = evMaxReplicas(privRel, pubRel)
     val (initSched, initEnv) = initSchedule()
     //Initial schedule and environment
-    val (initSchedRel, initEnvRel) = scheduleReplication(initSched, initEnv, maxReplicas)
 
+    val firstSol = WorkflowSchedulingProblem.scheduleToSolution(initSched, ctx, initEnv)
+
+    val (initSchedRel, initEnvRel) = scheduleReplication(initSched, initEnv, maxReplicas)
     ctx.setEnvironment(initEnvRel)
-    coevAlgorithm(initEnv)
+
+    val fitEval = new ScheduleFitnessEvaluator[DaxTask, CapacityBasedNode](ctx, initEnvRel)
+    val initCost = fitEval.evaluateNodeCosts(initSchedRel, initEnvRel)
+    println(s"Init cost = $initCost")
+    val initSol = WorkflowSchedulingProblem.scheduleToSolution(initSchedRel, ctx, initEnvRel)
+    val initRel = fitEval.evaluateReliability(initSol, initSchedRel, initEnvRel)
+    println(s"Init rel = $initRel")
+
+//    val coevRes = coevAlgorithm(initEnvRel)
+//    coevRes
 
 
     println("Finished")
@@ -112,7 +124,7 @@ class UrgentCostOptimization extends Experiment {
     var counter = 0
     var rel = priv
     while (rel < requiredRel) {
-      var q = (1 - rel) * pub
+      var q = (1 - rel) * pub * 0.99
       counter += 1
       rel += q
     }
@@ -125,7 +137,7 @@ class UrgentCostOptimization extends Experiment {
     val estimator = new BasicEstimator[CapacityBasedNode](idealCapacity, initEnv, bandwidth)
 
     val context = new BasicContext[DaxTask, CapacityBasedNode](initEnv, Schedule.emptySchedule(),
-      estimator, 0.0, new MultiWfWorkload(List(wf1)), costsMap)
+      estimator, 0.0, new MultiWfWorkload(List(wf1)), costsMap, privRel, pubRel)
 
     val initSol = WorkflowSchedulingProblem.scheduleToSolution[DaxTask, CapacityBasedNode](initSched, context, initEnv)
 
@@ -139,12 +151,7 @@ class UrgentCostOptimization extends Experiment {
     var publicNodes = List[CapacityBasedNode]()
 
     for (n <- fixedNodes) {
-      //      val nodeSched = initSched.getMap.get(n.id)
       val cN = n.copy(n.reliability, true)
-      //      newSchedule.addNode(cN.id)
-      //      for (item <- nodeSched) {
-      //        newSchedule.getMap.get(cN.id).add(item.asInstanceOf[TaskScheduleItem[DaxTask, CapacityBasedNode]].copy(cN))
-      //      }
       fixedCopyNodes :+= cN
     }
 
@@ -169,7 +176,7 @@ class UrgentCostOptimization extends Experiment {
     val newEnv = new BasicEnvironment(fixedCopyNodes, publicNodes, List[Network](), nodeTypes)
 
     val newCtx = new BasicContext[DaxTask, CapacityBasedNode](newEnv, newSchedule,
-      estimator, 0.0, new MultiWfWorkload(List(wf1)), costsMap)
+      estimator, 0.0, new MultiWfWorkload(List(wf1)), costsMap, privRel ,pubRel)
     newSchedule = WorkflowSchedulingProblem.solutionToSchedule[DaxTask, CapacityBasedNode](initSol, newCtx, newEnv)
 
     val testSol = WorkflowSchedulingProblem.scheduleToSolution[DaxTask, CapacityBasedNode](newSchedule, newCtx, newEnv)
@@ -182,11 +189,14 @@ class UrgentCostOptimization extends Experiment {
   def coevAlgorithm(env: BasicEnvironment) = {
     val scheduler = new CGAScheduler(crossoverProb = 0.4,
       mutationProb = 0.3,
-      swapMutationProb = 0.3,
-      popSize = 20,
-      iterationCount = 20)
+      popSize = 100,
+      iterationCount = 500)
 
     val ga_res = scheduler.asInstanceOf[CGAScheduler].costSchedule(ctx, env)
+    val sched = ga_res._1
+    val gaCost = ga_res._2
+    println(s"GA cost $gaCost")
+    println(sched.prettyPrint())
   }
 
 

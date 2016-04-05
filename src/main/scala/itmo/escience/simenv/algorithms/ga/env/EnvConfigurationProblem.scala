@@ -1,14 +1,10 @@
-package itmo.escience.simenv.algorithms.vm.env
+package itmo.escience.simenv.algorithms.ga.env
 
 import java.util
 
-import itmo.escience.simenv.algorithms.RandomScheduler
-import itmo.escience.simenv.algorithms.ga.env.{MappedEnv, EnvConfSolution}
 import itmo.escience.simenv.environment.entities._
-import itmo.escience.simenv.environment.entitiesimpl.BasicEnvironment
+import itmo.escience.simenv.environment.entitiesimpl.{BasicContext, BasicEnvironment}
 import itmo.escience.simenv.environment.modelling.Environment
-import itmo.escience.simenv.utilities.Units._
-import itmo.escience.simenv.utilities.Utilities._
 
 /**
  * Created by user on 02.12.2015.
@@ -17,26 +13,30 @@ import itmo.escience.simenv.utilities.Utilities._
 object EnvConfigurationProblem {
 
   def environmentToSolution[N <: Node](env: Environment[N]):EnvConfSolution = {
-    val genes: List[MappedEnv] = env.nodes.map(x => new MappedEnv(x.asInstanceOf[CapacityBasedNode].capacity)).toList
-    new EnvConfSolution(genes)
+    val genes: List[MappedEnv] = env.asInstanceOf[BasicEnvironment].publicNodes.map(x => new MappedEnv(x.capacity)).toList
+    new EnvConfSolution(genes, env.fixedNodes.length)
   }
 
   def solutionToEnvironment[T <: Task, N <: Node](solution: EnvConfSolution, context: Context[T, N]): Environment[N] = {
     // reconstruction of environment in context with new configuration of vms
-    var newNodes: List[CapacityBasedNode] = List()
-    var i = 0
+
+    var fixNodes = List[CapacityBasedNode]()
+    var pubNodes = List[CapacityBasedNode]()
+
+    for (n <- context.environment.fixedNodes) {
+      val newNode = n.asInstanceOf[CapacityBasedNode].copy(n.asInstanceOf[CapacityBasedNode].reliability, isFixed = true)
+      fixNodes :+= newNode
+    }
+
+    var i = fixNodes.length
     for (n <- solution.genSeq) {
-      val res: CapacityBasedNode = new CapacityBasedNode(id=s"res_$i", name=s"res_$i",
-        capacity=n.capacity)
-      newNodes :+= res
+      val res: CapacityBasedNode = new CapacityBasedNode(id=s"rep_$i", name=s"rep_$i",
+        capacity=n.capacity, reliability = context.asInstanceOf[BasicContext[DaxTask, CapacityBasedNode]].getPubRel, fixed = false)
+      pubNodes :+= res
       i += 1
     }
 
-    //TODO DANGER!!!!!!!!!!!
-    val bandwidth = 100 Mbit_Sec
-    val networks = List(new Network(id=generateId(), name="", bandwidth=bandwidth, newNodes))
-    val environment: Environment[N] = new BasicEnvironment(newNodes, Seq[CapacityBasedNode](), networks, context.environment.asInstanceOf[BasicEnvironment].getTypes).asInstanceOf[Environment[N]]
-
+    val environment: Environment[N] = new BasicEnvironment(fixNodes, pubNodes, List[Network](), context.environment.asInstanceOf[BasicEnvironment].getTypes).asInstanceOf[Environment[N]]
     environment
   }
 }

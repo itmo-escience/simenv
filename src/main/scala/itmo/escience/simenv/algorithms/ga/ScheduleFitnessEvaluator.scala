@@ -2,8 +2,7 @@ package itmo.escience.simenv.algorithms.ga
 
 import java.util
 
-import itmo.escience.simenv.algorithms.ga.env.EnvConfSolution
-import itmo.escience.simenv.algorithms.vm.env.EnvConfigurationProblem
+import itmo.escience.simenv.algorithms.ga.env.{EnvConfigurationProblem, EnvConfSolution}
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl.{BasicContext, BasicEnvironment, MultiWfWorkload}
 import itmo.escience.simenv.environment.modelling.Environment
@@ -34,10 +33,20 @@ class ScheduleFitnessEvaluator[T <: Task, N <: Node](ctx: Context[T, N], env: En
     val makespan = schedule.makespan()
     val cost = evaluateNodeCosts(schedule, environment)
     val deadline = ctx.workload.asInstanceOf[MultiWfWorkload[DaxTask]].deadlines.head._2
-    var fitness = cost
+
+    val relPenalty = evaluateReliability(s, schedule, environment)
+    var deadPenalty = 0.0
+
     if (makespan > deadline) {
-      fitness += (makespan - deadline) * 666
+      deadPenalty = makespan - deadline
     }
+
+    val a = 1.0 // Cost
+    val b = 0.5 // Makespan
+    val c = 10.0 // Deadline penalty
+    val d = 100.0 // Reliability penalty
+
+    val fitness = a * cost + b * makespan + c * deadPenalty + d * relPenalty
     fitness
   }
 
@@ -45,14 +54,34 @@ class ScheduleFitnessEvaluator[T <: Task, N <: Node](ctx: Context[T, N], env: En
     val costs = ctx.asInstanceOf[BasicContext[T, N]].getCosts
     var result = 0.0
     for (n <- schedule.getMap.keySet()) {
-      val itemList = schedule.getMap.get(n)
-      val start = itemList.head.startTime
-      val end = itemList.last.endTime
-      val time = end - start
-      val hours = (time / 3600).toInt + 1
-      val cost = hours * costs.get(environment.nodeById(n).asInstanceOf[CapacityBasedNode].capacity)
-      result += cost
+      val node = environment.nodeById(n).asInstanceOf[CapacityBasedNode]
+      if (!node.fixed && schedule.getMap.get(n).nonEmpty) {
+        val itemList = schedule.getMap.get(n)
+        val start = itemList.head.startTime
+        val end = itemList.last.endTime
+        val time = (end - start) / 3600
+        val cost = time * costs.get(environment.nodeById(n).asInstanceOf[CapacityBasedNode].capacity)
+        result += cost
+      }
     }
     result
+  }
+
+  def evaluateReliability(sol: WFSchedSolution, schedule: Schedule[T, N], env: Environment[N]): Double = {
+    val relMap = new util.HashMap[String, Double]()
+    val fixNodes = env.fixedNodes.length
+    for (g <- sol.genSeq) {
+      if (!relMap.containsKey(g.taskId)) {
+        relMap.put(g.taskId, 0.0)
+      }
+      val curRel = relMap.get(g.taskId)
+      var nodeRel = ctx.asInstanceOf[BasicContext[DaxTask, CapacityBasedNode]].getFixRel
+      if (g.nodeIdx >= fixNodes) {
+        nodeRel = ctx.asInstanceOf[BasicContext[DaxTask, CapacityBasedNode]].getPubRel
+      }
+      relMap.put(g.taskId, curRel + (1 - curRel) * g.rel * nodeRel)
+    }
+    val res = relMap.values.count(x => x < 0.99)
+    res
   }
 }

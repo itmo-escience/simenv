@@ -11,17 +11,18 @@ import org.uncommons.watchmaker.framework.factories.AbstractCandidateFactory
   */
 class EnvCandidateFactory[T <: Task, N <: Node](ctx: Context[T, N], env: Environment[N], types: List[Double]) extends AbstractCandidateFactory[EnvConfSolution] {
   override def generateRandomCandidate(random: Random): EnvConfSolution = {
-    val tasksCount = ctx.workload.apps.foldLeft(0)((s, x) => s + x.tasks.size)
-    val nodesNumber = random.nextInt(5) + 1
-    generateRandomCandidate(random, nodesNumber)
+    val fixSize= env.fixedNodes.length
+    val pubSize = env.publicNodes.length
+    val nodesNumber = random.nextInt(pubSize) + 1
+    generateRandomCandidate(random, nodesNumber, fixSize)
   }
 
-  def generateRandomCandidate(random: Random, nodesNumber: Int): EnvConfSolution = {
+  def generateRandomCandidate(random: Random, nodesNumber: Int, fixSize: Int): EnvConfSolution = {
     var sol: List[MappedEnv] = List[MappedEnv]()
     for (i <- 0 until nodesNumber) {
       sol :+= new MappedEnv(types(random.nextInt(types.size)))
     }
-    new EnvConfSolution(sol)
+    new EnvConfSolution(sol, fixSize)
   }
 
 }
