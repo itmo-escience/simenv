@@ -113,8 +113,8 @@ class UrgentCostOptimization extends Experiment {
     val initRel = fitEval.evaluateReliability(initSol, initSchedRel, initEnvRel)
     println(s"Init rel = $initRel")
 
-//    val coevRes = coevAlgorithm(initEnvRel)
-//    coevRes
+    val coevRes = coevAlgorithm(initEnvRel)
+    coevRes
 
 
     println("Finished")
@@ -189,8 +189,8 @@ class UrgentCostOptimization extends Experiment {
   def coevAlgorithm(env: BasicEnvironment) = {
     val scheduler = new CGAScheduler(crossoverProb = 0.4,
       mutationProb = 0.3,
-      popSize = 100,
-      iterationCount = 500)
+      popSize = 20,
+      iterationCount = 50)
 
     val ga_res = scheduler.asInstanceOf[CGAScheduler].costSchedule(ctx, env)
     val sched = ga_res._1

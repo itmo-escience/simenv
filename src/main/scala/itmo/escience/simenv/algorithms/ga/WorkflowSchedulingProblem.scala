@@ -29,7 +29,7 @@ object WorkflowSchedulingProblem {
     val restTasks = taskItems.filter(x => !fixed_tasks.contains(x.task.id))
     val genes = restTasks.map(x => MappedTask(x.task.id,
       environment.asInstanceOf[BasicEnvironment].indexOfNode(x.node.id),
-      MathFunctions.getZPercents(x.task.asInstanceOf[DaxTask], x.endTime-x.startTime))).toList
+      MathFunctions.getZPercents(x.task.asInstanceOf[DaxTask], x.endTime-x.startTime, x.node))).toList
     new WFSchedSolution(genes)
   }
 
