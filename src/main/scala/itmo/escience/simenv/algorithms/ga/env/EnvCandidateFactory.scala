@@ -13,7 +13,7 @@ class EnvCandidateFactory[T <: Task, N <: Node](ctx: Context[T, N], env: Environ
   override def generateRandomCandidate(random: Random): EnvConfSolution = {
     val fixSize= env.fixedNodes.length
     val pubSize = env.publicNodes.length
-    val nodesNumber = random.nextInt(pubSize) + 1
+    val nodesNumber = random.nextInt(pubSize + 1)
     generateRandomCandidate(random, nodesNumber, fixSize)
   }
 

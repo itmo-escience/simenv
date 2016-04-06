@@ -48,9 +48,11 @@ class EnvMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env: Environ
   }
 
   def changeNode(mutant:EnvConfSolution, rnd: Random) = {
-    val idx = rnd.nextInt(mutant.getNumberOfVariables)
-    val newCap = nodesTypes(rnd.nextInt(nodesTypes.size))
-    mutant.setVariableValue(idx, new MappedEnv(newCap))
+    if (mutant.getNumberOfVariables > 0) {
+      val idx = rnd.nextInt(mutant.getNumberOfVariables)
+      val newCap = nodesTypes(rnd.nextInt(nodesTypes.size))
+      mutant.setVariableValue(idx, new MappedEnv(newCap))
+    }
   }
 
   def addNode(mutant:EnvConfSolution, rnd: Random) = {

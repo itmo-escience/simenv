@@ -1,5 +1,6 @@
 package itmo.escience.simenv.experiments
 
+import java.io.PrintWriter
 import java.util
 
 import itmo.escience.simenv.algorithms.ga.env.EnvConfigurationProblem
@@ -13,22 +14,22 @@ import itmo.escience.simenv.utilities.Utilities._
 /**
   * Created by mikhail on 21.01.2016.
   */
-class UrgentCostOptimization extends Experiment {
+class UrgentCostOptimization(privRel: Double, wf_name: String) extends Experiment {
   var ctx: Context[DaxTask, CapacityBasedNode] = null
   var env: Environment[CapacityBasedNode] = null
   var scheduler: Scheduler = null
 
   // Params
-  val wf_name = "CyberShake_30"
-  val deadMultiplier = 2.5
-  val deadline = 31.18
+//  val wf_name = "Montage_25"
+//  val deadMultiplier = 2.5
+//  val deadline = 31.18
 
   val idealCapacity: Double = 20
   val nodeTypes: List[Double] = List(10, 15, 25, 30)
   val bandwidth = 20 * 1024 * 1024
 
-  val privRel = 0.95
-  val pubRel = 0.8
+//  val privRel = 0.90
+  val pubRel = privRel - 0.1
 
   val requiredRel = 0.99
 
@@ -41,12 +42,12 @@ class UrgentCostOptimization extends Experiment {
 
   val basepath = ".\\resources\\wf-examples\\"
 //  val wf1 = parseDAX(basepath + wf_name + ".xml", deadline * deadMultiplier)
-  val wf1 = parseDAX(basepath + wf_name + ".xml", 230.0 * deadMultiplier)
+  var wf1 = parseDAX(basepath + wf_name + ".xml", 666.0)
 
 
   def initSchedule(): (Schedule[DaxTask, CapacityBasedNode], BasicEnvironment) = {
-    println("Init schedule")
-    println("wf = " + wf_name + "; " + "deadMult = " + deadMultiplier)
+//    println("Init schedule")
+//    println("wf = " + wf_name + "; " + "deadMult = " + deadMultiplier)
 
     val workload = new MultiWfWorkload(List(wf1))
 
@@ -74,8 +75,12 @@ class UrgentCostOptimization extends Experiment {
       estimator, 0.0, workload, costsMap, fixRel=privRel, pubRel=pubRel)
 
     val heftSched = HEFTScheduler.schedule(ctx, initEnv)
-    println("HEFT makespan = " + heftSched.makespan())
+    val heftMakespan = heftSched.makespan()
+    val deadline = heftMakespan * 2.5
+    wf1 = parseDAX(basepath + wf_name + ".xml", deadline )
+//    println("HEFT makespan = " + heftSched.makespan())
     val heftSol = WorkflowSchedulingProblem.scheduleToSolution(heftSched, ctx, initEnv)
+
 
     val seeds: java.util.ArrayList[WFSchedSolution] = new java.util.ArrayList[WFSchedSolution]()
     seeds.add(heftSol)
@@ -87,10 +92,10 @@ class UrgentCostOptimization extends Experiment {
       iterationCount = 100, seeds = seeds)
 
     val ga_res = scheduler.schedule(ctx, initEnv)
-    println("!GA SCHEDULE:")
+//    println("!GA SCHEDULE:")
     //          println(ga_res.prettyPrint())
-    println(s"GA makespan: ${ga_res.makespan()}")
-    println("-----")
+//    println(s"GA makespan: ${ga_res.makespan()}")
+//    println("-----")
     (ga_res, initEnv)
 
   }
@@ -106,23 +111,41 @@ class UrgentCostOptimization extends Experiment {
     val (initSched, initEnv) = initSchedule()
     //Initial schedule and environment
 
-    val firstSol = WorkflowSchedulingProblem.scheduleToSolution(initSched, ctx, initEnv)
+//    val firstSol = WorkflowSchedulingProblem.scheduleToSolution(initSched, ctx, initEnv)
 
     val (initSchedRel, initEnvRel) = scheduleReplication(initSched, initEnv, maxReplicas)
     ctx.setEnvironment(initEnvRel)
 
     val fitEval = new ScheduleFitnessEvaluator[DaxTask, CapacityBasedNode](ctx, initEnvRel)
     val initCost = fitEval.evaluateNodeCosts(initSchedRel, initEnvRel)
-    println(s"Init cost = $initCost")
+//    println(s"Init cost = $initCost")
     val initSol = WorkflowSchedulingProblem.scheduleToSolution(initSchedRel, ctx, initEnvRel)
     val initRel = fitEval.evaluateReliability(initSol, initSchedRel, initEnvRel)
-    println(s"Init rel = $initRel")
+//    println(s"Init rel = $initRel")
+
+    val gaFile = new PrintWriter(s".\\results\\gaRepl\\ga_${wf_name}_${privRel}_${generateId()}.txt", "UTF-8")
+    gaFile.write(s"${initSchedRel.makespan()}\t${initCost}")
+    gaFile.close()
+    val gaSFile = new PrintWriter(s".\\results\\gaRepl\\scheds\\gaS_${wf_name}_${privRel}_${generateId()}.txt", "UTF-8")
+    gaSFile.write(s"${initEnvRel.envPrint}\n${initSchedRel.prettyPrint()}")
+    gaSFile.close()
 
     val coevRes = coevAlgorithm(initEnvRel, initSchedRel)
-    coevRes
+
+    val cCost = coevRes._1
+    val cMakespan = coevRes._2
+    val cSched = coevRes._3
+    val cEnv = coevRes._4
+    val cgaFile = new PrintWriter(s".\\results\\cga\\cga_${wf_name}_${privRel}_${generateId()}.txt", "UTF-8")
+    cgaFile.write(s"${cMakespan}\t${cCost}")
+    cgaFile.close()
+    val cgaSFile = new PrintWriter(s".\\results\\cga\\scheds\\cgaS_${wf_name}_${privRel}_${generateId()}.txt", "UTF-8")
+    cgaSFile.write(s"${cEnv.envPrint}\n${cSched.prettyPrint()}")
+    cgaSFile.close()
+//    coevRes
 
 
-    println("Finished")
+//    println("Finished")
   }
   // -- RUN
 
@@ -186,13 +209,13 @@ class UrgentCostOptimization extends Experiment {
     newSchedule = WorkflowSchedulingProblem.solutionToSchedule[DaxTask, CapacityBasedNode](initSol, newCtx, newEnv)
 
     val testSol = WorkflowSchedulingProblem.scheduleToSolution[DaxTask, CapacityBasedNode](newSchedule, newCtx, newEnv)
-    println("Init:" + initSched.makespan())
-    println("Replica:" + newSchedule.makespan())
+//    println("Init:" + initSched.makespan())
+//    println("Replica:" + newSchedule.makespan())
 
     (newSchedule, newEnv)
   }
 
-  def coevAlgorithm(env: BasicEnvironment, initSched: Schedule[DaxTask, CapacityBasedNode]) = {
+  def coevAlgorithm(env: BasicEnvironment, initSched: Schedule[DaxTask, CapacityBasedNode]):(Double, Double, Schedule[DaxTask, CapacityBasedNode], Environment[CapacityBasedNode]) = {
 
     val initSchedSol = WorkflowSchedulingProblem.scheduleToSolution(initSched, ctx, env)
     val initEnvSol = EnvConfigurationProblem.environmentToSolution(env)
@@ -203,13 +226,15 @@ class UrgentCostOptimization extends Experiment {
     val scheduler = new CGAScheduler(crossoverProb = 0.4,
       mutationProb = 0.3,
       popSize = 50,
-      iterationCount = 100, seedPairs = seeds)
+      iterationCount = 300, seedPairs = seeds)
 
     val ga_res = scheduler.asInstanceOf[CGAScheduler].costSchedule(ctx, env)
     val sched = ga_res._1
-    val gaCost = ga_res._2
-    println(s"GA cost $gaCost")
-    println(sched.prettyPrint())
+    val gaEnv = ga_res._2
+    val gaCost = ga_res._3
+    (gaCost, ga_res._1.makespan(), sched, gaEnv)
+//    println(s"GA cost $gaCost")
+//    println(sched.prettyPrint())
   }
 
 

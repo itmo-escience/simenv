@@ -40,15 +40,15 @@ class GAFixScheduler(crossoverProb:Double, mutationProb: Double, swapMutationPro
       selector,
       rng)
 
-    engine.addEvolutionObserver(new EvolutionObserver[WFSchedSolution]()
-    {
-      def populationUpdate(data :PopulationData[_ <: WFSchedSolution]) =
-      {
-        val best = data.getBestCandidate
-        val bestMakespan = WorkflowSchedulingProblem.solutionToSchedule(best, context, environment).makespan()
-        println(s"Generation ${data.getGenerationNumber}: $bestMakespan\n")
-      }
-    })
+//    engine.addEvolutionObserver(new EvolutionObserver[WFSchedSolution]()
+//    {
+//      def populationUpdate(data :PopulationData[_ <: WFSchedSolution]) =
+//      {
+//        val best = data.getBestCandidate
+//        val bestMakespan = WorkflowSchedulingProblem.solutionToSchedule(best, context, environment).makespan()
+//        println(s"Generation ${data.getGenerationNumber}: $bestMakespan\n")
+//      }
+//    })
 
     val result = engine.evolve(popSize, 1, seeds, new GenerationCount(iterationCount))
     WorkflowSchedulingProblem.solutionToSchedule(result, context, environment)

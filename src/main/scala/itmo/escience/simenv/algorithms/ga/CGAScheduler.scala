@@ -29,7 +29,7 @@ class CGAScheduler (crossoverProb:Double, mutationProb: Double,
     null
   }
 
-  def costSchedule[T <: Task, N <: Node](context: Context[T, N], environment: Environment[N]): (Schedule[T, N], Double) = {
+  def costSchedule[T <: Task, N <: Node](context: Context[T, N], environment: Environment[N]): (Schedule[T, N], Environment[N], Double) = {
     val schedFactory: ScheduleCandidateFactory[T, N] = new ScheduleCandidateFactory[T, N](context, environment)
     val envFactory: EnvCandidateFactory[T, N] = new EnvCandidateFactory[T, N](context, environment, environment.asInstanceOf[BasicEnvironment].getTypes)
 
@@ -68,14 +68,15 @@ class CGAScheduler (crossoverProb:Double, mutationProb: Double,
 
     val result: (WFSchedSolution, EnvConfSolution, Double) = engine.evolve(popSize, 1, seedPairs, new GenerationCount(iterationCount))
     val newEnv = EnvConfigurationProblem.solutionToEnvironment[T, N](result._2, context)
-    println(newEnv.envPrint())
+//    println(newEnv.envPrint())
 
 
     val schedule = WorkflowSchedulingProblem.solutionToSchedule(result._1, context, newEnv)
     val cost = fitnessEvaluator.evaluateNodeCosts(schedule, newEnv)
-    println(s"$cost   ${schedule.makespan()}")
-    println("wf solution:")
-    println(result._1.genSeq.foldLeft("")((s, x) => s + s"(${x.taskId} ${x.nodeIdx} ${x.rel})"))
-    (schedule, cost)
+    val env = EnvConfigurationProblem.solutionToEnvironment(result._2, context)
+//    println(s"$cost   ${schedule.makespan()}")
+//    println("wf solution:")
+//    println(result._1.genSeq.foldLeft("")((s, x) => s + s"(${x.taskId} ${x.nodeIdx} ${x.rel})"))
+    (schedule, env, cost)
   }
 }

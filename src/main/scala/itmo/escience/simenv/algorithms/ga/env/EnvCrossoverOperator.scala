@@ -36,7 +36,10 @@ class EnvCrossoverOperator (crossoverProb: Double, crossoverPoints: Int = 1)
     val minSize = math.min(p1Size, p2Size)
     val maxSize = math.max(p1Size, p2Size)
 
-    val point = rnd.nextInt(maxSize)
+    var point = 0
+    if (maxSize > 0) {
+      point = rnd.nextInt(maxSize)
+    }
 
     val res = new util.ArrayList[EnvConfSolution](2)
     res.add(new EnvConfSolution(p1.genSeq.take(point) ++ p2.genSeq.drop(point), p1.fixedSize))
