@@ -1,5 +1,8 @@
 package itmo.escience.simenv.experiments
 
+import java.util
+
+import itmo.escience.simenv.algorithms.ga.env.EnvConfigurationProblem
 import itmo.escience.simenv.algorithms.{HEFTScheduler, Scheduler}
 import itmo.escience.simenv.algorithms.ga._
 import itmo.escience.simenv.environment.entities._
@@ -16,7 +19,7 @@ class UrgentCostOptimization extends Experiment {
   var scheduler: Scheduler = null
 
   // Params
-  val wf_name = "Montage_25"
+  val wf_name = "CyberShake_30"
   val deadMultiplier = 2.5
   val deadline = 31.18
 
@@ -38,7 +41,7 @@ class UrgentCostOptimization extends Experiment {
 
   val basepath = ".\\resources\\wf-examples\\"
 //  val wf1 = parseDAX(basepath + wf_name + ".xml", deadline * deadMultiplier)
-  val wf1 = parseDAX(basepath + wf_name + ".xml", 60.0 * deadMultiplier)
+  val wf1 = parseDAX(basepath + wf_name + ".xml", 230.0 * deadMultiplier)
 
 
   def initSchedule(): (Schedule[DaxTask, CapacityBasedNode], BasicEnvironment) = {
@@ -95,6 +98,8 @@ class UrgentCostOptimization extends Experiment {
   def init(): Unit = {
   }
 
+
+  // ++ RUN!!!!!!!
   override def run(): Unit = {
 
     val maxReplicas = evMaxReplicas(privRel, pubRel)
@@ -113,12 +118,13 @@ class UrgentCostOptimization extends Experiment {
     val initRel = fitEval.evaluateReliability(initSol, initSchedRel, initEnvRel)
     println(s"Init rel = $initRel")
 
-    val coevRes = coevAlgorithm(initEnvRel)
+    val coevRes = coevAlgorithm(initEnvRel, initSchedRel)
     coevRes
 
 
     println("Finished")
   }
+  // -- RUN
 
   def evMaxReplicas(priv: Double, pub: Double) = {
     var counter = 0
@@ -186,11 +192,18 @@ class UrgentCostOptimization extends Experiment {
     (newSchedule, newEnv)
   }
 
-  def coevAlgorithm(env: BasicEnvironment) = {
+  def coevAlgorithm(env: BasicEnvironment, initSched: Schedule[DaxTask, CapacityBasedNode]) = {
+
+    val initSchedSol = WorkflowSchedulingProblem.scheduleToSolution(initSched, ctx, env)
+    val initEnvSol = EnvConfigurationProblem.environmentToSolution(env)
+    val seeds = new util.ArrayList[EvSolution[_]]()
+    seeds.add(initEnvSol)
+    seeds.add(initSchedSol)
+
     val scheduler = new CGAScheduler(crossoverProb = 0.4,
       mutationProb = 0.3,
-      popSize = 20,
-      iterationCount = 50)
+      popSize = 50,
+      iterationCount = 100, seedPairs = seeds)
 
     val ga_res = scheduler.asInstanceOf[CGAScheduler].costSchedule(ctx, env)
     val sched = ga_res._1
