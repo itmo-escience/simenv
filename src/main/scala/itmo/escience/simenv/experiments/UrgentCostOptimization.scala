@@ -10,6 +10,7 @@ import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl._
 import itmo.escience.simenv.environment.modelling.Environment
 import itmo.escience.simenv.utilities.Utilities._
+import itmo.escience.simenv.utilities.Units._
 
 /**
   * Created by mikhail on 21.01.2016.
@@ -26,7 +27,8 @@ class UrgentCostOptimization(privRel: Double, wf_name: String) extends Experimen
 
   val idealCapacity: Double = 20
   val nodeTypes: List[Double] = List(10, 15, 25, 30)
-  val bandwidth = 20 * 1024 * 1024
+//  val bandwidth = 20 * 1024 * 1024
+  val bandwidth = 1000 Mbit_Sec
 
 //  val privRel = 0.90
   val pubRel = privRel - 0.1
@@ -76,11 +78,14 @@ class UrgentCostOptimization(privRel: Double, wf_name: String) extends Experimen
 
     val heftSched = HEFTScheduler.schedule(ctx, initEnv)
     val heftMakespan = heftSched.makespan()
-    val deadline = heftMakespan * 2.5
+    val deadline = heftMakespan * 1.5
     wf1 = parseDAX(basepath + wf_name + ".xml", deadline )
+    println("Dead = " + deadline)
+
+    ctx = new BasicContext[DaxTask, CapacityBasedNode](initEnv, Schedule.emptySchedule(),
+      estimator, 0.0, new MultiWfWorkload(List(wf1)), costsMap, fixRel=privRel, pubRel=pubRel)
 //    println("HEFT makespan = " + heftSched.makespan())
     val heftSol = WorkflowSchedulingProblem.scheduleToSolution(heftSched, ctx, initEnv)
-
 
     val seeds: java.util.ArrayList[WFSchedSolution] = new java.util.ArrayList[WFSchedSolution]()
     seeds.add(heftSol)
@@ -92,6 +97,7 @@ class UrgentCostOptimization(privRel: Double, wf_name: String) extends Experimen
       iterationCount = 100, seeds = seeds)
 
     val ga_res = scheduler.schedule(ctx, initEnv)
+
 //    println("!GA SCHEDULE:")
     //          println(ga_res.prettyPrint())
 //    println(s"GA makespan: ${ga_res.makespan()}")
@@ -112,7 +118,6 @@ class UrgentCostOptimization(privRel: Double, wf_name: String) extends Experimen
     //Initial schedule and environment
 
 //    val firstSol = WorkflowSchedulingProblem.scheduleToSolution(initSched, ctx, initEnv)
-
     val (initSchedRel, initEnvRel) = scheduleReplication(initSched, initEnv, maxReplicas)
     ctx.setEnvironment(initEnvRel)
 
@@ -123,12 +128,15 @@ class UrgentCostOptimization(privRel: Double, wf_name: String) extends Experimen
     val initRel = fitEval.evaluateReliability(initSol, initSchedRel, initEnvRel)
 //    println(s"Init rel = $initRel")
 
+    println(s"GA ${initSchedRel.makespan()}\t${initCost}")
+
+    /*
     val gaFile = new PrintWriter(s".\\results\\gaRepl\\ga_${wf_name}_${privRel}_${generateId()}.txt", "UTF-8")
     gaFile.write(s"${initSchedRel.makespan()}\t${initCost}")
     gaFile.close()
     val gaSFile = new PrintWriter(s".\\results\\gaRepl\\scheds\\gaS_${wf_name}_${privRel}_${generateId()}.txt", "UTF-8")
     gaSFile.write(s"${initEnvRel.envPrint}\n${initSchedRel.prettyPrint()}")
-    gaSFile.close()
+    gaSFile.close() */
 
     val coevRes = coevAlgorithm(initEnvRel, initSchedRel)
 
@@ -136,13 +144,16 @@ class UrgentCostOptimization(privRel: Double, wf_name: String) extends Experimen
     val cMakespan = coevRes._2
     val cSched = coevRes._3
     val cEnv = coevRes._4
+    println(s"cga ${cMakespan}\t${cCost}")
+    /*
     val cgaFile = new PrintWriter(s".\\results\\cga\\cga_${wf_name}_${privRel}_${generateId()}.txt", "UTF-8")
     cgaFile.write(s"${cMakespan}\t${cCost}")
     cgaFile.close()
     val cgaSFile = new PrintWriter(s".\\results\\cga\\scheds\\cgaS_${wf_name}_${privRel}_${generateId()}.txt", "UTF-8")
     cgaSFile.write(s"${cEnv.envPrint}\n${cSched.prettyPrint()}")
-    cgaSFile.close()
+    cgaSFile.close() */
 //    coevRes
+
 
 
 //    println("Finished")
@@ -194,9 +205,11 @@ class UrgentCostOptimization(privRel: Double, wf_name: String) extends Experimen
         val rN = new CapacityBasedNode(id = newId, name = newId, capacity = n.capacity, reliability = pubRel,
           status = n.status, parent = n.parent, fixed = false)
         //        newSchedule.addNode(rN.id)
-        for (item <- nodeSched) {
-          initSol.addAfter(new MappedTask(item.asInstanceOf[TaskScheduleItem[DaxTask, CapacityBasedNode]].task.id, nodeIdx, 0.99))
-          //          newSchedule.getMap.get(rN.id).add(item.asInstanceOf[TaskScheduleItem[DaxTask, CapacityBasedNode]].copy(rN))
+        if (initSched.getMap.containsKey(n.id)) {
+          for (item <- nodeSched) {
+            initSol.addAfter(new MappedTask(item.asInstanceOf[TaskScheduleItem[DaxTask, CapacityBasedNode]].task.id, nodeIdx, 0.99))
+            //          newSchedule.getMap.get(rN.id).add(item.asInstanceOf[TaskScheduleItem[DaxTask, CapacityBasedNode]].copy(rN))
+          }
         }
         publicNodes :+= rN
       }
@@ -226,7 +239,7 @@ class UrgentCostOptimization(privRel: Double, wf_name: String) extends Experimen
     val scheduler = new CGAScheduler(crossoverProb = 0.4,
       mutationProb = 0.3,
       popSize = 50,
-      iterationCount = 300, seedPairs = seeds)
+      iterationCount = 100, seedPairs = seeds)
 
     val ga_res = scheduler.asInstanceOf[CGAScheduler].costSchedule(ctx, env)
     val sched = ga_res._1

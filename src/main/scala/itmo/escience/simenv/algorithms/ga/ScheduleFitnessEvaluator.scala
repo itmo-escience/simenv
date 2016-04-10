@@ -19,12 +19,14 @@ class ScheduleFitnessEvaluator[T <: Task, N <: Node](ctx: Context[T, N], env: En
   override def getFitness(t: WFSchedSolution, list: util.List[_ <: WFSchedSolution]): Double = {
     val schedule = WorkflowSchedulingProblem.solutionToSchedule[T, N](t, ctx, env)
     val makespan = schedule.makespan()
-//    val deadline = ctx.workload.asInstanceOf[MultiWfWorkload[DaxTask]].deadlines.head._2
-    var fitness = makespan
-//    if (makespan > deadline) {
-//      fitness += (makespan - deadline) * 666
-//    }
-    fitness
+    val cost = evaluateNode2Costs(schedule, env)
+    val deadline = ctx.workload.asInstanceOf[MultiWfWorkload[DaxTask]].deadlines.head._2
+    var fitness = 0.0
+//    var fitness = makespan
+    if (makespan > deadline) {
+      fitness += (makespan - deadline) * 666 * cost
+    }
+    fitness + cost
 
   }
 
@@ -43,9 +45,9 @@ class ScheduleFitnessEvaluator[T <: Task, N <: Node](ctx: Context[T, N], env: En
     }
 
     val a = 1.0 // Cost
-    val b = 0.7 // Makespan
-    val c = 5.0 // Deadline penalty
-    val d = 100.0 // Reliability penalty
+    val b = 0.2 // Makespan
+    val c = 200.0 // Deadline penalty
+    val d = 1000.0 // Reliability penalty
 
     val fitness = a * cost + b * makespan + c * deadPenalty + d * relPenalty
     fitness
@@ -92,6 +94,33 @@ class ScheduleFitnessEvaluator[T <: Task, N <: Node](ctx: Context[T, N], env: En
         }
         result += cost * (1 - chance)
       }
+    }
+
+    result
+  }
+
+  def evaluateNode2Costs(schedule: Schedule[T, N], environment: Environment[N]): Double = {
+    val costs = ctx.asInstanceOf[BasicContext[T, N]].getCosts
+    var result = 0.0
+
+    val allItems = schedule.scheduleItemsSeq().map(x => x.asInstanceOf[TaskScheduleItem[DaxTask, CapacityBasedNode]])
+    for (item <- allItems) {
+      val start = item.startTime
+      val end = item.endTime
+      val time = (end - start) / 3600
+      val cost = time * costs.get(item.node.capacity)
+      val taskItems = schedule.taskItems(item.task.id).filter(x => x != item)
+      val lowerItems = taskItems.filter(x => x.endTime <= item.startTime)
+      var chance = 0.0
+      for (t <- lowerItems) {
+        val exTime = t.endTime - t.startTime
+        val tNode = t.node
+        val tTask = t.task
+        val rel = MathFunctions.getZPercents(tTask.asInstanceOf[DaxTask], exTime, tNode)
+        val curRel = rel * tNode.asInstanceOf[CapacityBasedNode].reliability
+        chance = chance + (1 - chance) * curRel
+      }
+      result += cost * (1 - chance)
     }
 
     result
