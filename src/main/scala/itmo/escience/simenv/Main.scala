@@ -3,8 +3,9 @@ package itmo.escience.simenv
 import java.io.PrintWriter
 
 import ifmo.escience.dapris.common.data.MockRepository
-import ifmo.escience.dapris.common.entities.{Workload, Environment}
+import ifmo.escience.dapris.common.entities.{AlgorithmParameter, Workload, Environment}
 import ifmo.escience.dapris.common.sample.SampleAlgorithm
+import itmo.escience.simenv.algorithms.ga.IPGAScheduler
 import itmo.escience.simenv.experiments._
 import itmo.escience.simenv.utilities.Units._
 import org.apache.commons.math3.special.Erf
@@ -18,19 +19,26 @@ import org.apache.commons.math3.special.Erf
 object Main {
   def main(args: Array[String]) {
 
-//    val qwe =Erf.erf(0.95)
-    exp1()
+//    exp1()
 
-//    val sampleEnv = new Environment()
-//    val sampleAlg = new SampleAlgorithm()
-//    val sampleRepo = new MockRepository()
-//    val sampleWorkload = new Workload(sampleRepo.getAllTasks)
-//
-//
-//    val ip = new IPRunner(sampleEnv, sampleAlg, null)
-//    ip.run()
-//    println("f")
+    val sampleRepo = new MockRepository()
 
+    val sampleEnv = new Environment()
+    val sampleWl = new Workload(sampleRepo.getAllTasks)
+
+    val parameters = new java.util.ArrayList[AlgorithmParameter]
+    parameters.add(new AlgorithmParameter("crossover", 0.657, 0, 1))
+    parameters.add(new AlgorithmParameter("mutation", 0.308, 0, 1))
+    parameters.add(new AlgorithmParameter("swapMutation", 0.669, 0, 1))
+    parameters.add(new AlgorithmParameter("populationSize", 55, 10, 100))
+    parameters.add(new AlgorithmParameter("iterationsCount", 98, 50, 150))
+
+    val alg = new IPGAScheduler(sampleEnv, null, parameters, sampleWl)
+
+    val makespan = alg.makespan()
+
+
+    println("Finished")
   }
 
 

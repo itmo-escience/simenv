@@ -46,22 +46,24 @@ object IPAdapter {
 
   def parseTasks(parent: DaxTask, children: java.util.Set[Task], taskMap: java.util.HashMap[String, DaxTask]): List[DaxTask] = {
     var adaptChildren = List[DaxTask]()
-    for (t <- children) {
-      var task: DaxTask = null
-      if (taskMap.contains(t.getId)) {
-        task = taskMap.get(t.getId)
-        task.parents :+= parent
-      } else {
-        task = new DaxTask(id = t.getId, name = t.getId, execTime = 1.0,
-          inputData = adaptDataFiles(t.getInputData),
-          outputData = adaptDataFiles(t.getOutputData),
-          parents = List[DaxTask](parent),
-          children = List[DaxTask]())
-        val taskChildren = parseTasks(task, t.getChildTasks, taskMap)
-        task.children = taskChildren
-        taskMap.put(t.getId, task)
+    if (children != null) {
+      for (t <- children) {
+        var task: DaxTask = null
+        if (taskMap.contains(t.getId)) {
+          task = taskMap.get(t.getId)
+          task.parents :+= parent
+        } else {
+          task = new DaxTask(id = t.getId, name = t.getId, execTime = 1.0,
+            inputData = adaptDataFiles(t.getInputData),
+            outputData = adaptDataFiles(t.getOutputData),
+            parents = List[DaxTask](parent),
+            children = List[DaxTask]())
+          val taskChildren = parseTasks(task, t.getChildTasks, taskMap)
+          task.children = taskChildren
+          taskMap.put(t.getId, task)
+        }
+        adaptChildren :+= task
       }
-      adaptChildren :+= task
     }
     adaptChildren
   }

@@ -41,15 +41,15 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
       selector,
       rng, popSize)
 
-//    engine.addEvolutionObserver(new EvolutionObserver[WFSchedSolution]()
-//    {
-//      def populationUpdate(data :PopulationData[_ <: WFSchedSolution]) =
-//      {
-//        val best = data.getBestCandidate
-//        val bestMakespan = WorkflowSchedulingProblem.solutionToSchedule(best, context, environment).makespan()
-//        println(s"Generation ${data.getGenerationNumber}: $bestMakespan\n")
-//      }
-//    })
+    engine.addEvolutionObserver(new EvolutionObserver[WFSchedSolution]()
+    {
+      def populationUpdate(data :PopulationData[_ <: WFSchedSolution]) =
+      {
+        val best = data.getBestCandidate
+        val bestMakespan = WorkflowSchedulingProblem.solutionToSchedule(best, context, environment).makespan()
+        println(s"Generation ${data.getGenerationNumber}: $bestMakespan\n")
+      }
+    })
 
     val heft_schedule = HEFTScheduler.schedule(context, environment)
     val min_schedule = MinMinScheduler.schedule(context, environment)
