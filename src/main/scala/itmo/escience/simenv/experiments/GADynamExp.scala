@@ -1,5 +1,7 @@
 package itmo.escience.simenv.experiments
 
+import java.util.Random
+
 import itmo.escience.simenv.algorithms.ga.GAScheduler
 import itmo.escience.simenv.algorithms.{HEFTScheduler, MinMinScheduler}
 import itmo.escience.simenv.simulator.BasicSimulator
@@ -44,12 +46,17 @@ class GADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double, 
 
   override def run(): Double = {
 //    println("Init environment:")
+    val rnd = new Random()
+    val cross = 0.5 //rnd.nextDouble()
+    val m1 = 0.5 //rnd.nextDouble()
+    val m2 = 0.3 //rnd.nextDouble()
+//    println(s"$cross   $m1   $m2")
 
-    val scheduler = new GAScheduler(crossoverProb = 0.5,
-      mutationProb = 0.3,
-      swapMutationProb = 0.3,
+    val scheduler = new GAScheduler(crossoverProb = cross,
+      mutationProb = m1,
+      swapMutationProb = m2,
       popSize = 50,
-      iterationCount = 100)
+      iterationCount = 300)
 
     val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule[DaxTask, CapacityBasedNode](),
       estimator, 0.0, new SingleAppWorkload(wf))

@@ -1,33 +1,33 @@
 package itmo.escience.simenv.environment.entitiesimpl
 
-import itmo.escience.simenv.environment.entities.{CapacityBasedNode, Node, Network, DaxTask}
+import itmo.escience.simenv.environment.entities.{DetailedNode, CapacityBasedNode, DaxTask}
 import itmo.escience.simenv.environment.modelling.{Environment, Estimator}
 
 /**
  * Created by Nikolay on 11/29/2015.
  */
-class BasicEstimator[N <: CapacityBasedNode](idealCapacity:Double, env: Environment[N]) extends Estimator[DaxTask, N]{
+class IPEstimator(env: IPEnvironment) extends Estimator[DaxTask, DetailedNode]{
 
-  override def calcTime(task: DaxTask, node: N): Double = {
-    if (node.capacity == 0) {
+  override def calcTime(task: DaxTask, node: DetailedNode): Double = {
+    if (node.cpu == 0) {
       return task.execTime * 666
     }
-    (idealCapacity / node.capacity) * task.execTime
+    node.cpu * task.execTime
 //  task.execTime / math.log(node.capacity + 1)
   }
 
-  override def calcTransferTime(from: (DaxTask, N), to: (DaxTask, N)): Double = {
+  override def calcTransferTime(from: (DaxTask, DetailedNode), to: (DaxTask, DetailedNode)): Double = {
     val (parent_task, from_node) = from
     val (child_task, to_node) = to
 
     if (from_node.id == to_node.id) {
-      return 0.0
+      0.0
     }
     if (from_node.parent == to_node.parent) {
-      return 100.0
+      10.0
     } else
     {
-    return 100.0
+    100.0
     }
 
 

@@ -56,8 +56,8 @@ class ScheduleMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env: En
     val gene_1 = mutant.getVariableValue(a)
     val gene_2 = mutant.getVariableValue(b)
 
-    mutant.setVariableValue(a, MappedTask(gene_1.taskId, gene_2.nodeId))
-    mutant.setVariableValue(b, MappedTask(gene_2.taskId, gene_1.nodeId))
+    mutant.setVariableValue(a, gene_2)
+    mutant.setVariableValue(b, gene_1)
   }
 
 }
