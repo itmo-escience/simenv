@@ -19,12 +19,21 @@ class IPGAScheduler(env: Environment, schedule: ISchedule,
   var _alg: Scheduler = null
   setParameters(params)
 
+  def getAlg = _alg
+
   var _ctx: BasicContext[DaxTask, DetailedNode] = null
   var _wl: SingleAppWorkload = null
   var _env: IPEnvironment = null
+  var _sched: Schedule[DaxTask, DetailedNode] = null
 
   override def run(): Unit = {
-    throw new NotImplementedError()
+    _env = envAdapter(env)
+    _wl = wlAdapter(wl)
+    val currentTime = 0.0
+    val estimator = new IPEstimator(_env)
+    _ctx = new BasicContext[DaxTask, DetailedNode](_env, Schedule.emptySchedule[DaxTask, DetailedNode](), estimator,
+      currentTime, _wl)
+    _sched = _alg.schedule[DaxTask, DetailedNode](_ctx, _env)
   }
 
   override def getParameters: util.List[AlgorithmParameter] = super.getParameters
@@ -49,14 +58,15 @@ class IPGAScheduler(env: Environment, schedule: ISchedule,
   }
 
   override def makespan(): Double = {
-    _env = envAdapter(env)
-    _wl = wlAdapter(wl)
-    val currentTime = 0.0
-    val estimator = new IPEstimator(_env)
-    _ctx = new BasicContext[DaxTask, DetailedNode](_env, Schedule.emptySchedule[DaxTask, DetailedNode](), estimator,
-    currentTime, _wl)
-    val resultSchedule = _alg.schedule[DaxTask, DetailedNode](_ctx, _env)
+    if (_sched == null) {
+      throw new NullPointerException("Schedule is null")
+    }
+    _sched.makespan()
+  }
 
-    resultSchedule.makespan()
+  def getSchedule = _sched
+
+  def setSchedule(sched: ISchedule) = {
+    // Set schedule!
   }
 }

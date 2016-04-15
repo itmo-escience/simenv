@@ -7,8 +7,8 @@ import ifmo.escience.dapris.common.entities.{AlgorithmParameter, Workload, Envir
 import ifmo.escience.dapris.common.sample.SampleAlgorithm
 import itmo.escience.simenv.algorithms.ga.IPGAScheduler
 import itmo.escience.simenv.experiments._
+import itmo.escience.simenv.simulator.IPSimulator
 import itmo.escience.simenv.utilities.Units._
-import org.apache.commons.math3.special.Erf
 
 /**
  * Created by Mishanya on 12.10.2015.
@@ -35,7 +35,12 @@ object Main {
 
     val alg = new IPGAScheduler(sampleEnv, null, parameters, sampleWl)
 
-    val makespan = alg.makespan()
+    val simulator = new IPSimulator(sampleEnv, alg, sampleWl)
+
+    simulator.init()
+    simulator.runSimulation()
+    val makespan = simulator.getMakespan
+    println(s"makespan = $makespan")
 
 
     println("Finished")

@@ -7,6 +7,14 @@
     <artifactId>simenv</artifactId>
     <version>0.0.1</version>
     <packaging>jar</packaging>
+
+    <parent>
+        <groupId>ifmo.escience.dapris.common</groupId>
+        <artifactId>IntellectualProcedureEntities</artifactId>
+        <version>1.0</version>
+        <relativePath>Entities</relativePath>
+    </parent>
+
     <dependencies>
         <dependency>
             <groupId>org.scala-lang</groupId>
@@ -23,27 +31,6 @@
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-xml</artifactId>
             <version>2.11.0-M4</version>
-        </dependency>
-        <!--JMetal-->
-        <dependency>
-            <groupId>org.uma.jmetal</groupId>
-            <artifactId>jmetal-core</artifactId>
-            <version>5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.uma.jmetal</groupId>
-            <artifactId>jmetal-algorithm</artifactId>
-            <version>5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.uma.jmetal</groupId>
-            <artifactId>jmetal-exec</artifactId>
-            <version>5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.uma.jmetal</groupId>
-            <artifactId>jmetal-problem</artifactId>
-            <version>5.0</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
@@ -146,8 +133,13 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
+
+
+
         </plugins>
     </build>
+
+
     <repositories>
         <repository>
             <snapshots>
