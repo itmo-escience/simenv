@@ -5,9 +5,7 @@ import java.io.PrintWriter
 import ifmo.escience.dapris.common.data.MockRepository
 import ifmo.escience.dapris.common.entities.{AlgorithmParameter, Workload, Environment}
 import ifmo.escience.dapris.common.sample.SampleAlgorithm
-import itmo.escience.simenv.algorithms.ga.IPGAScheduler
 import itmo.escience.simenv.experiments._
-import itmo.escience.simenv.simulator.IPSimulator
 import itmo.escience.simenv.utilities.Units._
 
 /**
