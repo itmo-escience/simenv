@@ -26,6 +26,7 @@ class HEFTDynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double
       capacity=l.sum, reliability = reliability)
 
     for ((l2, j) <- l.zipWithIndex) {
+
       var node: CapacityBasedNode = null
       node = new CapacityBasedNode(id = s"res_${i}_node_$j", name = s"res_${i}_node_$j",
           capacity = l2, parent = res.id, reliability = reliability)

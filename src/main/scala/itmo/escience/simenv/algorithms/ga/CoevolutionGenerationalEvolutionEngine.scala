@@ -4,8 +4,8 @@ import java.util
 import java.util.concurrent._
 import java.util.{Collections, Random}
 
-import itmo.escience.simenv.algorithms.ga.env.{MappedEnv, EnvCandidateFactory, EnvConfSolution}
-import itmo.escience.simenv.environment.entities.{Node, Task}
+import itmo.escience.simenv.algorithms.ga.env.{EnvConfigurationProblem, MappedEnv, EnvCandidateFactory, EnvConfSolution}
+import itmo.escience.simenv.environment.entities.{CapacityBasedNode, NodeStatus, Node, Task}
 import org.uncommons.util.concurrent.ConfigurableThreadFactory
 import org.uncommons.util.id.{IDSource, IntSequenceIDSource, StringPrefixIDSource}
 import org.uncommons.watchmaker.framework._
@@ -201,8 +201,13 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
   }
 
   def canBeInteracted(s: WFSchedSolution, e: EnvConfSolution) : Boolean = {
+    val bEnv = EnvConfigurationProblem.solutionToEnvironment(e, envFactory.getCtx)
+    //    val availableNodes = env.genSeq.filter(x => x.cap > 0).map(x => x.vmId)
+    val availableNodes = bEnv.nodes.
+      filter(x => x.status == NodeStatus.UP && x.asInstanceOf[CapacityBasedNode].capacity > 0).
+      map(x => x.id)
     val sNodes = s.genSeq.map(x => x.nodeId).distinct
-    !e.genSeq.exists(x => sNodes.contains(x.vmId) && x.cap == 0)
+    !availableNodes.exists(x => sNodes.contains(x))
   }
 
   def evaluateFriendship(buddies: util.List[(WFSchedSolution, EnvConfSolution)]): util.Map[(WFSchedSolution, EnvConfSolution), Double] = {
@@ -314,7 +319,14 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
   def adaptation(sched: WFSchedSolution, env: EnvConfSolution): WFSchedSolution = {
     var genes: List[MappedTask] = List[MappedTask]()
     val emptyNodes = env.genSeq.filter(x => x.cap == 0).map(x => x.vmId)
-    val availableNodes = env.genSeq.filter(x => x.cap > 0).map(x => x.vmId)
+    val bEnv = EnvConfigurationProblem.solutionToEnvironment(env, envFactory.getCtx)
+//    val availableNodes = env.genSeq.filter(x => x.cap > 0).map(x => x.vmId)
+    val availableNodes = bEnv.nodes.
+      filter(x => x.status == NodeStatus.UP && x.asInstanceOf[CapacityBasedNode].capacity > 0).
+      map(x => x.id)
+    if (availableNodes.isEmpty) {
+      println("pizda")
+    }
     for (x <- sched.genSeq) {
       if (availableNodes.contains(x.nodeId)) {
         genes :+= x

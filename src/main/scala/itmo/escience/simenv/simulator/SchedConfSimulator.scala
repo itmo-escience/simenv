@@ -57,6 +57,7 @@ class SchedConfSimulator[T <: Task, N <: Node](scheduler: Scheduler, ctx:Context
   }
 
   override def onRescheduling(event: Rescheduling) = {
+    println("reschedule")
     ctx.setTime(event.eventTime)
     // Reschedule
     if (ctx.environment.nodes.count(

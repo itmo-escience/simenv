@@ -9,8 +9,9 @@ import org.uncommons.watchmaker.framework.factories.AbstractCandidateFactory
 /**
   * Created by mikhail on 26.01.2016.
   */
-class EnvCandidateFactory[T <: Task, N <: Node](env: Environment[N]) extends AbstractCandidateFactory[EnvConfSolution] {
-
+class EnvCandidateFactory[T <: Task, N <: Node](env: Environment[N], ctx: Context[T, N]) extends AbstractCandidateFactory[EnvConfSolution] {
+  val _ctx = ctx
+  def getCtx = ctx
   override def generateRandomCandidate(random: Random): EnvConfSolution = {
     var result: List[MappedEnv] = List[MappedEnv]()
     val carriers = env.carriers
@@ -22,15 +23,20 @@ class EnvCandidateFactory[T <: Task, N <: Node](env: Environment[N]) extends Abs
       val it: Iterator[CapacityBasedNode] = interceptors.iterator
       while (it.hasNext) {
         val node = it.next()
-        if (!it.hasNext) {
-         result :+= new MappedEnv(node.id, curCap)
+        val nodeSched = ctx.schedule.getMap.get(node.id)
+        if (ctx.schedule.getMap.containsKey(node.id) && nodeSched.nonEmpty && nodeSched.last.endTime > ctx.currentTime) {
+          curCap -= node.capacity
         } else {
-          if (curCap > 0) {
-            val nodeCap = random.nextInt(curCap.toInt)
-            curCap -= nodeCap
-            result :+= new MappedEnv(node.id, nodeCap.toDouble)
+          if (!it.hasNext) {
+            result :+= new MappedEnv(node.id, curCap)
           } else {
-            result :+= new MappedEnv(node.id, 0.0)
+            if (curCap > 0) {
+              val nodeCap = random.nextInt(curCap.toInt)
+              curCap -= nodeCap
+              result :+= new MappedEnv(node.id, nodeCap.toDouble)
+            } else {
+              result :+= new MappedEnv(node.id, 0.0)
+            }
           }
         }
       }

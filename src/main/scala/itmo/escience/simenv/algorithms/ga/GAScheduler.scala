@@ -41,21 +41,22 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
       selector,
       rng, popSize)
 
-    engine.addEvolutionObserver(new EvolutionObserver[WFSchedSolution]()
-    {
-      def populationUpdate(data :PopulationData[_ <: WFSchedSolution]) =
-      {
-        val best = data.getBestCandidate
-        val bestMakespan = WorkflowSchedulingProblem.solutionToSchedule(best, context, environment).makespan()
-        println(s"Generation ${data.getGenerationNumber}: $bestMakespan\n")
-      }
-    })
+    if (false) {
+      engine.addEvolutionObserver(new EvolutionObserver[WFSchedSolution]() {
+        def populationUpdate(data: PopulationData[_ <: WFSchedSolution]) = {
+          val best = data.getBestCandidate
+          val bestMakespan = WorkflowSchedulingProblem.solutionToSchedule(best, context, environment).makespan()
+          println(s"Generation ${data.getGenerationNumber}: $bestMakespan")
+          println(s"Mean fitness: ${data.getMeanFitness}\n")
+        }
+      })
+    }
 
     val heft_schedule = HEFTScheduler.schedule(context, environment)
     val min_schedule = MinMinScheduler.schedule(context, environment)
     val seeds: util.ArrayList[WFSchedSolution] = new util.ArrayList[WFSchedSolution]()
     val heft_sol = WorkflowSchedulingProblem.scheduleToSolution[T, N](heft_schedule, context, environment)
-    seeds.add(heft_sol)
+//    seeds.add(heft_sol)
 //    seeds.add(WorkflowSchedulingProblem.scheduleToSolution[T, N](min_schedule, context, environment))
 
     val result = engine.evolve(popSize, 1, seeds, new GenerationCount(iterationCount))

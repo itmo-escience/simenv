@@ -48,6 +48,9 @@ object WorkflowSchedulingProblem {
         environment.nodeById(nodeId).asInstanceOf[N],
         context)
     }
+
+    val repairedSolution = scheduleToSolution[T, N](newSchedule, context, environment)
+    solution.setGenes(repairedSolution)
     newSchedule.asInstanceOf[Schedule[T, N]]
   }
 

@@ -28,6 +28,7 @@ class GADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double, 
       capacity=l.sum, reliability = reliability)
 
     for ((l2, j) <- l.zipWithIndex) {
+
       val node: CapacityBasedNode = new CapacityBasedNode(id = s"res_${i}_node_$j", name = s"res_${i}_node_$j",
         capacity = l2, parent = res.id, reliability = reliability)
       res.addChild(node)
@@ -56,7 +57,7 @@ class GADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double, 
       mutationProb = m1,
       swapMutationProb = m2,
       popSize = 50,
-      iterationCount = 300)
+      iterationCount = 100)
 
     val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule[DaxTask, CapacityBasedNode](),
       estimator, 0.0, new SingleAppWorkload(wf))

@@ -6,7 +6,7 @@ import java.util.Random
 import itmo.escience.simenv.algorithms.{MinMinScheduler, HEFTScheduler, Scheduler}
 import itmo.escience.simenv.algorithms.ga.env._
 import itmo.escience.simenv.environment.entities._
-import itmo.escience.simenv.environment.entitiesimpl.{CarrierNodeEnvironment, BasicEnvironment}
+import itmo.escience.simenv.environment.entitiesimpl.{BasicContext, CarrierNodeEnvironment, BasicEnvironment}
 import itmo.escience.simenv.environment.modelling.Environment
 import org.uncommons.maths.random.MersenneTwisterRNG
 import org.uncommons.watchmaker.framework.selection.RouletteWheelSelection
@@ -22,7 +22,7 @@ class CGAScheduler (crossoverProb:Double, mutationProb: Double, swapMutationProb
   override def schedule[T <: Task, N <: Node](context: Context[T, N], environment: Environment[N]): Schedule[T, N] = {
     // not used
     val schedFactory: ScheduleCandidateFactory[T, N] = new ScheduleCandidateFactory[T, N](context, environment)
-    val envFactory: EnvCandidateFactory[T, N] = new EnvCandidateFactory[T, N](environment)
+    val envFactory: EnvCandidateFactory[T, N] = new EnvCandidateFactory[T, N](environment, context)
 
     val schedMut = new ScheduleMutationOperator[T, N](context, environment, mutationProb, swapMutationProb)
     val schedCross = new ScheduleCrossoverOperator(crossoverProb)
@@ -62,8 +62,8 @@ class CGAScheduler (crossoverProb:Double, mutationProb: Double, swapMutationProb
     val seeds: util.ArrayList[EvSolution[_]] = new util.ArrayList[EvSolution[_]]()
     seeds.add(WorkflowSchedulingProblem.scheduleToSolution[T, N](heft_schedule, context, environment))
     seeds.add(WorkflowSchedulingProblem.scheduleToSolution[T, N](min_schedule, context, environment))
-    seeds.add(EnvConfigurationProblem.environmentToSolution(environment))
-    seeds.add(EnvConfigurationProblem.environmentToSolution(environment))
+    seeds.add(EnvConfigurationProblem.environmentToSolution(environment, context.asInstanceOf[BasicContext[DaxTask, N]]))
+    seeds.add(EnvConfigurationProblem.environmentToSolution(environment, context.asInstanceOf[BasicContext[DaxTask, N]]))
 
     val result: (WFSchedSolution, EnvConfSolution, Double) = engine.evolve(popSize, 1, seeds, new GenerationCount(iterationCount))
     val newEnv = EnvConfigurationProblem.solutionToEnvironment[T, N](result._2, context)
@@ -76,7 +76,7 @@ class CGAScheduler (crossoverProb:Double, mutationProb: Double, swapMutationProb
 
   def coevSchedule[T <: Task, N <: Node](context: Context[T, N], environment: Environment[N]): (Schedule[T, N], Environment[N]) = {
     val schedFactory: ScheduleCandidateFactory[T, N] = new ScheduleCandidateFactory[T, N](context, environment)
-    val envFactory: EnvCandidateFactory[T, N] = new EnvCandidateFactory[T, N](environment)
+    val envFactory: EnvCandidateFactory[T, N] = new EnvCandidateFactory[T, N](environment, context)
 
     val schedMut = new ScheduleMutationOperator[T, N](context, environment, mutationProb, swapMutationProb)
     val schedCross = new ScheduleCrossoverOperator(crossoverProb)
@@ -116,7 +116,7 @@ class CGAScheduler (crossoverProb:Double, mutationProb: Double, swapMutationProb
     val seeds: util.ArrayList[EvSolution[_]] = new util.ArrayList[EvSolution[_]]()
     seeds.add(WorkflowSchedulingProblem.scheduleToSolution[T, N](heft_schedule, context, environment))
     seeds.add(WorkflowSchedulingProblem.scheduleToSolution[T, N](min_schedule, context, environment))
-    seeds.add(EnvConfigurationProblem.environmentToSolution(environment))
+    seeds.add(EnvConfigurationProblem.environmentToSolution(environment, context.asInstanceOf[BasicContext[DaxTask, N]]))
 
     val result: (WFSchedSolution, EnvConfSolution, Double) = engine.evolve(popSize, 1, seeds, new GenerationCount(iterationCount))
     val newEnv = EnvConfigurationProblem.solutionToEnvironment[T, N](result._2, context)
