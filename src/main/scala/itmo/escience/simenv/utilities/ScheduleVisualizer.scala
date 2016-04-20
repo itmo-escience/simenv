@@ -165,11 +165,8 @@ class ScheduleVisualizer[T <: Task, N <: Node] {
             val node_type: Element = doc.createElement("node_property")
             node_type.setAttribute("name", "type")
 
-            var node_fail_time = 0.0
-
             if (si.status == ScheduleItemStatus.FAILED) {
               node_type.setAttribute("value", "failed")
-              node_fail_time = 5.0
             }
             else {
               node_type.setAttribute("value", "waiting")
@@ -197,7 +194,7 @@ class ScheduleVisualizer[T <: Task, N <: Node] {
 
             val conf_hosts: Element = doc.createElement("conf_property")
             conf_hosts.setAttribute("name", "host_nb")
-            conf_hosts.setAttribute("value", "" + si.node.asInstanceOf[CapacityBasedNode].capacity.toInt)
+            conf_hosts.setAttribute("value", "" + si._capacity.toInt)
 
             configuration.appendChild(conf_cluster)
             configuration.appendChild(conf_hosts)
@@ -207,7 +204,7 @@ class ScheduleVisualizer[T <: Task, N <: Node] {
 
             val hosts: Element = doc.createElement("hosts")
             hosts.setAttribute("start", "" + usedNodes)
-            hosts.setAttribute("nb", "" + si.node.asInstanceOf[CapacityBasedNode].capacity.toInt)
+            hosts.setAttribute("nb", "" + si._capacity.toInt)
             host_lists.appendChild(hosts)
 
 

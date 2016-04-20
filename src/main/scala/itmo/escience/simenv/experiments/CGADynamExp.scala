@@ -47,8 +47,8 @@ class CGADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double,
     val scheduler = new CGAScheduler(crossoverProb = 0.4,
       mutationProb = 0.3,
       swapMutationProb = 0.3,
-      popSize = 20,
-      iterationCount = 20)
+      popSize = 100,
+      iterationCount = 500)
 
     val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule[DaxTask, CapacityBasedNode](),
       estimator, 0.0, new SingleAppWorkload(wf))
@@ -60,8 +60,8 @@ class CGADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double,
     println(ctx.schedule.makespan())
 //    println(ctx.schedule.prettyPrint())
 
-    println("CGA env: ")
-    println(ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
+//    println("CGA env: ")
+//    println(ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
 
     ctx.schedule.makespan()
   }

@@ -4,6 +4,7 @@ import java.io.PrintWriter
 
 import itmo.escience.simenv.experiments._
 import itmo.escience.simenv.utilities.Units._
+import itmo.escience.simenv.utilities.Utilities.generateId
 
 /**
  * Created by Mishanya on 12.10.2015.
@@ -25,44 +26,62 @@ object Main {
 
   def exp1() = {
 //    val wfName = "Montage_25"
-    val wfNames = List("Montage_25")
+    val wfNames = List("Montage_25", "Montage_50", "CyberShake_30", "CyberShake_50", "Inspiral_30", "Inspiral_50")
     //    val downTimes = List(0, 10, 25, 50)
-    val downTimes = List(20)
+    val downTimes = List(10)
     val wfPath = ".\\resources\\wf-examples\\"
     val expPath = ".\\temp\\exps\\"
     //  val basepath = ".\\resources\\"
     //  val wf_name = "crawlerWf"
 //    val envArray = List(List(10.0, 15.0, 25.0, 30.0), List(10.0, 15.0, 25.0, 30.0), List(10.0, 15.0, 25.0, 30.0))
-    val envArray = List(List(10.0, 15.0, 25.0, 30.0), List(10.0, 15.0, 25.0, 30.0), List(10.0, 15.0, 25.0, 30.0), List(10.0, 15.0, 25.0, 30.0))
+    val envArray = List(List(10.0, 15.0, 25.0, 30.0), List(10.0, 15.0, 25.0, 30.0), List(10.0, 15.0, 25.0, 30.0), List(10.0, 15.0, 25.0, 30.0), List(10.0, 15.0, 25.0, 30.0))
 
-    val globNet = 1 Mbit_Sec
-    val locNet = 10 Mbit_Sec
-    val reliability = 0.90
+    val globNet = 10 Mbit_Sec
+    val locNet = 100 Mbit_Sec
+    val reliability = 0.95
 
     for (downTime <- downTimes) {
-      for (wf <- wfNames) {
-        println("WF: " + wf)
-//        val cgaFile: PrintWriter = new PrintWriter(expPath + "CGA_" + wf + "_down_" + downTime + ".txt", "UTF-8")
-//        val gaFile: PrintWriter = new PrintWriter(expPath + "GA_" + wf + "_down_" + downTime + ".txt", "UTF-8")
-//        val heftFile: PrintWriter = new PrintWriter(expPath + "HEFT_" + wf + "_down_" + downTime + ".txt", "UTF-8")
-
-        for (i <- 0 until 1) {
+      for (i <- 0 until 20) {
+        println(s"iterations: $i" )
+        for (wf <- wfNames) {
+          println("WF: " + wf)
           println("--------")
-          println("CGA exp:")
-          val cgaRes = new CGADynamExp(wfPath + wf, envArray, globNet, locNet, reliability, 0, downTime, 0).run()
-//          println("GA exp:")
-//          val gaRes = new GADynamExp(wfPath + wf, envArray, globNet, locNet, reliability, 0, downTime, 0).run()
-//          println("HEFT exp:")
-//          val heftRes = new HEFTDynamExp(wfPath + wf, envArray, globNet, locNet, reliability, 0, downTime, 0).run()
+          try {
+            println("CGA exp:")
+            val cgaRes = new CGADynamExp(wfPath + wf, envArray, globNet, locNet, reliability, 0, downTime, 0).run()
+            val cgaFile: PrintWriter = new PrintWriter(expPath + "CGA_" + wf + "_" + generateId() + ".txt", "UTF-8")
+            cgaFile.write((cgaRes + ""))
+            cgaFile.close()
+          } catch {
+            case _: Throwable => println("fail")
+          }
+          try {
+            println("GA exp:")
+            val gaRes = new GADynamExp(wfPath + wf, envArray, globNet, locNet, reliability, 0, downTime, 0).run()
+            val gaFile: PrintWriter = new PrintWriter(expPath + "GA_" + wf + "_" + generateId() + ".txt", "UTF-8")
+            gaFile.write((gaRes + "\n"))
+            gaFile.close()
+          } catch {
+            case _: Throwable => println("fail")
+          }
+          try {
+            println("HEFT exp:")
+            val heftRes = new HEFTDynamExp(wfPath + wf, envArray, globNet, locNet, reliability, 0, downTime, 0).run()
+            val heftFile: PrintWriter = new PrintWriter(expPath + "HEFT_" + wf + "_" + generateId() + ".txt", "UTF-8")
+            heftFile.write((heftRes + "\n"))
+            heftFile.close()
+          } catch {
+            case _: Throwable => println("fail")
+          }
 
-//          heftFile.write((heftRes + "\n").replace(".", ","))
-//          cgaFile.write((cgaRes + "\n").replace(".", ","))
-//          gaFile.write((gaRes + "\n").replace(".", ","))
+//
+//
+//
         }
 
-//        cgaFile.close()
-//        gaFile.close()
-//        heftFile.close()
+//
+//
+//
 
       }
     }

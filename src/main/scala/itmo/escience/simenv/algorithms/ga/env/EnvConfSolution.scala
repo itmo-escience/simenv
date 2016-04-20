@@ -30,6 +30,9 @@ class EnvConfSolution(mappedVms: List[MappedEnv]) extends EvSolution {
     val item = getVmElement(vmId)
     _genes.add(new MappedEnv(vmId=vmId, cap=item.cap + c))
     _genes.remove(item)
+    if (getVmElement(vmId).cap > 80 || getVmElement(vmId).cap < 0) {
+      println("Jopa")
+    }
   }
 
 //  def deleteValue(i: Int): MappedEnv = {

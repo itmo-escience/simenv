@@ -58,7 +58,7 @@ class SchedConfSimulator[T <: Task, N <: Node](scheduler: Scheduler, ctx: Contex
   }
 
   override def onRescheduling(event: Rescheduling) = {
-    println("reschedule")
+//    println("reschedule")
     ctx.setTime(event.eventTime)
     // Reschedule
     if (ctx.environment.nodes.count(
@@ -84,7 +84,7 @@ class SchedConfSimulator[T <: Task, N <: Node](scheduler: Scheduler, ctx: Contex
         }
         var sc: Schedule[T, N] = null
         if (availableNodes.size > 1) {
-          println("coevo")
+//          println("coevo")
           val (sc1, env) = scheduler.asInstanceOf[CGAScheduler].coevSchedule(ctx, ctx.environment)
           sc = sc1
           queue.eq = queue.eq.filter(x => !x.isInstanceOf[TaskStarted])
@@ -92,7 +92,7 @@ class SchedConfSimulator[T <: Task, N <: Node](scheduler: Scheduler, ctx: Contex
           ctx.setEnvironment(env)
           ctx.applySchedule(sc, queue)
         } else {
-          println("ga")
+//          println("ga")
           sc = scheduler.schedule[T, N](ctx, ctx.environment)
           queue.eq = queue.eq.filter(x => !x.isInstanceOf[TaskStarted])
           // Apply new schedule

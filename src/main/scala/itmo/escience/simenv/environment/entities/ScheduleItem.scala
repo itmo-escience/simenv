@@ -26,6 +26,8 @@ case class TaskScheduleItem[T <: Task, N <: Node](id: ScheduleItemId,
                                                   task: T) extends ScheduleItem {
   override def entity: NameAndId[String] = task
 
+  val _capacity = node.asInstanceOf[CapacityBasedNode].capacity
+
   def changeStatus(newStatus: String) : TaskScheduleItem[T, N] = {
     if (newStatus != ScheduleItemStatus.RUNNING && newStatus != ScheduleItemStatus.FINISHED &&
       newStatus != ScheduleItemStatus.UNSTARTED && newStatus != ScheduleItemStatus.FAILED) {

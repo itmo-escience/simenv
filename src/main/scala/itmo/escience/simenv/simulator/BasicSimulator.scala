@@ -184,6 +184,7 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
     while (iterator.hasNext) {
       schedMap.get(nid).add(iterator.next())
     }
+    ctx.environment.setNodeStatus(nid, NodeStatus.DOWN)
   }
 
   def task_failed_after() = {
@@ -258,11 +259,20 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
 //      postTime = ctx.currentTime, eventTime=ctx.currentTime))
 //  }
 
+  var failMap = Set[String]("ID00004", "ID00008", "ID00016")
+
   private def taskFailer(taskScheduleItem: TaskScheduleItem[T, N]) = {
     //    taskScheduleItem.status = TaskScheduleItemStatus.RUNNING
     val dice = rnd.nextDouble()
+    val tId = taskScheduleItem.task.id
+    var fail = false
+    if (failMap.contains(tId)) {
+      fail = true
+      failMap = failMap.filter(x => x != tId)
+    }
     // TODO reliablity not via specific node
-    if (dice < taskScheduleItem.node.asInstanceOf[CapacityBasedNode].reliability) {
+//    if (dice < taskScheduleItem.node.asInstanceOf[CapacityBasedNode].reliability) {
+    if (!fail) {
       // Task will be finished
       val taskFinishedEvent = new TaskFinished(id = taskScheduleItem.id, name = taskScheduleItem.name, postTime = ctx.currentTime,
         eventTime = taskScheduleItem.endTime, taskScheduleItem.task, taskScheduleItem.node)

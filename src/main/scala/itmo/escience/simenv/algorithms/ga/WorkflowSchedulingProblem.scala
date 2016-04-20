@@ -25,7 +25,7 @@ object WorkflowSchedulingProblem {
       fixed_tasks = fixed_tasks ++ fixed.getMap.get(n).toList.filter(x => x.status != ScheduleItemStatus.FAILED
       ).map(x => x.asInstanceOf[TaskScheduleItem[T, N]].task.id)
     }
-    val restTasks = taskItems.filter(x => !fixed_tasks.contains(x.task.id))
+    val restTasks = taskItems.filter(x => !fixed_tasks.contains(x.task.id) && x.status != ScheduleItemStatus.FAILED)
     val brokenNodes = environment.nodes.filter(x => x.status == NodeStatus.DOWN).map(x => x.id)
     val genes = restTasks.map(x => MappedTask(x.task.id, x.node.id)).toList.filter(x => !brokenNodes.contains(x.nodeId))
     new WFSchedSolution(genes)
@@ -69,7 +69,7 @@ object WorkflowSchedulingProblem {
       val (task, nodeId) = x
       newSchedule.placeTask(task,
         environment.nodeById(nodeId).asInstanceOf[N],
-        context, environment)
+        context)
     }
     newSchedule.asInstanceOf[Schedule[T, N]]
   }

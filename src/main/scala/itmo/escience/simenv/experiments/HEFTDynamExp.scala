@@ -47,8 +47,8 @@ class HEFTDynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double
 
 
   override def run(): Double = {
-    println("Init environment:")
-    println(environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
+//    println("Init environment:")
+//    println(environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
 
     val scheduler = HEFTScheduler
     //

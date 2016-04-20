@@ -36,29 +36,32 @@ class EnvMutationOperator[N <: Node](env: Environment[N],
   def doMutation(mutant:EnvConfSolution, rnd: Random) = {
 
     val nodes = env.carriers.filter(x => x.children.count(y => y.status == NodeStatus.UP && mutant.genSeq.map(z => z.vmId).contains(y.id)) > 1)
+
     if (nodes.nonEmpty) {
       val node = nodes(rnd.nextInt(nodes.length)).asInstanceOf[CapacityBasedCarrier]
       val availableNodes = node.children.filter(x => x.status == NodeStatus.UP)
       val vmNumber = availableNodes.size
       val nodeChildren = mutant.genSeq.filter(x => availableNodes.map(y => y.id).contains(x.vmId))
       val workChildren = nodeChildren.filter(x => x.cap > 0)
-      val vmFrom = workChildren(rnd.nextInt(workChildren.size))
-      val restChildren = nodeChildren.filter(x => x.vmId != vmFrom.vmId)
-      val vmTo = restChildren(rnd.nextInt(restChildren.size))
-      var cpuTrans: Double = 0
-      val option = rnd.nextInt(3)
-      option match {
-        case 0 => cpuTrans = rnd.nextInt(vmFrom.cap.toInt).toDouble + 1
-        case 1 => cpuTrans = vmFrom.cap
-        case 2 => cpuTrans = (vmFrom.cap / 2).toInt.toDouble
+      if (workChildren.nonEmpty) {
+        val vmFrom = workChildren(rnd.nextInt(workChildren.size))
+        val restChildren = nodeChildren.filter(x => x.vmId != vmFrom.vmId)
+        val vmTo = restChildren(rnd.nextInt(restChildren.size))
+        var cpuTrans: Double = 0
+        val option = rnd.nextInt(3)
+        option match {
+          case 0 => cpuTrans = rnd.nextInt(vmFrom.cap.toInt).toDouble + 1
+          case 1 => cpuTrans = vmFrom.cap
+          case 2 => cpuTrans = (vmFrom.cap / 2).toInt.toDouble
+        }
+        //      if (rnd.nextBoolean()) {
+        //        cpuTrans = rnd.nextInt(vmFrom.cap.toInt).toDouble + 1
+        //      } else {
+        //        cpuTrans = vmFrom.cap
+        //      }
+        mutant.addValue(vmFrom.vmId, -cpuTrans)
+        mutant.addValue(vmTo.vmId, cpuTrans)
       }
-//      if (rnd.nextBoolean()) {
-//        cpuTrans = rnd.nextInt(vmFrom.cap.toInt).toDouble + 1
-//      } else {
-//        cpuTrans = vmFrom.cap
-//      }
-      mutant.addValue(vmFrom.vmId, -cpuTrans)
-      mutant.addValue(vmTo.vmId, cpuTrans)
     }
   }
 
