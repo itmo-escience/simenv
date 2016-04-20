@@ -11,7 +11,7 @@ import itmo.escience.simenv.environment.modelling.Environment
 import org.uncommons.maths.random.MersenneTwisterRNG
 import org.uncommons.watchmaker.framework.selection.RouletteWheelSelection
 import org.uncommons.watchmaker.framework.termination.GenerationCount
-import org.uncommons.watchmaker.framework.{PopulationData, EvolutionObserver, SelectionStrategy, EvolutionaryOperator}
+import org.uncommons.watchmaker.framework._
 import org.uncommons.watchmaker.framework.operators.EvolutionPipeline
 
 /**
@@ -20,56 +20,46 @@ import org.uncommons.watchmaker.framework.operators.EvolutionPipeline
 class CGAScheduler (crossoverProb:Double, mutationProb: Double, swapMutationProb: Double,
                     popSize:Int, iterationCount: Int) extends Scheduler{
   override def schedule[T <: Task, N <: Node](context: Context[T, N], environment: Environment[N]): Schedule[T, N] = {
-    // not used
-    val schedFactory: ScheduleCandidateFactory[T, N] = new ScheduleCandidateFactory[T, N](context, environment)
-    val envFactory: EnvCandidateFactory[T, N] = new EnvCandidateFactory[T, N](environment, context)
+    val factory: ScheduleCandidateFactory[T, N] = new ScheduleCandidateFactory[T, N](context, environment)
 
-    val schedMut = new ScheduleMutationOperator[T, N](context, environment, mutationProb, swapMutationProb)
-    val schedCross = new ScheduleCrossoverOperator(crossoverProb)
+    val operators: util.List[EvolutionaryOperator[WFSchedSolution]] = new util.LinkedList[EvolutionaryOperator[WFSchedSolution]]()
+    operators.add(new ScheduleCrossoverOperator(crossoverProb))
+    operators.add(new ScheduleMutationOperator[T, N](context, environment, mutationProb, swapMutationProb))
 
-    val envOperators: util.List[EvolutionaryOperator[EnvConfSolution]] = new util.LinkedList[EvolutionaryOperator[EnvConfSolution]]()
-    envOperators.add(new EnvCrossoverOperator(environment, crossoverProb))
-    envOperators.add(new EnvMutationOperator[N](environment, mutationProb))
+    val pipeline: EvolutionaryOperator[WFSchedSolution] = new EvolutionPipeline[WFSchedSolution](operators)
 
-
-    val envPipeline: EvolutionaryOperator[EnvConfSolution] = new EvolutionPipeline[EnvConfSolution](envOperators)
-
-    val fitnessEvaluator: ScheduleFitnessEvaluator[T, N] = new ScheduleFitnessEvaluator[T, N](context, environment)
+    val fitnessEvaluator: FitnessEvaluator[WFSchedSolution] = new ScheduleFitnessEvaluator[T, N](context, environment)
 
     val selector: SelectionStrategy[Object] = new RouletteWheelSelection()
 
     val rng: Random = new MersenneTwisterRNG()
 
-    val engine: CoevolutionGenerationalEvolutionEngine[T, N] = new CoevolutionGenerationalEvolutionEngine[T, N](schedFactory=schedFactory,
-      envFactory=envFactory, schedMutOperator=schedMut, schedCrossOperator=schedCross, envOperators=envPipeline,
-      fitnessEvaluator=fitnessEvaluator,
+    val  engine: EvolutionEngine[WFSchedSolution] = new ExtGenerationalEAlgorithm[T, N](factory,
+      pipeline,
+      fitnessEvaluator,
       selector,
-      rng)
+      rng, popSize)
 
-//    engine.addEvolutionObserver(new EvolutionObserver[WFSchedSolution]()
-//    {
-//      def populationUpdate(data :PopulationData[_ <: WFSchedSolution]) =
-//      {
-//        val best = data.getBestCandidate
-//        val bestMakespan = WorkflowSchedulingProblem.solutionToSchedule(best, context, environment).makespan()
-//        println(s"Generation ${data.getGenerationNumber}: $bestMakespan\n")
-//      }
-//    })
-
+    if (false) {
+      engine.addEvolutionObserver(new EvolutionObserver[WFSchedSolution]() {
+        def populationUpdate(data: PopulationData[_ <: WFSchedSolution]) = {
+          val best = data.getBestCandidate
+          val bestMakespan = WorkflowSchedulingProblem.solutionToSchedule(best, context, environment).makespan()
+          println(s"Generation ${data.getGenerationNumber}: $bestMakespan")
+          println(s"Mean fitness: ${data.getMeanFitness}\n")
+        }
+      })
+    }
 
     val heft_schedule = HEFTScheduler.schedule(context, environment)
     val min_schedule = MinMinScheduler.schedule(context, environment)
-    val seeds: util.ArrayList[EvSolution[_]] = new util.ArrayList[EvSolution[_]]()
-    seeds.add(WorkflowSchedulingProblem.scheduleToSolution[T, N](heft_schedule, context, environment))
-    seeds.add(WorkflowSchedulingProblem.scheduleToSolution[T, N](min_schedule, context, environment))
-    seeds.add(EnvConfigurationProblem.environmentToSolution(environment, context.asInstanceOf[BasicContext[DaxTask, N]]))
-    seeds.add(EnvConfigurationProblem.environmentToSolution(environment, context.asInstanceOf[BasicContext[DaxTask, N]]))
+    val seeds: util.ArrayList[WFSchedSolution] = new util.ArrayList[WFSchedSolution]()
+    val heft_sol = WorkflowSchedulingProblem.scheduleToSolution[T, N](heft_schedule, context, environment)
+    //    seeds.add(heft_sol)
+    //    seeds.add(WorkflowSchedulingProblem.scheduleToSolution[T, N](min_schedule, context, environment))
 
-    val result: (WFSchedSolution, EnvConfSolution, Double) = engine.evolve(popSize, 1, seeds, new GenerationCount(iterationCount))
-    val newEnv = EnvConfigurationProblem.solutionToEnvironment[T, N](result._2, context)
-    println("CGA environment: ")
-    println(newEnv.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint())
-    WorkflowSchedulingProblem.solutionToSchedule(result._1, context, newEnv)
+    val result = engine.evolve(popSize, 1, seeds, new GenerationCount(iterationCount))
+    WorkflowSchedulingProblem.solutionToSchedule(result, context, environment)
   }
 
 

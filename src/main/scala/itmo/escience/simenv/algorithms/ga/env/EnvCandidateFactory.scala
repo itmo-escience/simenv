@@ -14,6 +14,7 @@ class EnvCandidateFactory[T <: Task, N <: Node](env: Environment[N], ctx: Contex
   def getCtx = ctx
   override def generateRandomCandidate(random: Random): EnvConfSolution = {
     var result: List[MappedEnv] = List[MappedEnv]()
+    var fixedAvailNodes: List[MappedEnv] = List[MappedEnv]()
     val carriers = env.carriers
     for (carrier <- carriers) {
 
@@ -25,6 +26,9 @@ class EnvCandidateFactory[T <: Task, N <: Node](env: Environment[N], ctx: Contex
         val node = it.next()
         val nodeSched = ctx.schedule.getMap.get(node.id)
         if (ctx.schedule.getMap.containsKey(node.id) && nodeSched.nonEmpty && nodeSched.last.endTime > ctx.currentTime) {
+          if (node.status == NodeStatus.UP) {
+            fixedAvailNodes :+= new MappedEnv(node.id, node.capacity)
+          }
           curCap -= node.capacity
         } else {
           if (!it.hasNext) {

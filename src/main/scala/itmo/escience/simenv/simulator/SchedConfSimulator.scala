@@ -15,11 +15,12 @@ import scala.util.Random
 
 
 /**
- * Perform discrete event-drivent simulation of workflows execution
- * @param scheduler algorithm for scheduling, must implement Scheduler interface
- * @param ctx contains description of computational environments and may perform actions on it
- */
-class SchedConfSimulator[T <: Task, N <: Node](scheduler: Scheduler, ctx:Context[T, N],
+  * Perform discrete event-drivent simulation of workflows execution
+  *
+  * @param scheduler algorithm for scheduling, must implement Scheduler interface
+  * @param ctx       contains description of computational environments and may perform actions on it
+  */
+class SchedConfSimulator[T <: Task, N <: Node](scheduler: Scheduler, ctx: Context[T, N],
                                                nodeDownTime: Double,
                                                resDownTime: Double,
                                                val nodeResizeTime: Double)
@@ -65,12 +66,38 @@ class SchedConfSimulator[T <: Task, N <: Node](scheduler: Scheduler, ctx:Context
 
       if (ctx.schedule.restTasks().nonEmpty) {
 
-        val (sc, env) = scheduler.asInstanceOf[CGAScheduler].coevSchedule(ctx, ctx.environment)
-        queue.eq = queue.eq.filter(x => !x.isInstanceOf[TaskStarted])
-        // Apply new schedule
-        ctx.setEnvironment(env)
-        ctx.applySchedule(sc, queue)
-
+        var availableNodes = List[N]()
+        var nodes = ctx.environment.nodes.filter(x => x.status == NodeStatus.UP)
+        for (n <- nodes) {
+          if (ctx.schedule.getMap.containsKey(n.id)) {
+            val nodeSched = ctx.schedule.getMap.get(n.id)
+            if (nodeSched.nonEmpty) {
+              if (nodeSched.last.endTime <= ctx.currentTime) {
+                availableNodes :+= n
+              }
+            } else {
+              availableNodes :+= n
+            }
+          } else {
+            availableNodes :+= n
+          }
+        }
+        var sc: Schedule[T, N] = null
+        if (availableNodes.size > 1) {
+          println("coevo")
+          val (sc1, env) = scheduler.asInstanceOf[CGAScheduler].coevSchedule(ctx, ctx.environment)
+          sc = sc1
+          queue.eq = queue.eq.filter(x => !x.isInstanceOf[TaskStarted])
+          // Apply new schedule
+          ctx.setEnvironment(env)
+          ctx.applySchedule(sc, queue)
+        } else {
+          println("ga")
+          sc = scheduler.schedule[T, N](ctx, ctx.environment)
+          queue.eq = queue.eq.filter(x => !x.isInstanceOf[TaskStarted])
+          // Apply new schedule
+          ctx.applySchedule(sc, queue)
+        }
         vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
 
 
@@ -81,7 +108,7 @@ class SchedConfSimulator[T <: Task, N <: Node](scheduler: Scheduler, ctx:Context
         task_failed_after()
       }
     } else {
-      queue.submitEvent(new Rescheduling(id="reschedule", name="reschedule", postTime = ctx.currentTime, eventTime = ctx.currentTime + nodeDownTime) )
+      queue.submitEvent(new Rescheduling(id = "reschedule", name = "reschedule", postTime = ctx.currentTime, eventTime = ctx.currentTime + nodeDownTime))
     }
   }
 

@@ -35,7 +35,7 @@ class EnvMutationOperator[N <: Node](env: Environment[N],
 
   def doMutation(mutant:EnvConfSolution, rnd: Random) = {
 
-    val nodes = env.carriers.filter(x => x.children.count(y => y.status == NodeStatus.UP) > 1)
+    val nodes = env.carriers.filter(x => x.children.count(y => y.status == NodeStatus.UP && mutant.genSeq.map(z => z.vmId).contains(y.id)) > 1)
     if (nodes.nonEmpty) {
       val node = nodes(rnd.nextInt(nodes.length)).asInstanceOf[CapacityBasedCarrier]
       val availableNodes = node.children.filter(x => x.status == NodeStatus.UP)

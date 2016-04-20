@@ -16,6 +16,8 @@ class EnvConfSolution(mappedVms: List[MappedEnv]) extends EvSolution {
 
   private val _genes = new util.ArrayList(mappedVms)
 
+//  val fixed = fixedVms
+
   def setVariableValue(i: Int, t: MappedEnv): Unit = {
     _genes.set(i, t)
   }
@@ -52,7 +54,7 @@ class EnvConfSolution(mappedVms: List[MappedEnv]) extends EvSolution {
   }
 
   override def copy: EnvConfSolution = {
-    new EnvConfSolution(this)
+    new EnvConfSolution(this._genes.toList)
   }
 
   def getNumberOfVariables: Int = _genes.size()
@@ -60,6 +62,8 @@ class EnvConfSolution(mappedVms: List[MappedEnv]) extends EvSolution {
   def genSeq: List[MappedEnv] = _genes.toList
 
   def size = _genes.size
+
+//  def availSize = _genes.size + fixed.size
 
   override var fitness: Double = 66613666
 }
