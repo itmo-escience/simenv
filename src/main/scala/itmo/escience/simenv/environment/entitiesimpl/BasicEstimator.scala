@@ -20,27 +20,27 @@ class BasicEstimator[N <: CapacityBasedNode](idealCapacity:Double, env: Environm
     val (parent_task, from_node) = from
     val (child_task, to_node) = to
 
-//    if (from_node.id == to_node.id) {
-//      return 0.0
-//    }
-//    if (from_node.parent == to_node.parent) {
-//      1.0
-//    } else {
-//      10.0
-//    }
+    if (from_node.id == to_node.id) {
+      return 0.0
+    }
+    if (from_node.parent == to_node.parent) {
+      100.0
+    } else {
+      100.0
+    }
 
 
-    val from_networks = env.networksByNode(from_node)
-    val to_networks = env.networksByNode(to_node)
-
-    // TODO: ATTENTION! intersection is possible if the entity of network is immutable
-    val transferNetwork = from_networks.intersect(to_networks).max(new Ordering[Network] {
-      override def compare(x: Network, y: Network): Int = x.bandwidth.compare(y.bandwidth)
-    })
-
-    val volume = child_task.volumeToTransfer(parent_task)
-
-    //estimate time
-    volume / transferNetwork.bandwidth
+//    val from_networks = env.networksByNode(from_node)
+//    val to_networks = env.networksByNode(to_node)
+//
+//    // TODO: ATTENTION! intersection is possible if the entity of network is immutable
+//    val transferNetwork = from_networks.intersect(to_networks).max(new Ordering[Network] {
+//      override def compare(x: Network, y: Network): Int = x.bandwidth.compare(y.bandwidth)
+//    })
+//
+//    val volume = child_task.volumeToTransfer(parent_task)
+//
+//    //estimate time
+//    volume / transferNetwork.bandwidth
   }
 }

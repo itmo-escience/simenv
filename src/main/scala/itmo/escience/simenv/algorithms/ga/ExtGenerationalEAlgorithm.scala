@@ -5,6 +5,7 @@ import java.util.Random
 
 import itmo.escience.simenv.environment.entities.{Node, Task}
 import org.uncommons.watchmaker.framework._
+import scala.collection.JavaConversions._
 
 /**
   * Created by mikhail on 02.02.2016.
@@ -36,6 +37,10 @@ class ExtGenerationalEAlgorithm[T <: Task, N <: Node](factory: ScheduleCandidate
     population.addAll(selector.select(nextEvaluatedPopulation, this.fitnessEvaluator.isNatural, popSize - eliteCount, rng))
     val population1: util.List[WFSchedSolution] = this.pipeline.apply(population, rng)
     population1.addAll(elite)
-    evaluatePopulation(population1)
+    val evPop = evaluatePopulation(population1)
+    for (it <- evPop) {
+      it.getCandidate.fitness = it.getFitness
+    }
+    evPop
   }
 }

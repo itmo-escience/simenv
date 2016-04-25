@@ -47,17 +47,20 @@ class GADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double, 
 
   override def run(): Double = {
 //    println("Init environment:")
-    val rnd = new Random()
-    val cross = 0.5 //rnd.nextDouble()
-    val m1 = 0.5 //rnd.nextDouble()
-    val m2 = 0.3 //rnd.nextDouble()
+//    val rnd = new Random()
+    val cross = 0.7 //rnd.nextDouble()
+//    val cross = rnd.nextDouble()
+    val m1 = 0.2 //rnd.nextDouble()
+//    val m1 = rnd.nextDouble()
+    val m2 = 0.2 //rnd.nextDouble()
+//    val m2 = rnd.nextDouble()
 //    println(s"$cross   $m1   $m2")
 
     val scheduler = new GAScheduler(crossoverProb = cross,
       mutationProb = m1,
       swapMutationProb = m2,
       popSize = 100,
-      iterationCount = 500)
+      iterationCount = 10000)
 
     val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule[DaxTask, CapacityBasedNode](),
       estimator, 0.0, new SingleAppWorkload(wf))
