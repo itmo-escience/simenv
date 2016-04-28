@@ -43,6 +43,7 @@ class WfGeneratorGA(crossoverProb:Double, mutationProb: Double,
       engine.addEvolutionObserver(new EvolutionObserver[ArrSolution]() {
         def populationUpdate(data: PopulationData[_ <: ArrSolution]) = {
           val best = data.getBestCandidate
+          println("------------------")
           println(s"Generation ${data.getGenerationNumber}: best = ${best.arr.toList}; fit = ${best.fitness}")
           println(s"Mean fit: ${data.getMeanFitness} Std: ${data.getFitnessStandardDeviation}\n")
         }

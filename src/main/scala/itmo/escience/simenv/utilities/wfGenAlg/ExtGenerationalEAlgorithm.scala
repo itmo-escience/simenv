@@ -38,11 +38,19 @@ class ExtGenerationalEAlgorithm(factory: WfCandidateFactory,
     population.addAll(selector.select(nextEvaluatedPopulation, this.fitnessEvaluator.isNatural, popSize - eliteCount, rng))
     val population1: util.List[ArrSolution] = this.pipeline.apply(population, rng)
     population1.addAll(elite)
-    val evPop = evaluatePopulation(population1)
+    val evPop = evaluate(population1)
     for (it <- evPop) {
       it.getCandidate.fitness = it.getFitness
       it.getCandidate.evaluated = true
     }
     evPop
+  }
+
+  def evaluate(pop: util.List[ArrSolution]): util.List[EvaluatedCandidate[ArrSolution]] = {
+    val res = new util.ArrayList[EvaluatedCandidate[ArrSolution]]()
+    for (p <- pop) {
+      res.add(new EvaluatedCandidate[ArrSolution](p, fitnessEvaluator.getFitness(p, null)))
+    }
+    res
   }
 }

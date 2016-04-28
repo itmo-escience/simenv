@@ -72,12 +72,12 @@ class FitExp(wfGen: util.HashMap[String, (Double, List[(String, Double)])], wfNa
     val avgProfit = profit(avgMakespan)
     val profits = values.map(x => profit(x))
 
-//    println("--exp--")
+    println("--exp--")
 //    println(_wfString)
 //    println(s"Heft : $heft_makespan")
-//    println(s"GA makespans: $values")
-//    println(s"GA   profits: $profits")
-//    println(s"GA result: $avgProfit")
+    println(s"GA makespans: $values")
+    println(s"GA   profits: $profits")
+    println(s"GA result: $avgProfit")
     avgProfit
   }
 }
