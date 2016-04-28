@@ -100,7 +100,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>itmo.escience.Main</mainClass>
+                            <mainClass>itmo.escience.simenv.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

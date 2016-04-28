@@ -2,9 +2,6 @@ package itmo.escience.simenv.algorithms.ga
 
 import java.util
 
-import itmo.escience.simenv.algorithms.ga.env.{EnvConfSolution, EnvConfigurationProblem}
-
-//import itmo.escience.simenv.algorithms.ga.env.EnvConfSolution
 import itmo.escience.simenv.environment.entities.{Context, Node, Task}
 import itmo.escience.simenv.environment.modelling.Environment
 import org.uncommons.watchmaker.framework.FitnessEvaluator
@@ -20,23 +17,4 @@ class ScheduleFitnessEvaluator[T <: Task, N <: Node](ctx: Context[T, N], env: En
     schedule.makespan()
   }
 
-  def getFitness(s: WFSchedSolution, e: EnvConfSolution): Double = {
-    val environment = EnvConfigurationProblem.solutionToEnvironment[T, N](e, ctx)
-    val schedule = WorkflowSchedulingProblem.coevSolutionToSchedule[T, N](s, ctx, environment)
-    schedule.makespan()
-  }
-
-//  def adaptation(sched: WFSchedSolution, env: EnvConfSolution): WFSchedSolution = {
-//    var genes: List[MappedTask] = List[MappedTask]()
-//    val emptyNodes = env.genSeq.filter(x => x.cap == 0).map(x => x.vmId)
-//    val availableNodes = env.genSeq.filter(x => x.cap > 0).map(x => x.vmId)
-//    for (x <- sched.genSeq) {
-//      if (availableNodes.contains(x.nodeId)) {
-//        genes :+= x
-//      } else {
-//        genes :+= new MappedTask(x.taskId, availableNodes(scala.util.Random.nextInt(availableNodes.size)))
-//      }
-//    }
-//    new WFSchedSolution(genes)
-//  }
 }

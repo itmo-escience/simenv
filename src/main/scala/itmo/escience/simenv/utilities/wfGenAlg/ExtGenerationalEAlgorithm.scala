@@ -49,7 +49,10 @@ class ExtGenerationalEAlgorithm(factory: WfCandidateFactory,
   def evaluate(pop: util.List[ArrSolution]): util.List[EvaluatedCandidate[ArrSolution]] = {
     val res = new util.ArrayList[EvaluatedCandidate[ArrSolution]]()
     for (p <- pop) {
-      res.add(new EvaluatedCandidate[ArrSolution](p, fitnessEvaluator.getFitness(p, null)))
+      val fit = fitnessEvaluator.getFitness(p, null)
+      p.fitness = fit
+      p.evaluated = true
+      res.add(new EvaluatedCandidate[ArrSolution](p, fit))
     }
     res
   }

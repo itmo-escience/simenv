@@ -44,8 +44,8 @@ class FitExp(wfGen: util.HashMap[String, (Double, List[(String, Double)])], wfNa
     val scheduler = new GAScheduler(crossoverProb = 0.85,
       mutationProb = 0.15,
       swapMutationProb = 0.15,
-      popSize = 20,
-      iterationCount = 1)
+      popSize = 50,
+      iterationCount = 300)
 
     val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule[DaxTask, CapacityBasedNode](),
       estimator, 0.0, new SingleAppWorkload(wf))
@@ -55,7 +55,7 @@ class FitExp(wfGen: util.HashMap[String, (Double, List[(String, Double)])], wfNa
 
     var avgMakespan = 0.0
     var values = List[Double]()
-    val repeats = 2
+    val repeats = 5
     for (i <- 0 until repeats)
     {
       val ga_schedule = scheduler.schedule(ctx, environment)
@@ -72,12 +72,12 @@ class FitExp(wfGen: util.HashMap[String, (Double, List[(String, Double)])], wfNa
     val avgProfit = profit(avgMakespan)
     val profits = values.map(x => profit(x))
 
-    println("--exp--")
+//    println("--exp--")
 //    println(_wfString)
 //    println(s"Heft : $heft_makespan")
-    println(s"GA makespans: $values")
-    println(s"GA   profits: $profits")
-    println(s"GA result: $avgProfit")
+//    println(s"GA makespans: $values")
+//    println(s"GA   profits: $profits")
+//    println(s"GA result: $avgProfit")
     avgProfit
   }
 }

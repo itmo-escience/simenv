@@ -508,28 +508,6 @@ object RandomWFGenerator {
         ("res", randN(ccdResTr, ccdResTrV))
       )))
 
-    // sweep 3
-    result.put("cone3", (randN(cyclgenCalc, cyclgenCalcV),
-      List[(String, Double)](
-        ("swan3", randN(cyclgenSwanTr, cyclgenSwanTrV)),
-        ("bsm3", randN(cyclgenBsmTr, cyclgenBsmTrV))
-      )))
-
-    result.put("swan3", (randN(swanCalc, swanCalcV),
-      List[(String, Double)](
-        ("bsm3", randN(swanBsmTr, swanBsmTrV))
-      )))
-
-    result.put("bsm3", (randN(bsmCalc, bsmCalcV),
-      List[(String, Double)](
-        ("ccd3", randN(bsmCcdTr, bsmCcdTrV))
-      )))
-
-    result.put("ccd3", (randN(ccdCalc, ccdCalcV),
-      List[(String, Double)](
-        ("res", randN(ccdResTr, ccdResTrV))
-      )))
-
 
     // Result aggregation
     result.put("res", (randN(resCalc, resCalcV),

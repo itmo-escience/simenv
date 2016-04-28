@@ -1,5 +1,6 @@
 package itmo.escience.simenv.utilities.wfGenAlg
 
+import java.io.PrintWriter
 import java.util
 import java.util.Random
 
@@ -9,6 +10,7 @@ import org.uncommons.watchmaker.framework.operators.EvolutionPipeline
 import org.uncommons.watchmaker.framework.selection.RouletteWheelSelection
 import org.uncommons.watchmaker.framework.termination.GenerationCount
 import scala.collection.JavaConversions._
+import itmo.escience.simenv.utilities.Utilities.generateId
 
 /**
   * Created by Mishanya on 22.01.2016.
@@ -39,6 +41,7 @@ class WfGeneratorGA(crossoverProb:Double, mutationProb: Double,
       selector,
       rng, popSize)
 
+    val file = new PrintWriter(s".\\wfGALog2_$generateId.txt", "UTF-8")
     if (true) {
       engine.addEvolutionObserver(new EvolutionObserver[ArrSolution]() {
         def populationUpdate(data: PopulationData[_ <: ArrSolution]) = {
@@ -46,6 +49,7 @@ class WfGeneratorGA(crossoverProb:Double, mutationProb: Double,
           println("------------------")
           println(s"Generation ${data.getGenerationNumber}: best = ${best.arr.toList}; fit = ${best.fitness}")
           println(s"Mean fit: ${data.getMeanFitness} Std: ${data.getFitnessStandardDeviation}\n")
+          file.write(s"Generation ${data.getGenerationNumber}: best = ${best.arr.toList}; fit = ${best.fitness}\n")
         }
       })
     }
@@ -53,6 +57,7 @@ class WfGeneratorGA(crossoverProb:Double, mutationProb: Double,
     val seeds: util.ArrayList[ArrSolution] = new util.ArrayList[ArrSolution]()
 
     val result = engine.evolve(popSize, 1, seeds, new GenerationCount(iterationCount))
+    file.close()
     println(s"\n--Best = ${result.arr.toList}; fit = ${result.fitness}--")
   }
 
