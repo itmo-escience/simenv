@@ -259,7 +259,7 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
 //      postTime = ctx.currentTime, eventTime=ctx.currentTime))
 //  }
 
-  var failMap = Set[String]("ID00008", "ID00016")
+  var failMap = Set[String]()
 //  var failMap = Set[String]()
 
   private def taskFailer(taskScheduleItem: TaskScheduleItem[T, N]) = {

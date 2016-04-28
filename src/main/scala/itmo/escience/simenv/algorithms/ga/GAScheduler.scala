@@ -47,7 +47,7 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
           val best = data.getBestCandidate
           val bestMakespan = WorkflowSchedulingProblem.solutionToSchedule(best, context, environment).makespan()
           println(s"Generation ${data.getGenerationNumber}: $bestMakespan")
-          println(s"Mean fitness: ${data.getMeanFitness}\n")
+//          println(s"Mean fitness: ${data.getMeanFitness}\n")
         }
       })
     }
@@ -59,7 +59,7 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
     seeds.add(heft_sol)
 //    seeds.add(WorkflowSchedulingProblem.scheduleToSolution[T, N](min_schedule, context, environment))
 
-    val result = engine.evolve(popSize, 1, seeds, new GenerationCount(iterationCount))
+    val result = engine.evolve(popSize, 2, seeds, new GenerationCount(iterationCount))
     WorkflowSchedulingProblem.solutionToSchedule(result, context, environment)
   }
 
