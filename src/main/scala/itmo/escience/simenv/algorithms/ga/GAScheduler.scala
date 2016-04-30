@@ -8,7 +8,7 @@ import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.modelling.Environment
 import org.uncommons.maths.random.MersenneTwisterRNG
 import org.uncommons.watchmaker.framework.operators.EvolutionPipeline
-import org.uncommons.watchmaker.framework.selection.RouletteWheelSelection
+import org.uncommons.watchmaker.framework.selection.{RankSelection, RouletteWheelSelection}
 import org.uncommons.watchmaker.framework._
 import org.uncommons.watchmaker.framework.termination.GenerationCount
 
@@ -21,6 +21,11 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
 
 
   override def schedule[T <: Task, N <: Node](context: Context[T, N], environment: Environment[N]): Schedule[T, N] = {
+    val result = run[T, N](context, environment)
+    WorkflowSchedulingProblem.solutionToSchedule(result, context, environment)
+  }
+
+  def run[T <: Task, N <: Node](context: Context[T, N], environment: Environment[N]): WFSchedSolution = {
     val factory: ScheduleCandidateFactory[T, N] = new ScheduleCandidateFactory[T, N](context, environment)
 
     val operators: util.List[EvolutionaryOperator[WFSchedSolution]] = new util.LinkedList[EvolutionaryOperator[WFSchedSolution]]()
@@ -35,32 +40,20 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
 
     val rng: Random = new MersenneTwisterRNG()
 
-    val  engine: EvolutionEngine[WFSchedSolution] = new ExtGenerationalEAlgorithm[T, N](factory,
+    val  engine: ExtGenerationalEAlgorithm[T, N] = new ExtGenerationalEAlgorithm[T, N](factory,
       pipeline,
       fitnessEvaluator,
       selector,
       rng, popSize)
 
-    if (false) {
-      engine.addEvolutionObserver(new EvolutionObserver[WFSchedSolution]() {
-        def populationUpdate(data: PopulationData[_ <: WFSchedSolution]) = {
-          val best = data.getBestCandidate
-          val bestMakespan = WorkflowSchedulingProblem.solutionToSchedule(best, context, environment).makespan()
-          println(s"Generation ${data.getGenerationNumber}: $bestMakespan")
-//          println(s"Mean fitness: ${data.getMeanFitness}\n")
-        }
-      })
-    }
 
     val heft_schedule = HEFTScheduler.schedule(context, environment)
-//    val min_schedule = MinMinScheduler.schedule(context, environment)
     val seeds: util.ArrayList[WFSchedSolution] = new util.ArrayList[WFSchedSolution]()
     val heft_sol = WorkflowSchedulingProblem.scheduleToSolution[T, N](heft_schedule, context, environment)
-    seeds.add(heft_sol)
-//    seeds.add(WorkflowSchedulingProblem.scheduleToSolution[T, N](min_schedule, context, environment))
+//    seeds.add(heft_sol)
 
-    val result = engine.evolve(popSize, 2, seeds, new GenerationCount(iterationCount))
-    WorkflowSchedulingProblem.solutionToSchedule(result, context, environment)
+    val result = engine.evolve1(popSize, 5, seeds, new GenerationCount(iterationCount))
+    result
   }
 
 }

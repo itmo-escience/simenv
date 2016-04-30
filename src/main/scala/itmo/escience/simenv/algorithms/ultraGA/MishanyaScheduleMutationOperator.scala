@@ -1,4 +1,4 @@
-package itmo.escience.simenv.algorithms.ga
+package itmo.escience.simenv.algorithms.ultraGA
 
 import java.util
 import java.util.Random
@@ -10,22 +10,22 @@ import org.uncommons.watchmaker.framework.EvolutionaryOperator
 /**
   * Created by mikhail on 22.01.2016.
   */
-class ScheduleMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env: Environment[N],
-                                                     probability: Double, swapProbability: Double)
-                                                      extends EvolutionaryOperator[WFSchedSolution]{
+class MishanyaScheduleMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env: Environment[N],
+                                                             probability: Double, swapProbability: Double)
+                                                      extends EvolutionaryOperator[MishanyaSolution]{
 
-  override def apply(mutants: util.List[WFSchedSolution], random: Random): util.List[WFSchedSolution] = {
-    val mutatedPopulation: util.ArrayList[WFSchedSolution] = new util.ArrayList[WFSchedSolution](mutants.size())
-    val it: util.Iterator[WFSchedSolution] = mutants.iterator()
+  override def apply(mutants: util.List[MishanyaSolution], random: Random): util.List[MishanyaSolution] = {
+    val mutatedPopulation: util.ArrayList[MishanyaSolution] = new util.ArrayList[MishanyaSolution](mutants.size())
+    val it: util.Iterator[MishanyaSolution] = mutants.iterator()
 
     while(it.hasNext) {
-      val s: WFSchedSolution = it.next()
+      val s: MishanyaSolution = it.next()
       mutatedPopulation.add(mutateSolution(s, random))
     }
     mutatedPopulation
   }
 
-  def mutateSolution(mutant: WFSchedSolution, rnd: Random): WFSchedSolution = {
+  def mutateSolution(mutant: MishanyaSolution, rnd: Random): MishanyaSolution = {
     if (rnd.nextDouble() <= probability) {
       doMutation(mutant, rnd)
       mutant.evaluated = false
@@ -33,7 +33,7 @@ class ScheduleMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env: En
     mutant
   }
 
-  private def doMutation(mutant:WFSchedSolution, rnd: Random) = {
+  private def doMutation(mutant:MishanyaSolution, rnd: Random) = {
 //    for (i <- mutant.genSeq.indices) {
 
       val i = rnd.nextInt(mutant.getNumberOfVariables)
@@ -44,13 +44,13 @@ class ScheduleMutationOperator[T <: Task, N <: Node](ctx: Context[T, N], env: En
         val liveNodes = env.nodes.filter(x => x.status == NodeStatus.UP && x.id != oldNode).toList
         if (liveNodes.nonEmpty) {
           val node = liveNodes(rnd.nextInt(liveNodes.length))
-          mutant.setVariableValue(i, MappedTask(gene.taskId, node.id))
+          mutant.setVariableValue(i, MMappedTask(gene.taskId, node.id))
         }
 //      }
 //    }
   }
 
-  private def doSwapMutation(mutant:WFSchedSolution, rnd: Random) = {
+  private def doSwapMutation(mutant:MishanyaSolution, rnd: Random) = {
 
     val a = rnd.nextInt(mutant.getNumberOfVariables)
     val b = rnd.nextInt(mutant.getNumberOfVariables)

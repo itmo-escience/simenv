@@ -508,9 +508,274 @@ object RandomWFGenerator {
         ("res", randN(ccdResTr, ccdResTrV))
       )))
 
+    // sweep 3
+//    result.put("cone3", (randN(cyclgenCalc, cyclgenCalcV),
+//      List[(String, Double)](
+//        ("swan3", randN(cyclgenSwanTr, cyclgenSwanTrV)),
+//        ("bsm3", randN(cyclgenBsmTr, cyclgenBsmTrV))
+//      )))
+//
+//    result.put("swan3", (randN(swanCalc, swanCalcV),
+//      List[(String, Double)](
+//        ("bsm3", randN(swanBsmTr, swanBsmTrV))
+//      )))
+//
+//    result.put("bsm3", (randN(bsmCalc, bsmCalcV),
+//      List[(String, Double)](
+//        ("ccd3", randN(bsmCcdTr, bsmCcdTrV))
+//      )))
+//
+//    result.put("ccd3", (randN(ccdCalc, ccdCalcV),
+//      List[(String, Double)](
+//        ("res", randN(ccdResTr, ccdResTrV))
+//      )))
+
+    // sweep 4
+//    result.put("cone4", (randN(cyclgenCalc, cyclgenCalcV),
+//      List[(String, Double)](
+//        ("swan4", randN(cyclgenSwanTr, cyclgenSwanTrV)),
+//        ("bsm4", randN(cyclgenBsmTr, cyclgenBsmTrV))
+//      )))
+//
+//    result.put("swan4", (randN(swanCalc, swanCalcV),
+//      List[(String, Double)](
+//        ("bsm4", randN(swanBsmTr, swanBsmTrV))
+//      )))
+//
+//    result.put("bsm4", (randN(bsmCalc, bsmCalcV),
+//      List[(String, Double)](
+//        ("ccd4", randN(bsmCcdTr, bsmCcdTrV))
+//      )))
+//
+//    result.put("ccd4", (randN(ccdCalc, ccdCalcV),
+//      List[(String, Double)](
+//        ("res", randN(ccdResTr, ccdResTrV))
+//      )))
+
 
     // Result aggregation
     result.put("res", (randN(resCalc, resCalcV),
+      List[(String, Double)](
+      )))
+
+    result
+  }
+
+
+  // Hydro sweeps
+  def type4GAGenerate(transfers: Array[Int]): util.HashMap[String, (Double, List[(String, Double)])] = {
+    val result = new util.HashMap[String, (Double, List[(String, Double)])]()
+
+    val cyclgenCalc = 325.0
+    val cyclgenCalcV = 25.0
+    val cyclgenSwanTr = transfers(0)
+    val cyclgenSwanTrV = cyclgenSwanTr * 0.05
+    val cyclgenBsmTr = transfers(1)
+    val cyclgenBsmTrV = cyclgenBsmTr * 0.05
+
+    val swanCalc = 1300.0
+    val swanCalcV = 50.0
+    val swanBsmTr = transfers(2)
+    val swanBsmTrV = swanBsmTr * 0.05
+
+    val bsmCalc = 2800.0
+    val bsmCalcV = 150.0
+    val bsmCcdTr = transfers(3)
+    val bsmCcdTrV = bsmCcdTr * 0.05
+
+    val ccdCalc = 1.0
+    val ccdCalcV = 0.1
+
+    val totalSwan = 28
+    val halfSwan = totalSwan / 2
+    val swan1Bsm = totalSwan
+    val swan2Bsm = halfSwan
+
+    // Generators
+    var gen1Children = List[(String, Double)]()
+    var gen2Children = List[(String, Double)]()
+
+    for (i <- 1 to halfSwan) {
+      gen1Children :+= (s"swan$i", randN(cyclgenSwanTr, cyclgenSwanTrV))
+      gen2Children :+= (s"swan${i + halfSwan}", randN(cyclgenSwanTr, cyclgenSwanTrV))
+    }
+    gen1Children :+= ("bdsm1", randN(cyclgenBsmTr, cyclgenBsmTrV))
+    gen1Children :+= ("bdsm2", randN(cyclgenBsmTr, cyclgenBsmTrV))
+
+    gen2Children :+= ("bdsm1", randN(cyclgenBsmTr, cyclgenBsmTrV))
+    gen2Children :+= ("bdsm2", randN(cyclgenBsmTr, cyclgenBsmTrV))
+
+    result.put("genadiy1", (randN(cyclgenCalc, cyclgenCalcV), gen1Children))
+    result.put("genadiy2", (randN(cyclgenCalc, cyclgenCalcV), gen2Children))
+
+    // Swan's army
+    for (i <- 1 to totalSwan) {
+      var swanChildren = List[(String, Double)]()
+      if (i <= swan1Bsm) {
+        swanChildren :+=  ("bdsm1", randN(swanBsmTr, swanBsmTrV))
+      }
+      if (i > totalSwan - swan2Bsm) {
+        swanChildren :+=  ("bdsm2", randN(swanBsmTr, swanBsmTrV))
+      }
+      result.put(s"swan$i", (randN(swanCalc, swanCalcV), swanChildren))
+    }
+
+    // BDSM
+    result.put("bdsm1", (randN(bsmCalc, bsmCalcV),
+      List[(String, Double)](
+        ("anal", randN(bsmCcdTr, bsmCcdTrV))
+      )))
+    result.put("bdsm2", (randN(bsmCalc, bsmCalcV),
+      List[(String, Double)](
+        ("anal", randN(bsmCcdTr, bsmCcdTrV))
+      )))
+
+    // Anal
+    result.put("anal", (randN(ccdCalc, ccdCalcV),
+      List[(String, Double)]()
+      ))
+
+    result
+  }
+
+  // Hydro sweeps
+  def type5GAGenerate(transfers: Array[Int]): util.HashMap[String, (Double, List[(String, Double)])] = {
+    val result = new util.HashMap[String, (Double, List[(String, Double)])]()
+
+    val cyclgenCalc = 325.0
+    val cyclgenCalcV = 2.0
+    val cyclgenSwanTr = transfers(0)
+    val cyclgenSwanTrV = cyclgenSwanTr * 0.0
+    val cyclgenBsmTr = transfers(1)
+    val cyclgenBsmTrV = cyclgenBsmTr * 0.05
+
+    val swanCalc = 1300.0
+    val swanCalcV = 5.0
+    val swanBsmTr = transfers(2)
+    val swanBsmTrV = swanBsmTr * 0.0
+
+    val bsmCalc = 2800.0
+    val bsmCalcV = 10.0
+    val bsmCcdTr = transfers(3)
+    val bsmCcdTrV = bsmCcdTr * 0.0
+
+    val ccdCalc = 1.0
+    val ccdCalcV = 0.0
+    val ccdGenTr = transfers(4)
+    val ccdGenTrV = ccdGenTr * 0.0
+
+    // Generators
+    result.put("genadiy1", (randN(cyclgenCalc, cyclgenCalcV),
+      List[(String, Double)](
+        ("swan1", randN(cyclgenSwanTr, cyclgenSwanTr)),
+        ("swan11", randN(cyclgenSwanTr, cyclgenSwanTr)),
+        ("swan2", randN(cyclgenSwanTr, cyclgenSwanTr)),
+        ("bdsm1", randN(cyclgenBsmTr, cyclgenBsmTr))
+      )))
+    result.put("genadiy2", (randN(cyclgenCalc, cyclgenCalcV),
+      List[(String, Double)](
+        ("swan2", randN(cyclgenSwanTr, cyclgenSwanTr)),
+        ("swan33", randN(cyclgenSwanTr, cyclgenSwanTr)),
+        ("swan3", randN(cyclgenSwanTr, cyclgenSwanTr)),
+        ("bdsm2", randN(cyclgenBsmTr, cyclgenBsmTr))
+      )))
+
+    // Swan's army
+    result.put(s"swan1", (randN(swanCalc, swanCalcV),
+      List[(String, Double)](
+        ("bdsm1", randN(swanBsmTr, swanBsmTrV))
+    )))
+    result.put(s"swan11", (randN(swanCalc, swanCalcV),
+      List[(String, Double)](
+        ("bdsm1", randN(swanBsmTr, swanBsmTrV)),
+        ("bdsm3", randN(swanBsmTr, swanBsmTrV))
+      )))
+    result.put(s"swan2", (randN(swanCalc, swanCalcV),
+      List[(String, Double)](
+        ("bdsm1", randN(swanBsmTr, swanBsmTrV)),
+        ("bdsm3", randN(swanBsmTr, swanBsmTrV)),
+        ("bdsm4", randN(swanBsmTr, swanBsmTrV)),
+        ("bdsm2", randN(swanBsmTr, swanBsmTrV))
+      )))
+    result.put(s"swan3", (randN(swanCalc, swanCalcV),
+      List[(String, Double)](
+        ("bdsm2", randN(swanBsmTr, swanBsmTrV)),
+        ("bdsm4", randN(swanBsmTr, swanBsmTrV))
+      )))
+    result.put(s"swan33", (randN(swanCalc, swanCalcV),
+      List[(String, Double)](
+        ("bdsm2", randN(swanBsmTr, swanBsmTrV))
+      )))
+
+    // BDSM
+    result.put("bdsm1", (randN(bsmCalc, bsmCalcV),
+      List[(String, Double)](
+        ("anal1", randN(bsmCcdTr, bsmCcdTrV))
+      )))
+    result.put("bdsm2", (randN(bsmCalc, bsmCalcV),
+      List[(String, Double)](
+        ("anal1", randN(bsmCcdTr, bsmCcdTrV))
+      )))
+
+    // Anal
+    result.put("anal1", (randN(ccdCalc, ccdCalcV),
+      List[(String, Double)](
+        ("genadiy3", randN(ccdGenTr, ccdGenTrV)),
+        ("genadiy3", randN(ccdGenTr, ccdGenTrV))
+      )))
+
+
+    // Generators
+    result.put("genadiy3", (randN(cyclgenCalc, cyclgenCalcV),
+      List[(String, Double)](
+        ("swan4", randN(cyclgenSwanTr, cyclgenSwanTr)),
+        ("swan44", randN(cyclgenSwanTr, cyclgenSwanTr)),
+        ("swan5", randN(cyclgenSwanTr, cyclgenSwanTr)),
+        ("bdsm3", randN(cyclgenBsmTr, cyclgenBsmTr))
+      )))
+    result.put("genadiy4", (randN(cyclgenCalc, cyclgenCalcV),
+      List[(String, Double)](
+        ("swan5", randN(cyclgenSwanTr, cyclgenSwanTr)),
+        ("swan6", randN(cyclgenSwanTr, cyclgenSwanTr)),
+        ("swan66", randN(cyclgenSwanTr, cyclgenSwanTr)),
+        ("bdsm4", randN(cyclgenBsmTr, cyclgenBsmTr))
+      )))
+
+    // Swan's army
+    result.put(s"swan4", (randN(swanCalc, swanCalcV),
+      List[(String, Double)](
+        ("bdsm3", randN(swanBsmTr, swanBsmTrV))
+      )))
+    result.put(s"swan44", (randN(swanCalc, swanCalcV),
+      List[(String, Double)](
+        ("bdsm3", randN(swanBsmTr, swanBsmTrV))
+      )))
+    result.put(s"swan5", (randN(swanCalc, swanCalcV),
+      List[(String, Double)](
+        ("bdsm3", randN(swanBsmTr, swanBsmTrV)),
+        ("bdsm4", randN(swanBsmTr, swanBsmTrV))
+      )))
+    result.put(s"swan6", (randN(swanCalc, swanCalcV),
+      List[(String, Double)](
+        ("bdsm4", randN(swanBsmTr, swanBsmTrV))
+      )))
+    result.put(s"swan66", (randN(swanCalc, swanCalcV),
+      List[(String, Double)](
+        ("bdsm4", randN(swanBsmTr, swanBsmTrV))
+      )))
+
+    // BDSM
+    result.put("bdsm3", (randN(bsmCalc, bsmCalcV),
+      List[(String, Double)](
+        ("anal2", randN(bsmCcdTr, bsmCcdTrV))
+      )))
+    result.put("bdsm4", (randN(bsmCalc, bsmCalcV),
+      List[(String, Double)](
+        ("anal2", randN(bsmCcdTr, bsmCcdTrV))
+      )))
+
+    // Anal
+    result.put("anal2", (randN(ccdCalc, ccdCalcV),
       List[(String, Double)](
       )))
 

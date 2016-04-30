@@ -1,9 +1,8 @@
-package itmo.escience.simenv.algorithms.ga
+package itmo.escience.simenv.algorithms.ultraGA
 
 import java.util
 
 import itmo.escience.simenv.environment.entities._
-import itmo.escience.simenv.environment.entitiesimpl.BasicEnvironment
 import itmo.escience.simenv.environment.modelling.Environment
 
 import scala.collection.JavaConversions._
@@ -12,9 +11,9 @@ import scala.collection.JavaConversions._
   * Created by user on 02.12.2015.
   */
 
-object WorkflowSchedulingProblem {
+object MishanyaWorkflowSchedulingProblem {
 
-  def scheduleToSolution[T <: Task, N <: Node](schedule: Schedule[T, N], context: Context[T, N], environment: Environment[N]): WFSchedSolution = {
+  def scheduleToSolution[T <: Task, N <: Node](schedule: Schedule[T, N], context: Context[T, N], environment: Environment[N]): MishanyaSolution = {
     val taskItems = schedule.scheduleItemsSeq().filter({
       case x: TaskScheduleItem[T, N] => true
       case _ => false
@@ -27,12 +26,12 @@ object WorkflowSchedulingProblem {
     }
     val restTasks = taskItems.filter(x => !fixed_tasks.contains(x.task.id) && x.status != ScheduleItemStatus.FAILED)
     val brokenNodes = environment.nodes.filter(x => x.status == NodeStatus.DOWN).map(x => x.id)
-    val genes = restTasks.map(x => MappedTask(x.task.id, x.node.id)).toList.filter(x => !brokenNodes.contains(x.nodeId))
-    new WFSchedSolution(genes)
+    val genes = restTasks.map(x => MMappedTask(x.task.id, x.node.id)).toList.filter(x => !brokenNodes.contains(x.nodeId))
+    new MishanyaSolution(genes)
   }
 
   def solutionToSchedule[T <: Task, N <: Node]
-                        (solution: WFSchedSolution,
+                        (solution: MishanyaSolution,
                          context: Context[T, N],
                          environment: Environment[N]): Schedule[T, N] = {
 
@@ -54,7 +53,7 @@ object WorkflowSchedulingProblem {
     newSchedule.asInstanceOf[Schedule[T, N]]
   }
 
-  def repairOrdering[T <: Task, N <: Node](solution: WFSchedSolution, context: Context[T, N], environment: Environment[N]): List[(T, NodeId)] = {
+  def repairOrdering[T <: Task, N <: Node](solution: MishanyaSolution, context: Context[T, N], environment: Environment[N]): List[(T, NodeId)] = {
     val wf = context.workload.apps.head
     val tasksSeq = new util.TreeSet[Pair[(T, NodeId)]](solution.genSeq.zipWithIndex
       .map({ case (x, i) =>
