@@ -1,0 +1,4 @@
+[
+{"id":"Cluster0","nodes":[
+{"id":"a1b99226-53cc-4375-92da-dfde3c11e0ee","host":"i7-psmirnov","availableCpuResources":2000.0,"availableMemoryResources":48815.0,"totalCpuResources":2000.0,"totalMemoryResources":48815.0,"slots":["1027","1028","1029"]},
+{"id":"3a299fec-9515-410e-8f1e-0a868e44977e","host":"i7-psmirnov","availableCpuResources":2000.0,"availableMemoryResources":48815.0,"totalCpuResources":2000.0,"totalMemoryResources":48815.0,"slots":["1024","1026","1025"]}]}]
