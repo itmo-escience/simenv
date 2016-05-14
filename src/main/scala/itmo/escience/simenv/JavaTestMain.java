@@ -9,17 +9,20 @@ import java.util.HashMap;
 public class JavaTestMain {
     public static void main(String[] args) {
 
-        String wfPath = ".\\resources\\tplgs\\tplg1.json";
-        String envPath = ".\\resources\\envs\\env1.json";
+        String wfPath = ".\\resources\\tplgs\\diamond.json";
+        String envPath = ".\\resources\\envs\\blades.json";
 
         String seedSolution = ".\\resources\\solutions\\sol1.json";
 
-        int localNet = 5000;
-        int globNet = 5;
+        int localNet = 800; // bandwidth in rack in MB\sec
+        int globNet = 800; // bandwidth between racks in MB\sec
 
         StormScheduler storm = new StormScheduler(wfPath, envPath, globNet, localNet, null);
         storm.initialization();
-        HashMap<String, java.util.ArrayList<java.util.ArrayList<Object>>> result = storm.scheduleToMapList(storm.run());
+
+        Boolean needPrintAlgLog = true;
+
+        HashMap<String, java.util.ArrayList<java.util.ArrayList<Object>>> result = storm.scheduleToMapList(storm.run(needPrintAlgLog));
         System.out.println("Finished");
     }
 

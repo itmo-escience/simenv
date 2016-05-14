@@ -2,21 +2,18 @@ package itmo.escience.simenv.ga
 
 import java.util
 
-import itmo.escience.simenv.entities.Network
+import itmo.escience.simenv.entities.{Network, _}
 import org.uncommons.watchmaker.framework.FitnessEvaluator
 
-import itmo.escience.simenv.entities._
 import scala.collection.JavaConversions._
 
 /**
   * Created by mikhail on 22.01.2016.
   */
-class ScheduleFitnessEvaluator(env: CarrierNodeEnvironment[CpuRamNode], tasks: util.HashMap[String, DaxTask]) extends FitnessEvaluator[SSSolution] {
-  override def isNatural: Boolean = true
+class ScheduleFitnessEvaluator2(env: CarrierNodeEnvironment[CpuRamNode], tasks: util.HashMap[String, DaxTask]) extends FitnessEvaluator[SSSolution] {
+  override def isNatural: Boolean = false
 
   override def getFitness(sol: SSSolution, list: util.List[_ <: SSSolution]): Double = {
-
-    val expTime = 300 // seconds
 
     if (sol.genes.size() != tasks.size()) {
       println("Pizdec")
@@ -43,39 +40,20 @@ class ScheduleFitnessEvaluator(env: CarrierNodeEnvironment[CpuRamNode], tasks: u
     val headTasks = tasks.filter(x => x._2.parents.isEmpty && x._2.children.nonEmpty)
     val endTasks = tasks.filter(x => x._2.parents.nonEmpty && x._2.children.isEmpty)
 
-    val outputTuplesMap = new java.util.HashMap[String, Double]()
-
-
     // Recursively calculate data and iterations from each task
     def recIteratCounter(tasksList: List[String]): Unit = {
       for (t <- tasksList) {
         val task = tasks.get(t)
-        val taskNode = sol.getVal(t)
-        var taskTuplesPerSec = 0.1
-        if (task.nodePerf.containsKey(taskNode)) {
-          taskTuplesPerSec = task.nodePerf.get(taskNode)
-        }
-        val taskSecondPerTupleCompute = 1 / taskTuplesPerSec
-        var taskSecondPerTupleTransfer = 0.0
-
-        var parentsTuples = List[Double]()
-
-        for (p <- task.parents) {
-          val parent = tasks.get(p)
-          parentsTuples :+= outputTuplesMap.get(p)
-          val parentNode = sol.getVal(p)
-          if (parentNode != taskNode) {
-            taskSecondPerTupleTransfer += parent.outputData / env.bandwidthBetweenNodes(taskNode, parentNode)
+        if (task.parents.isEmpty) {
+          iteratMap.put(t, (perfMap.get(t) / task.outputData).toInt)
+        } else {
+          val dataFromParents =
+            task.parents.map(x => x -> math.min(iteratMap.get(x) * tasks.get(x).outputData, (perfMap.get(x) / tasks.get(x).outputData).toInt * tasks.get(x).outputData))
+          for (d <- dataFromParents) {
+            transMap.put((d._1, t), d._2)
           }
+//          iteratMap.put(t, dataFromParents.map(x => (x._2 / task.inputData.get(x._1)).toInt).min)
         }
-
-        val taskSecondPerTuple = taskSecondPerTupleCompute + taskSecondPerTupleTransfer
-        val idealTuples = expTime / taskSecondPerTuple
-
-        parentsTuples :+= idealTuples
-        val minTuples = parentsTuples.min
-
-        outputTuplesMap.put(t, minTuples)
 
       }
       val children = tasksList.foldLeft(List[String]())((s, x) => s ++ tasks.get(x).children).distinct
@@ -87,17 +65,77 @@ class ScheduleFitnessEvaluator(env: CarrierNodeEnvironment[CpuRamNode], tasks: u
     recIteratCounter(headTasks.keySet.toList)
 
     // Result is a sum of all end outputData.
-//    var result = endTasks.map(x => math.min(iteratMap.get(x._1) * x._2.outputData, (perfMap.get(x._1) / x._2.outputData).toInt * x._2.outputData)).sum
-    var result = endTasks.map(x => outputTuplesMap.get(x._1)).sum
+    var result = endTasks.map(x => math.min(iteratMap.get(x._1) * x._2.outputData, (perfMap.get(x._1) / x._2.outputData).toInt * x._2.outputData)).sum
 
     val dataTransfer = evaluateDataTransfer(sol, transMap)
+    val transferOverheads = evaluateTransferOverheads(dataTransfer)
     val nodeOverheads = evaluateNodeOverheads(sol)
     val utilization = usedNodes(sol)
-//    utilization.toDouble + nodeOverheads._1 * 666 + nodeOverheads._2 * 666
-    result / nodeOverheads._1 / nodeOverheads._2
-//    utilization
+//    result -= transferOverheads
+//    if (result <= 0) {
+//      result = 1
+//    }
+    utilization.toDouble + nodeOverheads._1 * 666 + nodeOverheads._2 * 666 + transferOverheads * 13
   }
 
+
+//  override def getFitness(sol: SSSolution, list: util.List[_ <: SSSolution]): Double = {
+//    val perfMap: util.HashMap[String, Double] = new util.HashMap[String, Double]()
+//    val iteratMap: util.HashMap[String, Int] = new util.HashMap[String, Int]()
+//    val transMap: util.HashMap[(String, String), Double] = new util.HashMap[(String, String), Double]()
+//
+//    // Evaluate max performance of tasks
+//    for (t <- sol.genes.keySet()) {
+//      val item = sol.getVal(t)
+//      val task = tasks.get(t)
+//      if (task.children.nonEmpty || task.parents.nonEmpty) {
+//        val node = env.nodeById(item._1).asInstanceOf[CpuRamNode]
+//        val cpuCoef = node.cpu * item._2 / task.cpu
+//        val ramCoef = node.ram * item._2 / task.ram
+//        val minCoef = math.min(cpuCoef, ramCoef)
+//        val taskPerf = task.maxData * minCoef
+//        perfMap.put(t, taskPerf)
+//      }
+//    }
+//
+//    val headTasks = tasks.filter(x => x._2.parents.isEmpty && x._2.children.nonEmpty)
+//    val endTasks = tasks.filter(x => x._2.parents.nonEmpty && x._2.children.isEmpty)
+//
+//    // Recursively calculate data and iterations from each task
+//    def recIteratCounter(tasksList: List[String]): Unit = {
+//      for (t <- tasksList) {
+//        val task = tasks.get(t)
+//        if (task.parents.isEmpty) {
+//          iteratMap.put(t, (perfMap.get(t) / task.outputData).toInt)
+//        } else {
+//          val dataFromParents =
+//            task.parents.map(x => x -> math.min(iteratMap.get(x) * tasks.get(x).outputData, (perfMap.get(x) / tasks.get(x).outputData).toInt * tasks.get(x).outputData))
+//          for (d <- dataFromParents) {
+//            transMap.put((d._1, t), d._2)
+//          }
+//          iteratMap.put(t, dataFromParents.map(x => (x._2 / task.inputData.get(x._1)).toInt).min)
+//        }
+//
+//      }
+//      val children = tasksList.foldLeft(List[String]())((s, x) => s ++ tasks.get(x).children).distinct
+//      if (children.nonEmpty) {
+//        recIteratCounter(children)
+//      }
+//    }
+//
+//    recIteratCounter(headTasks.keySet.toList)
+//
+//    // Result is a sum of all end outputData.
+//    var result = endTasks.map(x => math.min(iteratMap.get(x._1) * x._2.outputData, (perfMap.get(x._1) / x._2.outputData).toInt * x._2.outputData)).sum
+//
+//    val dataTransfer = evaluateDataTransfer(sol, transMap)
+//    val transferOverheads = evaluateTransferOverheads(dataTransfer)
+//    result -= transferOverheads
+//    if (result <= 0) {
+//      result = 1
+//    }
+//    result
+//  }
 
   def evaluateTransferOverheads(dataTransfer: util.HashMap[String, (Double, Double)]): Double = {
     var result = 0.0
@@ -153,8 +191,8 @@ class ScheduleFitnessEvaluator(env: CarrierNodeEnvironment[CpuRamNode], tasks: u
         ramMap.put(nodeId, task.ram)
       }
     }
-    var cpuOver = 1.0
-    var ramOver = 1.0
+    var cpuOver = 0.0
+    var ramOver = 0.0
     for (node <- env.nodes) {
       if (cpuMap.get(node.id) > node.cpu) {
         cpuOver += cpuMap.get(node.id) - node.cpu

@@ -76,6 +76,16 @@ class CarrierNodeEnvironment[N <: Node](nodesSeq: List[Node], networksSeq: List[
 
   override def networks: List[Network] = _networks.toList
 
+  def bandwidthBetweenNodes(n1: String, n2: String): Double = {
+    val from_networks = networksByNode(nodeById(n1))
+    val to_networks = networksByNode(nodeById(n2))
+
+    val transferNetwork = from_networks.intersect(to_networks).max(new Ordering[Network] {
+      override def compare(x: Network, y: Network): Int = x.bandwidth.compare(y.bandwidth)
+    })
+    transferNetwork.bandwidth
+  }
+
   def envPrint(): String = {
     var res: String = ""
     for (n <- nodes) {

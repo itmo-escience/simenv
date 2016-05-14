@@ -1,5 +1,7 @@
 package itmo.escience.simenv.utilities
 
+import java.util
+
 import itmo.escience.simenv.entities._
 import itmo.escience.simenv.ga.SSSolution
 import itmo.escience.simenv.utilities.Utilities._
@@ -7,6 +9,7 @@ import itmo.escience.simenv.utilities.Utilities._
 import scala.io.Source
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
+import scala.collection.JavaConversions._
 
 /**
   * Created by mikhail on 28.01.2016.
@@ -41,10 +44,10 @@ def parseEnv(envPath: String, globNet: Int, localNet: Int): CarrierNodeEnvironme
     val size = curNodes.size
     for (i <- 0 until size) {
       val curJ = curNodes(i)
-      val id: String = curJ.get("id").get.asInstanceOf[String]
+      val id: String = curJ.get("host").get.asInstanceOf[String]
       val cpu: Double = curJ.get("totalCpuResources").get.asInstanceOf[Double]
       val ram: Double = curJ.get("totalMemoryResources").get.asInstanceOf[Double]
-      val node = new CpuRamNode(id = id, cpu = cpu, ram = ram, name = s"res_${c}_node_$i", parent="res_" + c)
+      val node = new CpuRamNode(id = id, cpu = cpu, ram = ram, name = id, parent="res_" + c)
       nodes :+= node
     }
     val locNet = new Network(id=generateId(), name="local net", bandwidth=localNet, nodes)
@@ -83,17 +86,19 @@ def parseEnv(envPath: String, globNet: Int, localNet: Int): CarrierNodeEnvironme
       val curJ = myJSON(i).values.asInstanceOf[Map[String, Any]]
       val id: String = curJ.get("id").get.asInstanceOf[String]
       val name: String = curJ.get("name").get.asInstanceOf[String]
-      val cpu: Double = curJ.get("cpu.pcore.percent").get.asInstanceOf[Double]
-      val ram: Double = curJ.get("max.heap.size.mb").get.asInstanceOf[Double]
+      val cpu: Double = curJ.get("cpu_pcore_percent").get.asInstanceOf[Double]
+      val ram: Double = curJ.get("max_heap_size_mb").get.asInstanceOf[Double]
+
+      val nodeKeys = curJ.keySet
 
       var outData: Double = 0
       var children: List[String] = List[String]()
       var parents: List[String] = List[String]()
       var dataFromParents: List[Double] = List[Double]()
+      val nodePerformance: java.util.HashMap[String, Double] = new util.HashMap[String, Double]()
       var parentData: java.util.HashMap[String, Double] = new java.util.HashMap[String, Double]()
-      var megabytesPerSecond: Double = 0
       if (curJ.get("megabytesOut").isDefined) {
-        outData = curJ.get("megabytesOut").get.asInstanceOf[Double]
+        outData = curJ.get("megabytesOut").get.asInstanceOf[BigInt].toDouble
       }
       if (curJ.get("children").isDefined) {
         children = curJ.get("children").get.asInstanceOf[List[String]]
@@ -106,12 +111,17 @@ def parseEnv(envPath: String, globNet: Int, localNet: Int): CarrierNodeEnvironme
         parentData = new java.util.HashMap[String, Double]()
         parents.zip(dataFromParents).foreach(x => parentData.put(x._1, x._2))
       }
-      if (curJ.get("megabytesPerSecond").isDefined) {
-        megabytesPerSecond = curJ.get("megabytesPerSecond").get.asInstanceOf[Double]
+
+      for (key <- nodeKeys) {
+        if (key.contains("tuplesPerSec")) {
+          val nodeId = key.replace("tuplesPerSec.", "")
+          val nodeP = curJ.get(key).get.asInstanceOf[String].toDouble
+          nodePerformance.put(nodeId, nodeP)
+        }
       }
 
       val task = new DaxTask(id=id, cpu=cpu, ram=ram, name=name,
-        children=children, parents=parents, inputData = parentData, outputData = outData, maxData=megabytesPerSecond)
+        children=children, parents=parents, outputData = outData, nodePerf = nodePerformance)
       res.put(task.id, task)
     }
     res

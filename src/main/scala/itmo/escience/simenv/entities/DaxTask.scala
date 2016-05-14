@@ -4,11 +4,11 @@ package itmo.escience.simenv.entities
  * Created by Nikolay on 11/29/2015.
  */
 class DaxTask(val id: String, val name: String, val cpu: Double, val ram: Double,
-              val inputData: java.util.HashMap[String, Double],
-              val maxData: Double,
               val outputData: Double,
               val parents: List[String],
-              val children: List[String]) {}
+              val children: List[String],
+              val nodePerf: java.util.HashMap[String, Double]
+             ) {}
 
 //  def volumeToTransfer(parent: DaxTask): Double = {
 //    if (!parents.contains(parent)) {

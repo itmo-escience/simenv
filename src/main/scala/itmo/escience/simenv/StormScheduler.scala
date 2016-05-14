@@ -34,7 +34,7 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
   val crossProb = 0.5
   val mutProb = 0.3
   val popSize = 50
-  val iterations = 100
+  val iterations = 500
 
   // Объект визуализатора.
     var vis: StormScheduleVisualizer = null
@@ -68,20 +68,23 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
       selector,
       rng, popSize)
 
-//    scheduler.addEvolutionObserver(new EvolutionObserver[SSSolution]() {
-//      def populationUpdate(data: PopulationData[_ <: SSSolution]) = {
-//        println(s"Generation ${data.getGenerationNumber}: ${data.getBestCandidateFitness}\n")
-//      }
-//    })
+
 
      vis = new StormScheduleVisualizer(env, tasks)
 
     println("Initialization complete")
   }
 
-  def run(): java.util.HashMap[String, List[String]] = {
+  def run(needPrint: Boolean = true): java.util.HashMap[String, List[String]] = {
 //    val seedFitness = fitnessEvaluator.getFitness(seeds.get(0))
 //    println("Fitness of init solution: " + seedFitness)
+    if (needPrint) {
+      scheduler.addEvolutionObserver(new EvolutionObserver[SSSolution]() {
+        def populationUpdate(data: PopulationData[_ <: SSSolution]) = {
+          println(s"Generation ${data.getGenerationNumber}: ${data.getBestCandidateFitness}\n")
+        }
+      })
+    }
 
     val result = scheduler.evolve(popSize, 1, seeds, new GenerationCount(iterations))
 //    val result = scheduler.evolve(popSize, 1, null, new GenerationCount(iterations))
