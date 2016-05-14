@@ -22,7 +22,7 @@ public class JavaTestMain {
 
         Boolean needPrintAlgLog = true;
 
-        HashMap<String, java.util.ArrayList<java.util.ArrayList<Object>>> result = storm.scheduleToMapList(storm.run(needPrintAlgLog));
+        HashMap<String, java.util.ArrayList<String>> result = storm.scheduleToMap(storm.run(needPrintAlgLog));
         System.out.println("Finished");
     }
 

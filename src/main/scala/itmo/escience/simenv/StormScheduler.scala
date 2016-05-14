@@ -117,4 +117,18 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
     result
   }
 
+
+  def scheduleToMap(schedule: java.util.HashMap[String, List[String]]): java.util.HashMap[String, java.util.ArrayList[String]] = {
+    val result = new java.util.HashMap[String, java.util.ArrayList[String]]()
+    for (k <- schedule.keySet()) {
+      val list = schedule.get(k)
+      val outList = new java.util.ArrayList[String]()
+      for (l <- list) {
+        outList.add(l)
+      }
+      result.put(k, outList)
+    }
+    result
+  }
+
 }
