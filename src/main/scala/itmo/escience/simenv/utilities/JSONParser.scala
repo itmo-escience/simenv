@@ -98,7 +98,7 @@ def parseEnv(envPath: String, globNet: Int, localNet: Int): CarrierNodeEnvironme
       val nodePerformance: java.util.HashMap[String, Double] = new util.HashMap[String, Double]()
       var parentData: java.util.HashMap[String, Double] = new java.util.HashMap[String, Double]()
       if (curJ.get("megabytesOut").isDefined) {
-        outData = curJ.get("megabytesOut").get.asInstanceOf[BigInt].toDouble
+        outData = curJ.get("megabytesOut").get.asInstanceOf[Double]
       }
       if (curJ.get("children").isDefined) {
         children = curJ.get("children").get.asInstanceOf[List[String]]
