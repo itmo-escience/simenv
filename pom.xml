@@ -95,7 +95,7 @@
                 <artifactId>scala-maven-plugin</artifactId>
                 <version>3.2.1</version>
                 <configuration>
-                    <mainClass>itmo.escience.Main</mainClass>
+                    <mainClass>itmo.escience.simenv.Main</mainClass>
                 </configuration>
                 <executions>
                     <execution>
@@ -136,7 +136,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>itmo.escience.Main</mainClass>
+                            <mainClass>itmo.escience.simenv.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
