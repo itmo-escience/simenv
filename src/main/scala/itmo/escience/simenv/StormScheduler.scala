@@ -17,7 +17,7 @@ import scala.collection.JavaConversions._
 /**
   * Created by Mishanya on 23.12.2015.
   */
-class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localNet: Int, initSol: String = null) {
+class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localNet: Int, initSol: List[String] = null) {
 
   var env: CarrierNodeEnvironment[CpuRamNode] = null
   var tasks: util.HashMap[String, DaxTask] = null
@@ -44,8 +44,10 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
     env = JSONParser.parseEnv(envPath, globNet, localNet)
     tasks = JSONParser.parseWorkload(workloadPath)
     if (initSol != null) {
-      val sol: SSSolution = JSONParser.parseSolution(initSol)
-      seeds.add(sol)
+      for (s <- initSol) {
+        val sol: SSSolution = JSONParser.parseSolution(s)
+        seeds.add(sol)
+      }
     }
 
     val factory: ScheduleCandidateFactory = new ScheduleCandidateFactory(env, tasks)
@@ -76,6 +78,16 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
   }
 
   def run(needPrint: Boolean = true): java.util.HashMap[String, List[String]] = {
+
+    // Seed estimation
+    if (needPrint) {
+      for (s <- seeds) {
+        println("seed")
+        println(s.genes.toString)
+        println(fitnessEvaluator.getFitness(s, null))
+      }
+    }
+
 //    val seedFitness = fitnessEvaluator.getFitness(seeds.get(0))
 //    println("Fitness of init solution: " + seedFitness)
     if (needPrint) {
@@ -86,7 +98,7 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
       })
     }
 
-    val result = scheduler.evolve(popSize, 1, seeds, new GenerationCount(iterations))
+    val result = scheduler.evolve(popSize, 1, new util.ArrayList[SSSolution](), new GenerationCount(iterations))
 //    val result = scheduler.evolve(popSize, 1, null, new GenerationCount(iterations))
     println(s"result: ${fitnessEvaluator.getFitness(result)}\n" + StormSchedulingProblem.mapToString(result.genes))
     val schedule = StormSchedulingProblem.solutionToSchedule(result)

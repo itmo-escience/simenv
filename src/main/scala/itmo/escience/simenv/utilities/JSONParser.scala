@@ -140,17 +140,17 @@ def parseEnv(envPath: String, globNet: Int, localNet: Int): CarrierNodeEnvironme
 
     // Converting from JOjbect to plain object
     implicit val formats = DefaultFormats
-    val size = myJSON.values.asInstanceOf[List[Any]].size
-    for (i <- 0 until size) {
-      val curJ = myJSON(i).values.asInstanceOf[Map[String, Any]]
-      val nodeId = curJ.get("nodeId").get.asInstanceOf[String]
-      val tasks = curJ.get("tasks").get.asInstanceOf[List[(String, Double)]]
+    val scheduleMap = myJSON.values.asInstanceOf[Map[String, List[String]]]
+    for (i <- scheduleMap) {
+//      val curJ = myJSON(i).values.asInstanceOf[Map[String, Any]]
+      val nodeId = i._1 //curJ.get("nodeId").get.asInstanceOf[String]
+      val tasks = i._2 //curJ.get("tasks").get.asInstanceOf[List[String]]
       val tasksSize = tasks.size
       for (j <- 0 until tasksSize) {
-        val item = tasks(j).asInstanceOf[List[Any]]
-        val task = item(0).asInstanceOf[String]
+        val task = tasks(j).asInstanceOf[BigInt].intValue()//.asInstanceOf[String]
+//        val task = item(0).asInstanceOf[String]
 //        val proc = item(1).asInstanceOf[Double]
-        res.put(task, nodeId)
+        res.put(task + "", nodeId)
       }
     }
     new SSSolution(res)
