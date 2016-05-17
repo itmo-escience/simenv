@@ -24,7 +24,7 @@ object Main {
 
 
 
-    val localNet = 1000 // Bandwidth in rack in MB\sec
+    val localNet = 10000 // Bandwidth in rack in MB\sec
     val globNet = 1 // bandwidth between racks in MB\sec
     // запуск
 
