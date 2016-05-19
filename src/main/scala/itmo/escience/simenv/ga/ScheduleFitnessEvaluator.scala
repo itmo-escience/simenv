@@ -16,7 +16,7 @@ class ScheduleFitnessEvaluator(env: CarrierNodeEnvironment[CpuRamNode], tasks: u
 
   override def getFitness(sol: SSSolution, list: util.List[_ <: SSSolution]): Double = {
 
-    val expTime = 300 // seconds
+    val expTime = 500 // seconds
 
     if (sol.genes.size() != tasks.size()) {
       println("Pizdec")
