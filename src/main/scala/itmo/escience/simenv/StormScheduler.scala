@@ -106,8 +106,8 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
 //
 //    val result = scheduler.evolve(popSize, 1, new util.ArrayList[SSSolution](), new GenerationCount(iterations))
 ////    val result = scheduler.evolve(popSize, 1, null, new GenerationCount(iterations))
-    println(s"result: ${fitnessEvaluator.getFitness(result)}\n" + StormSchedulingProblem.mapToString(result.genes))
-    resFitness = fitnessEvaluator.getFitness(result)
+//    println(s"result: ${fitnessEvaluator.getFitness(result)}\n" + StormSchedulingProblem.mapToString(result.genes))
+//    resFitness = fitnessEvaluator.getFitness(result)
     println(result.genes.toString)
     val schedule = StormSchedulingProblem.solutionToSchedule(result)
     schedule

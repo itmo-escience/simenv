@@ -23,8 +23,7 @@ public class JavaTestMain {
         Boolean needPrintAlgLog = true;
 
         HashMap<String, java.util.ArrayList<String>> result = storm.scheduleToMap(storm.run(needPrintAlgLog));
-        double fitness = storm.runFit();
-        System.out.println(fitness);
+//        double fitness = storm.runFit();
         System.out.println("Finished");
     }
 
