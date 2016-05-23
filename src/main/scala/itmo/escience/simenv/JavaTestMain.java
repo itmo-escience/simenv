@@ -9,8 +9,8 @@ import java.util.HashMap;
 public class JavaTestMain {
     public static void main(String[] args) {
 
-        String wfPath = ".\\resources\\tplgs\\843_tp.json";
-        String envPath = ".\\resources\\envs\\843.json";
+        String wfPath = ".\\resources\\tplgs\\rnd_tp.json";
+        String envPath = ".\\resources\\envs\\rnd_env.json";
 
         String seedSolution = ".\\resources\\solutions\\sol1.json";
 

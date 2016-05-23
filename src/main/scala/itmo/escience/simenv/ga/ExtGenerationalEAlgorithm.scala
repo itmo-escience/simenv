@@ -25,7 +25,7 @@ class ExtGenerationalEAlgorithm(factory: ScheduleCandidateFactory,
     val nextEvaluatedPopulation: util.List[EvaluatedCandidate[SSSolution]] = new  util.ArrayList[EvaluatedCandidate[SSSolution]]()
 
     while(elite.size() < eliteCount) {
-      elite.add(iterator.next.getCandidate)
+      elite.add(iterator.next.getCandidate.copy)
     }
     while (iterator.hasNext) {
       nextEvaluatedPopulation.add(iterator.next)

@@ -34,8 +34,8 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
   // GA params
   val crossProb = 0.5
   val mutProb = 0.3
-  val popSize = 5
-  val iterations = 10
+  val popSize = 50
+  val iterations = 100
 
   // Объект визуализатора.
     var vis: StormScheduleVisualizer = null
@@ -81,33 +81,34 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
 
   var resFitness: Double = 0.0
   def run(needPrint: Boolean = true): java.util.HashMap[String, List[String]] = {
-    val factory = new ScheduleCandidateFactory(env, tasks)
-    val result = factory.generateRandomCandidate(rnd)
+//    val factory = new ScheduleCandidateFactory(env, tasks)
+//    val result = factory.generateRandomCandidate(rnd)
 //
 //    // Seed estimation
-//    if (needPrint) {
-//      for (s <- seedMap.keySet()) {
-//        println("seed")
-//        println(s)
-//        println(seedMap.get(s).genes.toString)
-//        println(fitnessEvaluator.getFitness(seedMap.get(s), null))
-//      }
-//    }
-//
-////    val seedFitness = fitnessEvaluator.getFitness(seeds.get(0))
-////    println("Fitness of init solution: " + seedFitness)
-//    if (needPrint) {
-//      scheduler.addEvolutionObserver(new EvolutionObserver[SSSolution]() {
-//        def populationUpdate(data: PopulationData[_ <: SSSolution]) = {
-//          println(s"Generation ${data.getGenerationNumber}: ${data.getBestCandidateFitness}\n")
-//        }
-//      })
-//    }
-//
+    if (needPrint) {
+      for (s <- seedMap.keySet()) {
+        println("seed")
+        println(s)
+        println(seedMap.get(s).genes.toString)
+        println(fitnessEvaluator.getFitness(seedMap.get(s), null))
+      }
+      println("----")
+    }
+
+//    val seedFitness = fitnessEvaluator.getFitness(seeds.get(0))
+//    println("Fitness of init solution: " + seedFitness)
+    if (needPrint) {
+      scheduler.addEvolutionObserver(new EvolutionObserver[SSSolution]() {
+        def populationUpdate(data: PopulationData[_ <: SSSolution]) = {
+          println(s"Generation ${data.getGenerationNumber}: ${data.getBestCandidateFitness}\n")
+        }
+      })
+    }
+
 //    val result = scheduler.evolve(popSize, 1, new util.ArrayList[SSSolution](), new GenerationCount(iterations))
-////    val result = scheduler.evolve(popSize, 1, null, new GenerationCount(iterations))
-//    println(s"result: ${fitnessEvaluator.getFitness(result)}\n" + StormSchedulingProblem.mapToString(result.genes))
-//    resFitness = fitnessEvaluator.getFitness(result)
+    val result = scheduler.evolve(popSize, 1, seeds, new GenerationCount(iterations))
+    println(s"result: ${fitnessEvaluator.getFitness(result)}\n" + StormSchedulingProblem.mapToString(result.genes))
+    resFitness = fitnessEvaluator.getFitness(result)
     println(result.genes.toString)
     val schedule = StormSchedulingProblem.solutionToSchedule(result)
     schedule

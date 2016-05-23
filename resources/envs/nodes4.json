@@ -1,0 +1,5 @@
+[{"id":"Cluster0","nodes":[
+    {"id":"node-92-19","host":"node-92-19","availableCpuResources":300.0,"availableMemoryResources":3953.0,"totalCpuResources":300.0,"totalMemoryResources":3953.0,"slots":["6701","6702","6703","6700"]},
+    {"id":"node-92-21","host":"node-92-21","availableCpuResources":200.0,"availableMemoryResources":2001.0,"totalCpuResources":200.0,"totalMemoryResources":2001.0,"slots":["6702","6703","6700","6701"]},
+    {"id":"node-92-18","host":"node-92-18","availableCpuResources":200.0,"availableMemoryResources":2001.0,"totalCpuResources":200.0,"totalMemoryResources":2001.0,"slots":["6702","6701","6703","6700"]},
+    {"id":"node-92-20","host":"node-92-20","availableCpuResources":400.0,"availableMemoryResources":7889.0,"totalCpuResources":400.0,"totalMemoryResources":7889.0,"slots":["6700","6702","6701","6703"]}]}]
