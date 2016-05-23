@@ -35,7 +35,7 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
   val crossProb = 0.5
   val mutProb = 0.3
   val popSize = 50
-  val iterations = 100
+  val iterations = 500
 
   // Объект визуализатора.
     var vis: StormScheduleVisualizer = null

@@ -9,8 +9,8 @@ import java.util.HashMap;
 public class JavaTestMain {
     public static void main(String[] args) {
 
-        String wfPath = ".\\resources\\tplgs\\rnd_tp.json";
-        String envPath = ".\\resources\\envs\\rnd_env.json";
+        String wfPath = ".\\resources\\tplgs\\test1spout.json";
+        String envPath = ".\\resources\\envs\\nodes4.json";
 
         String seedSolution = ".\\resources\\solutions\\sol1.json";
 
@@ -23,7 +23,8 @@ public class JavaTestMain {
         Boolean needPrintAlgLog = true;
 
         HashMap<String, java.util.ArrayList<String>> result = storm.scheduleToMap(storm.run(needPrintAlgLog));
-//        double fitness = storm.runFit();
+        double fitness = storm.runFit();
+        System.out.println(fitness);
         System.out.println("Finished");
     }
 
