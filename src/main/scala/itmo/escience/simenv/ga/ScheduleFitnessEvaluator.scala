@@ -94,7 +94,8 @@ class ScheduleFitnessEvaluator(env: CarrierNodeEnvironment[CpuRamNode], tasks: u
     val nodeOverheads = evaluateNodeOverheads(sol)
     val utilization = usedNodes(sol)
 //    utilization.toDouble + nodeOverheads._1 * 666 + nodeOverheads._2 * 666
-    result / nodeOverheads._1 / nodeOverheads._2
+    val output = result / nodeOverheads._1 / nodeOverheads._2
+    output - output * 0.01 * utilization
 //    utilization
   }
 

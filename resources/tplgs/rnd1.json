@@ -1,0 +1,5 @@
+[
+  {"id":"1","name":"processBolt_1","exec":[1, 1],"cpu_pcore_percent":50.0,"max_heap_size_mb":250.0,"parents":["4"],"children":["2"],"tuplesPerSec.node-92-13":"94.840","tuplesPerSec.node-92-14":"96.667","tuplesPerSec.node-92-15":"98.273","tuplesPerSec.node-92-16":"98.535","megabytesOut":3.0},
+  {"id":"2","name":"processBolt_2","exec":[2, 2],"cpu_pcore_percent":50.0,"max_heap_size_mb":250.0,"parents":["1"],"children":["3"],"tuplesPerSec.node-92-13":"95.592","tuplesPerSec.node-92-14":"98.268","tuplesPerSec.node-92-15":"99.373","tuplesPerSec.node-92-16":"99.636","megabytesOut":3.0},
+  {"id":"3","name":"processBolt_3","exec":[3, 3],"cpu_pcore_percent":50.0,"max_heap_size_mb":250.0,"parents":["2"],"children":[],"tuplesPerSec.node-92-13":"95.720","tuplesPerSec.node-92-14":"98.751","tuplesPerSec.node-92-15":"100.153","tuplesPerSec.node-92-16":"99.393","megabytesOut":3.0},
+  {"id":"4","name":"spout","exec":[4, 4],"cpu_pcore_percent":50.0,"max_heap_size_mb":250.0,"parents":[],"children":["1"],"tuplesPerSec.node-92-13":"95.391","tuplesPerSec.node-92-14":"99.566","tuplesPerSec.node-92-15":"100.661","tuplesPerSec.node-92-16":"100.590","megabytesOut":5.0}]
