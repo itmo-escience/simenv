@@ -1,6 +1,8 @@
 package itmo.escience.simenv;
 
 
+import itmo.escience.simenv.tstorm.TstormAlg;
+
 import java.util.HashMap;
 
 /**
@@ -9,8 +11,8 @@ import java.util.HashMap;
 public class JavaTestMain {
     public static void main(String[] args) {
 
-        String wfPath = ".\\resources\\tplgs\\test1spout.json";
-        String envPath = ".\\resources\\envs\\nodes4.json";
+        String wfPath = ".\\resources\\tplgs\\rnd1.json";
+        String envPath = ".\\resources\\envs\\env1.json";
 
         String seedSolution = ".\\resources\\solutions\\sol1.json";
 
@@ -25,6 +27,9 @@ public class JavaTestMain {
         HashMap<String, java.util.ArrayList<String>> result = storm.scheduleToMap(storm.run(needPrintAlgLog));
         double fitness = storm.runFit();
         System.out.println(fitness);
+
+        HashMap<String, java.util.ArrayList<String>> tStormResult = storm.scheduleToMap(TstormAlg.run(wfPath, envPath));
+
         System.out.println("Finished");
     }
 
