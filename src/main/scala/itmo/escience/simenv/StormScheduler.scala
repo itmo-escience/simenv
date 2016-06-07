@@ -107,6 +107,15 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
 
 //    val result = scheduler.evolve(popSize, 1, new util.ArrayList[SSSolution](), new GenerationCount(iterations))
     val result = scheduler.evolve(popSize, 1, seeds, new GenerationCount(iterations))
+
+    val nodeOverheads = fitnessEvaluator.evaluateNodeOverheads(result)
+    if (nodeOverheads._1 > 1.0) {
+      throw new Exception("Can't find a solution. Not enough available CPU")
+    }
+    if (nodeOverheads._2 > 1.0) {
+      throw new Exception("Can't find a solution. Not enough available MEMORY")
+    }
+
     println(s"result: ${fitnessEvaluator.getFitness(result)}\n" + StormSchedulingProblem.mapToString(result.genes))
     resFitness = fitnessEvaluator.getFitness(result)
     println(result.genes.toString)

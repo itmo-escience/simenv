@@ -24,7 +24,9 @@ object TstormAlg {
   }
 
   def runAlg(env: CarrierNodeEnvironment[CpuRamNode], tasks: util.HashMap[String, DaxTask]) = {
+    val nodes = env.nodes
 
+    var mat = Array[Array[Int]]()
   }
 
 }
