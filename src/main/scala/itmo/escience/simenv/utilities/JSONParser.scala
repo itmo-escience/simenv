@@ -45,8 +45,8 @@ def parseEnv(envPath: String, globNet: Int, localNet: Int): CarrierNodeEnvironme
     for (i <- 0 until size) {
       val curJ = curNodes(i)
       val id: String = curJ.get("host").get.asInstanceOf[String]
-      val cpu: Double = curJ.get("totalCpuResources").get.asInstanceOf[Double]
-      val ram: Double = curJ.get("totalMemoryResources").get.asInstanceOf[Double]
+      val cpu: Double = curJ.get("availableCpuResources").get.asInstanceOf[Double]
+      val ram: Double = curJ.get("availableMemoryResources").get.asInstanceOf[Double]
       val node = new CpuRamNode(id = id, cpu = cpu, ram = ram, name = id, parent="res_" + c)
       nodes :+= node
     }
