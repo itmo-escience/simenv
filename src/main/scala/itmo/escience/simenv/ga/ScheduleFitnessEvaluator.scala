@@ -53,7 +53,7 @@ class ScheduleFitnessEvaluator(env: CarrierNodeEnvironment[CpuRamNode], tasks: u
         val taskNode = sol.getVal(t)
         var taskTuplesPerSec = 0.1
         if (task.nodePerf.containsKey(taskNode)) {
-          taskTuplesPerSec = task.nodePerf.get(taskNode)
+          taskTuplesPerSec = task.nodePerf.get(taskNode) * cpuUsageCoef(taskNode, sol)
         }
         val taskSecondPerTupleCompute = 1 / taskTuplesPerSec
         var taskSecondPerTupleTransfer = 0.0
@@ -98,6 +98,18 @@ class ScheduleFitnessEvaluator(env: CarrierNodeEnvironment[CpuRamNode], tasks: u
     val output = result / nodeOverheads._1 / nodeOverheads._2
     output - output * 0.01 * utilization
 //    utilization
+  }
+
+  def cpuUsageCoef(taskNode: String, sol: SSSolution): Double = {
+    val tasksCount = sol.genes.count(x => x._2 == taskNode)
+    val node = env.nodeById(taskNode)
+    val cores = node.cpu / 100
+    val c2t = cores / tasksCount
+    if (c2t > 1.0) {
+      return 1.0
+    }
+    val res = Math.sqrt(c2t)*0.95
+    res
   }
 
 

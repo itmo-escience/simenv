@@ -26,8 +26,7 @@ object Main {
     val seeds = List[String](seedSolution1, seedSolution12)//, seedSolution12, seedSolution2)//, seedSolution2)
 
 
-
-    val localNet = 1000000 // Bandwidth in rack in MB\sec
+    val localNet = 100000000 // Bandwidth in rack in MB\sec
     val globNet = 1 // bandwidth between racks in MB\sec
     // запуск
 
