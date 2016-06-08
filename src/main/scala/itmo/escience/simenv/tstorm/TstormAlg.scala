@@ -60,15 +60,20 @@ object TstormAlg {
         jArr(j) = eSum
       }
       val minJ = jArr.indices.minBy(idx => jArr(idx))
-      mat(minJ)(i) = 1
+      mat(piz(minJ))(i) = 1
     }
 
+    // build solution
     val solMap = new java.util.HashMap[String, String]()
     for (n <- 0 until x) {
       for (t <- 0 until y) {
-        solMap.put(taskSeq(t).id, nodes(n).id)
+        if (mat(n)(t) == 1) {
+          solMap.put(taskSeq(t).id, nodes(n).id)
+        }
       }
     }
+
+
     val result = new SSSolution(solMap)
     val fitnessEvaluator = new ScheduleFitnessEvaluator(env, tasks)
     val nodeOverheads = fitnessEvaluator.evaluateNodeOverheads(result)

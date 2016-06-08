@@ -30,13 +30,13 @@ object Main {
     val globNet = 1 // bandwidth between racks in MB\sec
     // запуск
 
-    val storm = new StormScheduler(wfPath, envPath, globNet, localNet, seeds)
+    val storm = new StormScheduler(wfPath, envPath, globNet, localNet, null)
     storm.initialization()
 
     // Get result schedule
     val result = storm.run(needPrint=true)
-    val fit = storm.runFit()
-    println(fit)
+//    val fit = storm.runFit()
+//    println(fit)
 
     // Visualize schedule
     storm.drawSolution(StormSchedulingProblem.scheduleToSolution(result))
