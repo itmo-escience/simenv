@@ -17,7 +17,7 @@ import scala.collection.JavaConversions._
 /**
   * Created by Mishanya on 23.12.2015.
   */
-class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localNet: Int, initSol: List[String] = null) {
+class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localNet: Int, initSol: List[String] = null, perfFlag: Boolean) {
 
   var env: CarrierNodeEnvironment[CpuRamNode] = null
   var tasks: util.HashMap[String, DaxTask] = null
@@ -60,7 +60,7 @@ class StormScheduler(workloadPath: String, envPath: String, globNet: Int, localN
 
     val pipeline: EvolutionaryOperator[SSSolution] = new EvolutionPipeline[SSSolution](operators)
 
-    fitnessEvaluator = new ScheduleFitnessEvaluator(env, tasks)
+    fitnessEvaluator = new ScheduleFitnessEvaluator(env, tasks, perfFlag)
 
     val selector: SelectionStrategy[Object] = new RouletteWheelSelection()
 

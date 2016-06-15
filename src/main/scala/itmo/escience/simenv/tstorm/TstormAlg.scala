@@ -75,7 +75,7 @@ object TstormAlg {
 
 
     val result = new SSSolution(solMap)
-    val fitnessEvaluator = new ScheduleFitnessEvaluator(env, tasks)
+    val fitnessEvaluator = new ScheduleFitnessEvaluator(env, tasks, true)
     val nodeOverheads = fitnessEvaluator.evaluateNodeOverheads(result)
     if (nodeOverheads._1 > 1.0) {
       throw new Exception("Can't find a solution. Not enough available CPU")

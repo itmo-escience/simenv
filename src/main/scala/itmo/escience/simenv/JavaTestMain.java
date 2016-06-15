@@ -19,7 +19,9 @@ public class JavaTestMain {
         int localNet = 1000; // bandwidth in rack in MB\sec
         int globNet = 1000; // bandwidth between racks in MB\sec
 
-        StormScheduler storm = new StormScheduler(wfPath, envPath, globNet, localNet, null);
+        boolean perfFlag = true;
+
+        StormScheduler storm = new StormScheduler(wfPath, envPath, globNet, localNet, null, perfFlag);
         storm.initialization();
 
         Boolean needPrintAlgLog = true;

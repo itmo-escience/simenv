@@ -29,8 +29,9 @@ object Main {
     val localNet = 100000000 // Bandwidth in rack in MB\sec
     val globNet = 1 // bandwidth between racks in MB\sec
     // запуск
+    val perfFlag = false
 
-    val storm = new StormScheduler(wfPath, envPath, globNet, localNet, null)
+    val storm = new StormScheduler(wfPath, envPath, globNet, localNet, null, perfFlag)
     storm.initialization()
 
     // Get result schedule
