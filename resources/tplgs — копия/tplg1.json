@@ -1,0 +1,7 @@
+[{"megabytesOut":30.0,"children":["2","3"],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0,"name":"checkpointspout","megabytesPerSecond":150.0,"id":"0","megabytesFromParent":[],"parents":[]},
+  {"megabytesOut":30.0,"children":["2","3"],"cpu.pcore.percent":120.0,"max.heap.size.mb":512.0,"name":"spout","megabytesPerSecond":150.0,"id":"1","megabytesFromParent":[],"parents":[]},
+  {"megabytesOut":30.0,"children":["4"],"cpu.pcore.percent":120.0,"max.heap.size.mb":512.0,"name":"partialsum","megabytesPerSecond":150.0,"id":"2","megabytesFromParent":[30.0, 30.0],"parents":["1", "0"]},
+  {"megabytesOut":30.0,"children":["4"],"cpu.pcore.percent":120.0,"max.heap.size.mb":512.0,"name":"partialsum","megabytesPerSecond":150.0,"id":"3","megabytesFromParent":[30.0, 30.0],"parents":["1", "0"]},
+  {"megabytesOut":30.0,"children":[],"cpu.pcore.percent":180.0,"max.heap.size.mb":296.0,"name":"printer","megabytesPerSecond":150.0,"id":"4","megabytesFromParent":[30.0,30.0],"parents":["2","3"]},
+  {"name":"eventlogger","id":"5","children":[],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0},
+  {"name":"acker","id":"6","children":[],"cpu.pcore.percent":10.0,"max.heap.size.mb":128.0}]
