@@ -11,15 +11,15 @@ import java.util.HashMap;
 public class JavaTestMain {
     public static void main(String[] args) {
 
-        String wfPath = ".\\resources\\tplgs\\rnd1.json";
-        String envPath = ".\\resources\\envs\\env1.json";
+        String wfPath = ".\\resources\\tplgs\\2006.json";
+        String envPath = ".\\resources\\envs\\2006.json";
 
         String seedSolution = ".\\resources\\solutions\\sol1.json";
 
-        int localNet = 1000; // bandwidth in rack in MB\sec
+        int localNet = 100000; // bandwidth in rack in MB\sec
         int globNet = 1000; // bandwidth between racks in MB\sec
 
-        boolean perfFlag = true;
+        boolean perfFlag = false;
 
         StormScheduler storm = new StormScheduler(wfPath, envPath, globNet, localNet, null, perfFlag);
         storm.initialization();
