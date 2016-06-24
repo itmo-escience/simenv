@@ -1,0 +1,9 @@
+[{"id":"Cluster1","nodes":[
+    {"id":"node-92-33","host":"node-92-33","availableCpuResources":100.0,"availableMemoryResources":2048.0,"totalCpuResources":100.0,"totalMemoryResources":2048.0,"slots":[6700, 6701, 6702, 6703]},
+    {"id":"node-92-31","host":"node-92-31","availableCpuResources":100.0,"availableMemoryResources":2048.0,"totalCpuResources":100.0,"totalMemoryResources":2048.0,"slots":[6700, 6701, 6702, 6703]},
+    {"id":"node-92-34","host":"node-92-34","availableCpuResources":100.0,"availableMemoryResources":2048.0,"totalCpuResources":100.0,"totalMemoryResources":2048.0,"slots":[6700, 6701, 6702, 6703]},
+    {"id":"node-92-36","host":"node-92-36","availableCpuResources":100.0,"availableMemoryResources":2048.0,"totalCpuResources":100.0,"totalMemoryResources":2048.0,"slots":[6700, 6701, 6702, 6703]},
+    {"id":"node-92-35","host":"node-92-35","availableCpuResources":100.0,"availableMemoryResources":2048.0,"totalCpuResources":100.0,"totalMemoryResources":2048.0,"slots":[6700, 6701, 6702, 6703]},
+    {"id":"node-92-32","host":"node-92-32","availableCpuResources":100.0,"availableMemoryResources":2048.0,"totalCpuResources":100.0,"totalMemoryResources":2048.0,"slots":[6700, 6701, 6702, 6703]},
+    {"id":"node-92-37","host":"node-92-37","availableCpuResources":100.0,"availableMemoryResources":2048.0,"totalCpuResources":100.0,"totalMemoryResources":2048.0,"slots":[6700, 6701, 6702, 6703]},
+    {"id":"node-92-30","host":"node-92-30","availableCpuResources":100.0,"availableMemoryResources":2048.0,"totalCpuResources":100.0,"totalMemoryResources":2048.0,"slots":[6700, 6701, 6702, 6703]}]}]

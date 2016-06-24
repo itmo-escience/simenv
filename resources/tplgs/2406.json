@@ -1,0 +1,7 @@
+[  {"id":"1","name":"spout","topoId":"BenchmarkTopology-1466696102572-annealing-5000-1-1466696242","exec":[7, 7],"max_heap_size_mb":100.0,"parents":[],"children":["2"],"cpu_pcore_percent":16.0,"megabytesOut":5.0},
+  {"id":"2","name":"processBolt_1","topoId":"BenchmarkTopology-1466696102572-annealing-5000-1-1466696242","exec":[1, 1],"max_heap_size_mb":100.0,"parents":["1"],"children":["3"],"cpu_pcore_percent":26.0,"megabytesOut":3.0},
+  {"id":"3","name":"processBolt_2","topoId":"BenchmarkTopology-1466696102572-annealing-5000-1-1466696242","exec":[2, 2],"max_heap_size_mb":100.0,"parents":["2"],"children":["4"],"cpu_pcore_percent":26.0,"megabytesOut":3.0},
+  {"id":"4","name":"processBolt_3","topoId":"BenchmarkTopology-1466696102572-annealing-5000-1-1466696242","exec":[3, 3],"max_heap_size_mb":100.0,"parents":["3"],"children":["5"],"cpu_pcore_percent":16.0,"megabytesOut":3.0},
+  {"id":"5","name":"processBolt_4","topoId":"BenchmarkTopology-1466696102572-annealing-5000-1-1466696242","exec":[4, 4],"max_heap_size_mb":100.0,"parents":["4"],"children":["6"],"cpu_pcore_percent":51.0,"megabytesOut":3.0},
+  {"id":"6","name":"processBolt_5","topoId":"BenchmarkTopology-1466696102572-annealing-5000-1-1466696242","exec":[5, 5],"max_heap_size_mb":100.0,"parents":["5"],"children":["7"],"cpu_pcore_percent":16.0,"megabytesOut":3.0},
+  {"id":"7","name":"processBolt_6","topoId":"BenchmarkTopology-1466696102572-annealing-5000-1-1466696242","exec":[6, 6],"max_heap_size_mb":100.0,"parents":["6"],"children":[],"cpu_pcore_percent":51.0,"megabytesOut":3.0}]

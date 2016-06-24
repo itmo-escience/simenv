@@ -11,7 +11,7 @@ import scala.collection.JavaConversions._
 /**
   * Created by mikhail on 22.01.2016.
   */
-class ScheduleFitnessEvaluator(env: CarrierNodeEnvironment[CpuRamNode], tasks: util.HashMap[String, DaxTask], perfFunction: Boolean) extends FitnessEvaluator[SSSolution] {
+class ScheduleFitnessEvaluator(env: CarrierNodeEnvironment[CpuRamNode], tasks: util.HashMap[String, DaxTask]) extends FitnessEvaluator[SSSolution] {
   override def isNatural: Boolean = true
 
   override def getFitness(sol: SSSolution, list: util.List[_ <: SSSolution]): Double = {
@@ -53,11 +53,11 @@ class ScheduleFitnessEvaluator(env: CarrierNodeEnvironment[CpuRamNode], tasks: u
         val taskNode = sol.getVal(t)
         var taskTuplesPerSec = 0.1
         if (task.nodePerf.containsKey(taskNode)) {
-          if (perfFunction) {
-            taskTuplesPerSec = task.nodePerf.get(taskNode) * cpuUsageCoef(taskNode, sol)
-          } else {
-            taskTuplesPerSec = task.nodePerf.get(taskNode)
-          }
+//          if (perfFunction) {
+//            taskTuplesPerSec = task.nodePerf.get(taskNode) * cpuUsageCoef(taskNode, sol)
+//          } else {
+          taskTuplesPerSec = task.nodePerf.get(taskNode)
+//          }
         }
         val taskSecondPerTupleCompute = 1 / taskTuplesPerSec
         var taskSecondPerTupleTransfer = 0.0
@@ -100,7 +100,8 @@ class ScheduleFitnessEvaluator(env: CarrierNodeEnvironment[CpuRamNode], tasks: u
     val utilization = usedNodes(sol)
 //    utilization.toDouble + nodeOverheads._1 * 666 + nodeOverheads._2 * 666
     val output = result / nodeOverheads._1 / nodeOverheads._2
-    output - output * 0.01 * utilization
+//    output - output * 0.05 * utilization
+    output
 //    utilization
   }
 
