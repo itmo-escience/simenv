@@ -7,7 +7,6 @@ import ifmo.escience.dapris.common.entities.{AlgorithmParameter, Workload, Envir
 import ifmo.escience.dapris.common.sample.SampleAlgorithm
 import itmo.escience.simenv.algorithms.ga.IPGAScheduler
 import itmo.escience.simenv.experiments._
-import itmo.escience.simenv.simulator.IPSimulator
 import itmo.escience.simenv.utilities.Units._
 
 /**
@@ -19,30 +18,7 @@ import itmo.escience.simenv.utilities.Units._
 object Main {
   def main(args: Array[String]) {
 
-//    exp1()
-
-    val sampleRepo = new MockRepository()
-
-    val sampleEnv = new Environment()
-    val sampleWl = new Workload(sampleRepo.getAllTasks)
-
-    val parameters = new java.util.ArrayList[AlgorithmParameter]
-    parameters.add(new AlgorithmParameter("crossover", 0.657, 0, 1))
-    parameters.add(new AlgorithmParameter("mutation", 0.308, 0, 1))
-    parameters.add(new AlgorithmParameter("swapMutation", 0.669, 0, 1))
-    parameters.add(new AlgorithmParameter("populationSize", 55, 10, 100))
-    parameters.add(new AlgorithmParameter("iterationsCount", 98, 50, 150))
-
-    val alg = new IPGAScheduler(sampleEnv, null, parameters, sampleWl)
-
-    val simulator = new IPSimulator(sampleEnv, alg, sampleWl)
-
-    simulator.init()
-    simulator.runSimulation()
-    val makespan = simulator.getMakespan
-    println(s"makespan = $makespan")
-
-
+    exp1()
     println("Finished")
   }
 

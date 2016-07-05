@@ -7,9 +7,8 @@ import ifmo.escience.dapris.common.base.algorithm.{BaseScheduleAlgorithm}
 import ifmo.escience.dapris.common.entities.{Environment, Workload, AlgorithmParameter}
 import itmo.escience.simenv.algorithms.Scheduler
 import itmo.escience.simenv.environment.entities._
-import itmo.escience.simenv.environment.entitiesimpl.{IPEstimator, IPEnvironment, SingleAppWorkload, BasicContext}
+import itmo.escience.simenv.environment.entitiesimpl.{SingleAppWorkload, BasicContext}
 import scala.collection.JavaConversions._
-import itmo.escience.simenv.IPAdapter._
 
 /**
   * Created by mikhail on 13.04.2016.

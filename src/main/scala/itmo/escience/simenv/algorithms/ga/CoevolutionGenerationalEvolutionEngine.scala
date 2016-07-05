@@ -188,8 +188,8 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
       //      val curBuddies = scala.util.Random.shuffle(availableNodes.toList).take(math.min(20, availableNodes.size)).
       val curBuddies = scala.util.Random.shuffle(availableScheds.toList).take(math.min(4, availableScheds.size)).
         map(x => (x, e))
-        val azaza = scala.util.Random.shuffle(schedPop.toList).take(1) :+ best._1.copy
-        for (sz <- azaza) {
+      val azaza = scala.util.Random.shuffle(schedPop.toList).take(1) :+ best._1.copy
+      for (sz <- azaza) {
           val sAdapt = adaptation(sz.copy, e)
           buddies.add((sAdapt, e))
       }
