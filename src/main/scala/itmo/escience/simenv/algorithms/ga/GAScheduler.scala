@@ -35,7 +35,7 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
 
     val rng: Random = new MersenneTwisterRNG()
 
-    val  engine: EvolutionEngine[WFSchedSolution] = new ExtGenerationalEAlgorithm[T, N](factory,
+    val  engine: ExtGenerationalEAlgorithm[T, N] = new ExtGenerationalEAlgorithm[T, N](factory,
       pipeline,
       fitnessEvaluator,
       selector,
@@ -58,7 +58,7 @@ class GAScheduler(crossoverProb:Double, mutationProb: Double, swapMutationProb: 
     seeds.add(heft_sol)
 //    seeds.add(WorkflowSchedulingProblem.scheduleToSolution[T, N](min_schedule, context, environment))
 
-    val result = engine.evolve(popSize, 1, seeds, new GenerationCount(iterationCount))
+    val result = engine.evolve1(popSize, 1, seeds, new GenerationCount(iterationCount))
     WorkflowSchedulingProblem.solutionToSchedule(result, context, environment)
   }
 

@@ -3,9 +3,13 @@ package itmo.escience.simenv.algorithms.ga.env
 import java.util
 import java.util.{Collections, Random}
 
+import itmo.escience.simenv.algorithms.ga.WFSchedSolution
 import itmo.escience.simenv.environment.entities.{CapacityBasedCarrier, Node}
 import itmo.escience.simenv.environment.modelling.Environment
+import org.uncommons.watchmaker.framework.EvaluatedCandidate
 import org.uncommons.watchmaker.framework.operators.AbstractCrossover
+import org.uncommons.watchmaker.framework.selection.RouletteWheelSelection
+import scala.collection.JavaConversions._
 
 /**
   * Created by mikhail on 27.01.2016.
@@ -14,20 +18,22 @@ class EnvCrossoverOperator[N <: Node] (env: Environment[N], crossoverProb: Doubl
   extends AbstractCrossover[EnvConfSolution](crossoverPoints){
 
   override def apply(parents: util.List[EnvConfSolution], random: Random): util.List[EnvConfSolution] = {
+
+    val selector = new RouletteWheelSelection()
+
     val selectionClone: util.ArrayList[EnvConfSolution] = new util.ArrayList[EnvConfSolution](parents)
     Collections.shuffle(selectionClone, random)
-    val result: util.ArrayList[EnvConfSolution] = new util.ArrayList[EnvConfSolution](parents.size())
-    val iterator: util.Iterator[EnvConfSolution] = selectionClone.iterator()
+    val result: util.ArrayList[EnvConfSolution] = new util.ArrayList[EnvConfSolution](parents.size)
 
-    while(iterator.hasNext) {
-      val parent1: EnvConfSolution = iterator.next().copy()
-      if(iterator.hasNext) {
-        val parent2: EnvConfSolution = iterator.next().copy()
-        if (random.nextDouble() < crossoverProb) {
-          result.addAll(mate(parent1, parent2, crossoverPoints, random))
-        }
-      }
+    for (i <- 0 until (parents.size * (crossoverProb)).toInt) {
+      val xparents = selector.select(selectionClone.map(x => new EvaluatedCandidate[EnvConfSolution](x, x.fitness)), false, 2, random)
+      //      if (random.nextDouble() < 0.5) {
+      result.addAll(mate(xparents.get(0).asInstanceOf[EnvConfSolution].copy, xparents.get(1).asInstanceOf[EnvConfSolution].copy, crossoverPoints, random))
+      //      } else {
+      //        result.addAll(mate2(parents.get(0), parents.get(1), crossoverPoints, random))
+      //      }
     }
+
     result.addAll(parents)
     result
   }

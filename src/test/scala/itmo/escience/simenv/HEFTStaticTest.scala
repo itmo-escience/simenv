@@ -59,5 +59,6 @@ val wfPath = ".\\resources\\wf-examples\\Montage_25"
       estimator, 0.0, new SingleAppWorkload(wf))
 
     val sched = scheduler.schedule(ctx, environment)
+    println(sched.makespan())
   }
 }

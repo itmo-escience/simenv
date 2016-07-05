@@ -3,7 +3,11 @@ package itmo.escience.simenv.algorithms.ga
 import java.util
 import java.util.{Collections, Random}
 
+import org.uncommons.watchmaker.framework.EvaluatedCandidate
 import org.uncommons.watchmaker.framework.operators.AbstractCrossover
+import org.uncommons.watchmaker.framework.selection.RouletteWheelSelection
+
+import scala.collection.JavaConversions._
 
 /**
   * Created by mikhail on 22.01.2016.
@@ -11,21 +15,42 @@ import org.uncommons.watchmaker.framework.operators.AbstractCrossover
 class ScheduleCrossoverOperator(crossoverProb: Double, crossoverPoints: Int = 1)
   extends AbstractCrossover[WFSchedSolution](crossoverPoints){
 
+//  override def apply(parents: util.List[WFSchedSolution], random: Random): util.List[WFSchedSolution] = {
+//    val selectionClone: util.ArrayList[WFSchedSolution] = new util.ArrayList[WFSchedSolution](parents)
+//    Collections.shuffle(selectionClone, random)
+//    val result: util.ArrayList[WFSchedSolution] = new util.ArrayList[WFSchedSolution](parents.size)
+//    val iterator: util.Iterator[WFSchedSolution] = selectionClone.iterator()
+//    while(iterator.hasNext) {
+//
+//      val parent1: WFSchedSolution = iterator.next().copy
+//      if (iterator.hasNext) {
+//        val parent2: WFSchedSolution = iterator.next().copy
+//        if (random.nextDouble() < crossoverProb) {
+//          result.addAll(mate(parent1, parent2, crossoverPoints, random))
+//        }
+//      }
+//    }
+//    result.addAll(parents)
+//    result
+//  }
+
   override def apply(parents: util.List[WFSchedSolution], random: Random): util.List[WFSchedSolution] = {
+
+    val selector = new RouletteWheelSelection()
+
     val selectionClone: util.ArrayList[WFSchedSolution] = new util.ArrayList[WFSchedSolution](parents)
     Collections.shuffle(selectionClone, random)
     val result: util.ArrayList[WFSchedSolution] = new util.ArrayList[WFSchedSolution](parents.size)
-    val iterator: util.Iterator[WFSchedSolution] = selectionClone.iterator()
-    while(iterator.hasNext) {
 
-      val parent1: WFSchedSolution = iterator.next().copy
-      if (iterator.hasNext) {
-        val parent2: WFSchedSolution = iterator.next().copy
-        if (random.nextDouble() < crossoverProb) {
-          result.addAll(mate(parent1, parent2, crossoverPoints, random))
-        }
-      }
+    for (i <- 0 until (parents.size * (crossoverProb)).toInt) {
+      val xparents = selector.select(selectionClone.map(x => new EvaluatedCandidate[WFSchedSolution](x, x.fitness)), false, 2, random)
+      //      if (random.nextDouble() < 0.5) {
+      result.addAll(mate(xparents.get(0).asInstanceOf[WFSchedSolution].copy, xparents.get(1).asInstanceOf[WFSchedSolution].copy, crossoverPoints, random))
+      //      } else {
+      //        result.addAll(mate2(parents.get(0), parents.get(1), crossoverPoints, random))
+      //      }
     }
+
     result.addAll(parents)
     result
   }

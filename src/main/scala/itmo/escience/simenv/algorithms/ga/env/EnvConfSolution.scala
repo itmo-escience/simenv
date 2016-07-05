@@ -52,7 +52,9 @@ class EnvConfSolution(mappedVms: List[MappedEnv]) extends EvSolution {
   }
 
   override def copy: EnvConfSolution = {
-    new EnvConfSolution(this)
+    val res = new EnvConfSolution(this)
+    res.fitness = this.fitness
+    res
   }
 
   def getNumberOfVariables: Int = _genes.size()

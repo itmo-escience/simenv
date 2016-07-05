@@ -2,10 +2,6 @@ package itmo.escience.simenv
 
 import java.io.PrintWriter
 
-import ifmo.escience.dapris.common.data.MockRepository
-import ifmo.escience.dapris.common.entities.{AlgorithmParameter, Workload, Environment}
-import ifmo.escience.dapris.common.sample.SampleAlgorithm
-import itmo.escience.simenv.algorithms.ga.IPGAScheduler
 import itmo.escience.simenv.experiments._
 import itmo.escience.simenv.utilities.Units._
 
@@ -39,7 +35,7 @@ object Main {
     val envArray = List(List(10.0, 15.0, 25.0, 30.0))
 
     val globNet = 10 Mbit_Sec
-    val locNet = 1000 Mbit_Sec
+    val locNet = 100 Mbit_Sec
     val reliability = 1.00
 
     for (downTime <- downTimes) {

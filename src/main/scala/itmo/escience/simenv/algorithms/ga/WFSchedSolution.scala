@@ -31,7 +31,9 @@ class WFSchedSolution(mappedTasks: List[MappedTask]) extends EvSolution[MappedTa
   }
 
   override def copy: WFSchedSolution = {
-    new WFSchedSolution(this)
+    val res = new WFSchedSolution(this)
+    res.fitness = this.fitness
+    res
   }
 
   def getNumberOfVariables: Int = _genes.size()

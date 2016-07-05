@@ -41,10 +41,10 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
     val envIterator: util.Iterator[EvaluatedCandidate[EnvConfSolution]] = evalEnvPop.iterator()
 
     while(schedElite.size() < eliteCount) {
-      schedElite.add(schedIterator.next().getCandidate)
+      schedElite.add(schedIterator.next().getCandidate.copy)
     }
     while(envElite.size() < eliteCount) {
-      envElite.add(envIterator.next().getCandidate)
+      envElite.add(envIterator.next().getCandidate.copy)
     }
 
     schedPop.addAll(selectionStrategy.select(evalSchedPop, fitnessEvaluator.isNatural, _popSize - eliteCount, rng))
@@ -155,7 +155,7 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
           schedData = EvolutionUtils.getPopulationData(evalSchedPop, fitnessEvaluator.isNatural, eliteCount, gen, startTime)
           envData = EvolutionUtils.getPopulationData(evalEnvPop, fitnessEvaluator.isNatural, eliteCount, gen, startTime)
 
-//          println(s"gen: ${gen}; best fit: ${best._3}")
+          println(s"gen: ${gen}; best fit: ${best._3}")
 //          println("sched size = " + evalSchedPop.size)
 //          println("env size = " + evalEnvPop.size)
 //          println(best._1.genSeq.map(x => "(" + x.taskId + ": " + x.nodeId + ")"))
@@ -175,8 +175,8 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
 //      val curBuddies = scala.util.Random.shuffle(availableNodes.toList).take(math.min(20, availableNodes.size)).
       val curBuddies = scala.util.Random.shuffle(availableNodes.toList).take(math.min(4, availableNodes.size)).
         map(x => (s, x))
-        val azaza = scala.util.Random.shuffle(envPop.toList).take(1) :+ best._2.copy
-        for (sz <- azaza) {
+        val adapted = scala.util.Random.shuffle(envPop.toList).take(1) :+ best._2.copy
+        for (sz <- adapted) {
           val sAdapt = adaptation(s.copy, sz)
           buddies.add((sAdapt, sz))
         }
@@ -188,8 +188,8 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
       //      val curBuddies = scala.util.Random.shuffle(availableNodes.toList).take(math.min(20, availableNodes.size)).
       val curBuddies = scala.util.Random.shuffle(availableScheds.toList).take(math.min(4, availableScheds.size)).
         map(x => (x, e))
-      val azaza = scala.util.Random.shuffle(schedPop.toList).take(1) :+ best._1.copy
-      for (sz <- azaza) {
+      val adapted = scala.util.Random.shuffle(schedPop.toList).take(1) :+ best._1.copy
+      for (sz <- adapted) {
           val sAdapt = adaptation(sz.copy, e)
           buddies.add((sAdapt, e))
       }
@@ -227,7 +227,7 @@ class CoevolutionGenerationalEvolutionEngine[T <: Task, N <: Node](schedFactory:
             friendship.put((res._1, res._2), res._3)
           }
         } catch {
-          case e : Exception => throw new IllegalStateException("PIZDA")
+          case e : Exception => throw new IllegalStateException("coevo evaluate error")
         }
 
 

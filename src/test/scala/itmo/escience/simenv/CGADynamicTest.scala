@@ -56,7 +56,7 @@ class CGADynamicTest {
     val scheduler = new CGAScheduler(crossoverProb = 0.4,
       mutationProb = 0.3,
       swapMutationProb = 0.3,
-      popSize = 20,
+      popSize = 10,
       iterationCount = 10)
 
     val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule[DaxTask, CapacityBasedNode](),
