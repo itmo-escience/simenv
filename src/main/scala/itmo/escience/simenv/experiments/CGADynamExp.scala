@@ -48,7 +48,7 @@ class CGADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double,
       mutationProb = 0.3,
       swapMutationProb = 0.3,
       popSize = 50,
-      iterationCount = 50)
+      iterationCount = 100)
 
     val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule[DaxTask, CapacityBasedNode](),
       estimator, 0.0, new SingleAppWorkload(wf))

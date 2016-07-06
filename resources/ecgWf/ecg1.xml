@@ -1,0 +1,41 @@
+<adag>
+    <job id="r1" namespace="ECG" name="reader" runtime="2750.0">
+        <uses file="raw_ecg_1" link="input" size="1730150400"/>
+        <uses file="digit_ecg_1" link="output" size="8650752000"/>
+    </job>
+    <job id="f1" namespace="ECG" name="filter" runtime="275.0">
+        <uses file="digit_ecg_1" link="input" size="8650752000"/>
+        <uses file="filter_ecg_1" link="output" size="1730150400"/>
+    </job>
+    <job id="ft1" namespace="ECG" name="features" runtime="2200.0">
+        <uses file="filter_ecg_1" link="input" size="1730150400"/>
+        <uses file="features_1" link="output" size="112640000"/>
+    </job>
+
+    <!--PCA-->
+    <job id="p" namespace="ECG" name="pca" runtime="30">
+        <uses file="features_1" link="input" size="112640000"/>
+        <uses file="matrix" link="output" size="51200"/>
+    </job>
+
+    <!--Classification-->
+    <job id="c" namespace="ECG" name="classification" runtime="60">
+        <uses file="matrix" link="input" size="51200"/>
+        <uses file="error" link="output" size="1024"/>
+    </job>
+
+    <child ref="f1">
+        <parent ref="r1"/>
+    </child>
+    <child ref="ft1">
+        <parent ref="f1"/>
+    </child>
+
+    <child ref="p">
+        <parent ref="ft1"/>
+    </child>
+
+    <child ref="c">
+        <parent ref="p"/>
+    </child>
+</adag>

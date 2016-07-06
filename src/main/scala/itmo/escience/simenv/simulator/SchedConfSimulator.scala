@@ -28,13 +28,13 @@ class SchedConfSimulator[T <: Task, N <: Node](scheduler: Scheduler, ctx:Context
   override val queue = new EventQueue()
   override val rnd = new Random()
 
-  override val vis = new ScheduleVisualizer[T, N]
+//  override val vis = new ScheduleVisualizer[T, N]
 
   override def runSimulation(): Unit = {
     super.runSimulation()
     SimLogger.logEnv(ctx.environment.asInstanceOf[Environment[CapacityBasedNode]])
 
-    vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
+//    vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
   }
 
   override def onInitEvent() = {
@@ -46,7 +46,7 @@ class SchedConfSimulator[T <: Task, N <: Node](scheduler: Scheduler, ctx:Context
     ctx.setEnvironment(env)
     ctx.applySchedule(schedule, queue)
 
-    vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
+//    vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
 
     SimLogger.logSched(schedule.asInstanceOf[Schedule[DaxTask, CapacityBasedNode]])
     SimLogger.logEnv(ctx.environment.asInstanceOf[Environment[CapacityBasedNode]])
@@ -70,7 +70,7 @@ class SchedConfSimulator[T <: Task, N <: Node](scheduler: Scheduler, ctx:Context
         ctx.setEnvironment(env)
         ctx.applySchedule(sc, queue)
 
-        vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
+//        vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
 
 
         SimLogger.log("Rescheduling has been completed")

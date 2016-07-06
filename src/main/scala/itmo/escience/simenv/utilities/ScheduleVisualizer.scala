@@ -6,6 +6,7 @@ import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.{TransformerException, Transformer, TransformerFactory}
 
+import itmo.escience.simenv.environment.ecgProcessing.CoreStorageCarrier
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl.CarrierNodeEnvironment
 import net.sf.jedule.JeduleStarter
@@ -131,7 +132,12 @@ class ScheduleVisualizer[T <: Task, N <: Node] {
     for ((carrier, i) <- carIdx) {
       val cluster: Element = doc.createElement("cluster")
       cluster.setAttribute("id", i + "")
-      cluster.setAttribute("hosts", "" + carrier.asInstanceOf[CapacityBasedCarrier].capacity.toInt)
+      carrier match {
+        case carrier2: CapacityBasedCarrier =>
+          cluster.setAttribute("hosts", "" + carrier2.capacity.toInt)
+        case _ => cluster.setAttribute("hosts", "" + 1)
+      }
+
       cluster.setAttribute("first_host", "0")
       clusters.appendChild(cluster)
     }
@@ -142,7 +148,7 @@ class ScheduleVisualizer[T <: Task, N <: Node] {
 
     for ((carrier, i) <- carIdx) {
 
-      val curNodes = nodes.filter(x => x.parent == carrier.asInstanceOf[CapacityBasedCarrier].id)
+      val curNodes = nodes.filter(x => x.parent == carrier.id)
 
       var usedNodes = 0
 

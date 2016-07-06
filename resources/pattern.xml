@@ -1,0 +1,14 @@
+<adag>
+    <job id="ID00" namespace="Pattern" name="name1" runtime="666.0">
+        <uses file="in" link="input" size="1024"/>
+        <uses file="out0" link="output" size="1024"/>
+    </job>
+    <job id="ID01" namespace="Pattern" name="name2" runtime="666.0">
+        <uses file="in0" link="input" size="1024"/>
+        <uses file="out1" link="output" size="1024"/>
+    </job>
+
+    <child ref="ID00">
+        <parent ref="ID01"/>
+    </child>
+</adag>

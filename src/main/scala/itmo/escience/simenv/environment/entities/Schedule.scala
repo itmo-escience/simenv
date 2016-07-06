@@ -2,6 +2,7 @@ package itmo.escience.simenv.environment.entities
 
 import java.util
 
+import itmo.escience.simenv.environment.ecgProcessing.{CoreStorageNode, EcgEstimator}
 import itmo.escience.simenv.environment.modelling.Environment
 import itmo.escience.simenv.utilities.Utilities
 
@@ -73,6 +74,60 @@ class Schedule[T <: Task, N <: Node] {
       name = task.name,
       startTime = foundStartTime,
       endTime = foundStartTime + runningTime,
+      status = ScheduleItemStatus.UNSTARTED,
+      node,
+      task)
+    newItem
+  }
+
+  // For ecg processing experiments
+  def ecgFindTimeSlot(task: T, node: N, context: Context[T, N], env: Environment[N]): TaskScheduleItem[T, N] = {
+
+    var initTime: Double = 0.0
+
+    if (fixedSchedule().getMap.containsKey(node.id)) {
+      val fixedItems = fixedSchedule().getMap.get(node.id)
+      if (fixedItems.nonEmpty) {
+        initTime = fixedItems.last.endTime
+      }
+    }
+
+    // Init time
+    if (map.containsKey(node.id)) {
+      val endOfLastTask = if (map.get(node.id).isEmpty) 0.0 else map.get(node.id).last.endTime
+      if (endOfLastTask > initTime) {
+        initTime = endOfLastTask
+      }
+    }
+    // Calculate parents end times
+    val stageInTime = task.parents.map({
+      case _: HeadDaxTask =>
+        0.0
+      case x =>
+        val parentItem = this.lastTaskItem(x.id)
+        parentItem.endTime
+    }).max
+
+    initTime = List(initTime, context.currentTime, stageInTime).max
+
+    // Calculate transfers
+    val transferTime = task.parents.map({
+      case _: HeadDaxTask =>
+        context.estimator.asInstanceOf[EcgEstimator].calcInputTransferTime(task.asInstanceOf[DaxTask], node.asInstanceOf[CoreStorageNode])
+      case x =>
+        val parentItem = this.lastTaskItem(x.id)
+        val transTime = context.estimator.calcTransferTime(from = (parentItem.task, parentItem.node), to = (task, node))
+        transTime
+    }).max
+
+    // run time
+    val runningTime = context.estimator.calcTime(task, node)
+
+
+    val newItem = new TaskScheduleItem(id = Utilities.generateId(),
+      name = task.name,
+      startTime = initTime + transferTime,
+      endTime = initTime + transferTime + runningTime,
       status = ScheduleItemStatus.UNSTARTED,
       node,
       task)
@@ -286,6 +341,19 @@ class Schedule[T <: Task, N <: Node] {
     }
 
     val newItem = coevFindTimeSlot(task, node, context, env)
+
+    map.get(node.id).add(newItem)
+    newItem
+  }
+
+  //ecg
+  def ecgPlaceTask(task: T, node: N, context: Context[T, N], env: Environment[N]): TaskScheduleItem[T, N] = {
+
+    if (!map.containsKey(node.id)) {
+      addNode(node.id)
+    }
+
+    val newItem = ecgFindTimeSlot(task, node, context, env)
 
     map.get(node.id).add(newItem)
     newItem

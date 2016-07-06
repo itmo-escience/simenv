@@ -2,6 +2,7 @@ package itmo.escience.simenv.utilities
 
 import java.io.File
 
+import itmo.escience.simenv.environment.ecgProcessing.CoreStorageNode
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.entitiesimpl.CarrierNodeEnvironment
 import itmo.escience.simenv.environment.modelling.Environment
@@ -46,7 +47,7 @@ object SimLogger {
   }
 
   def logEnv(log: Environment[CapacityBasedNode]) = {
-    logger.trace(env, s"time: ${_ctx.currentTime}; Environment - \n${log.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]].envPrint()}")
+    //logger.trace(env, s"time: ${_ctx.currentTime}; Environment - \n${log.envPrint()}")
   }
 
   def logNode(log: Node) = {

@@ -56,7 +56,7 @@ class GADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double, 
       mutationProb = m1,
       swapMutationProb = m2,
       popSize = 50,
-      iterationCount = 300)
+      iterationCount = 100)
 
     val ctx = new BasicContext[DaxTask, CapacityBasedNode](environment, Schedule.emptySchedule[DaxTask, CapacityBasedNode](),
       estimator, 0.0, new SingleAppWorkload(wf))
@@ -68,8 +68,6 @@ class GADynamExp(wfPath: String, envArray: List[List[Double]], globNet: Double, 
     print("GA Makespan:")
     println(ctx.schedule.makespan())
     ctx.schedule.makespan()
-
-
 
   }
 }

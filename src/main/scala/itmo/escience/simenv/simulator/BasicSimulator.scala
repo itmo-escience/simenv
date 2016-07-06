@@ -24,7 +24,7 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
   val queue = new EventQueue()
   val rnd = new Random()
   SimLogger.setCtx(ctx.asInstanceOf[Context[DaxTask, CapacityBasedNode]])
-  val vis = new ScheduleVisualizer[T, N]
+//  val vis = new ScheduleVisualizer[T, N]
 
   /**
     * generates and adds the very first event [[InitEvent]] to the event queue
@@ -50,7 +50,7 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
     SimLogger.log("Finished")
     SimLogger.logSched(ctx.schedule.asInstanceOf[Schedule[DaxTask, CapacityBasedNode]])
 
-    vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
+//    vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
   }
 
   /**
@@ -77,7 +77,7 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
     ctx.applySchedule(schedule, queue)
     SimLogger.logSched(ctx.schedule.asInstanceOf[Schedule[DaxTask, CapacityBasedNode]])
 
-    vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
+//    vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
 
     SimLogger.log("Init schedule has been applied")
     // Generate initial events
@@ -155,7 +155,7 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
         // Apply new schedule
         ctx.applySchedule(sc, queue)
 
-        vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
+//        vis.drawSched(ctx.schedule, ctx.environment.asInstanceOf[CarrierNodeEnvironment[CapacityBasedNode]])
 
 
         SimLogger.log("Rescheduling has been completed")
@@ -262,7 +262,11 @@ class BasicSimulator[T <: Task, N <: Node](val scheduler: Scheduler, var ctx: Co
     //    taskScheduleItem.status = TaskScheduleItemStatus.RUNNING
     val dice = rnd.nextDouble()
     // TODO reliablity not via specific node
-    if (dice < taskScheduleItem.node.asInstanceOf[CapacityBasedNode].reliability) {
+    var rel = 1.0
+    if (taskScheduleItem.node.isInstanceOf[CapacityBasedNode]) {
+      rel = taskScheduleItem.node.asInstanceOf[CapacityBasedNode].reliability
+    }
+    if (dice < rel) {
       // Task will be finished
       val taskFinishedEvent = new TaskFinished(id = taskScheduleItem.id, name = taskScheduleItem.name, postTime = ctx.currentTime,
         eventTime = taskScheduleItem.endTime, taskScheduleItem.task, taskScheduleItem.node)

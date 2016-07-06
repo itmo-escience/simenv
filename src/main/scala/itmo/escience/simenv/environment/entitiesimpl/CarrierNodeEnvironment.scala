@@ -1,5 +1,6 @@
 package itmo.escience.simenv.environment.entitiesimpl
 
+import itmo.escience.simenv.environment.ecgProcessing.CoreStorageNode
 import itmo.escience.simenv.environment.entities._
 import itmo.escience.simenv.environment.modelling.Environment
 
@@ -22,6 +23,7 @@ class CarrierNodeEnvironment[N <: Node](nodesSeq: Seq[Node], networksSeq: Seq[Ne
     * Adds physical or virtual nodes to the pool of resources
     * the node is virtual if we cannot directly control physical machine when it runs
     * (for example, a node which has been bought of Amazon EC2 or GAE)
+ *
     * @param nodes sequence of nodes
     * @return
     */
@@ -80,7 +82,14 @@ class CarrierNodeEnvironment[N <: Node](nodesSeq: Seq[Node], networksSeq: Seq[Ne
   def envPrint(): String = {
     var res: String = ""
     for (n <- nodes) {
-      res += s"(${n.asInstanceOf[CapacityBasedNode].printNode()})\n"
+      n match {
+        case node: CapacityBasedNode =>
+          res += s"(${node.printNode()})\n"
+        case node: CoreStorageNode =>
+          res += s"(${node.printNode()})\n"
+        case _ =>
+      }
+
     }
     res
   }

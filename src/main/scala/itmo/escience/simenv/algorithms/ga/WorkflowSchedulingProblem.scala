@@ -71,6 +71,26 @@ object WorkflowSchedulingProblem {
     newSchedule.asInstanceOf[Schedule[T, N]]
   }
 
+  def ecgSolutionToSchedule[T <: Task, N <: Node]
+  (solution: WFSchedSolution,
+   context: Context[T, N],
+   environment: Environment[N]): Schedule[T, N] = {
+
+    val newSchedule = context.schedule.fixedSchedule()
+
+    // repair sequence in relation with parent-child dependencies
+    // construct new schedule by placing it in task-by-task manner
+    val repairedOrdering = repairOrdering(solution, context, environment)
+
+    for (x <- repairedOrdering) {
+      val (task, nodeId) = x
+      newSchedule.ecgPlaceTask(task,
+        environment.nodeById(nodeId).asInstanceOf[N],
+        context, environment)
+    }
+    newSchedule.asInstanceOf[Schedule[T, N]]
+  }
+
 
   def repairOrdering[T <: Task, N <: Node](solution: WFSchedSolution, context: Context[T, N], environment: Environment[N]): List[(T, NodeId)] = {
     val wf = context.workload.apps.head
